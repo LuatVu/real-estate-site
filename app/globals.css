@@ -1,26 +1,155 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
 @import "tailwindcss";
+body {
+  	@apply leading-[normal] m-0;
+}
+*, ::before, ::after { border-width: 0; }
+
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary-p50: #e6f0ffff; 
+  --color-primary-p75: #96c0ffff; 
+  --color-primary-p100: #6ba6ffff; 
+  --color-primary-p200: #2b7fffff; 
+  --color-primary-p300: #0065ffff; 
+  --color-primary-p400: #0047b3ff; 
+  --color-primary-p500: #003e9cff; 
+  --color-secondary-s50: #fefeffff; 
+  --color-secondary-s75: #fafbfdff; 
+  --color-secondary-s100: #f7f9fcff; 
+  --color-secondary-s200: #f4f7fbff; 
+  --color-secondary-s300: #f2f5faff; 
+  --color-secondary-s400: #a9acafff; 
+  --color-secondary-s500: #949599ff; 
+  --color-text-t50: #e7e7e8ff; 
+  --color-text-t75: #9d9d9fff; 
+  --color-text-t100: #747577ff; 
+  --color-text-t200: #38393cff; 
+  --color-text-t300: #0f1114ff; 
+  --color-text-t400: #0b0c0eff; 
+  --color-text-t500: #090a0cff; 
+  --color-red-r50: #f7eae9ff; 
+  --color-red-r75: #dda9a5ff; 
+  --color-red-r100: #cf8680ff; 
+  --color-red-r200: #bb5249ff; 
+  --color-red-r300: #ad2e24ff; 
+  --color-red-r400: #792019ff; 
+  --color-red-r500: #6a1c16ff; 
+  --color-yellow-y50: #fffbf0ff; 
+  --color-yellow-y75: #ffefc0ff; 
+  --color-yellow-y100: #fee8a6ff; 
+  --color-yellow-y200: #fede80ff; 
+  --color-yellow-y300: #fed766ff; 
+  --color-yellow-y400: #b29747ff; 
+  --color-yellow-y500: #9b833eff; 
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.heading-h1 {
+  font-family: Roboto;
+  font-size: 5.8125rem;
+  font-weight: 400; 
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.heading-h2 {
+  font-family: Roboto;
+  font-size: 4.625rem; 
+  font-weight: 400; 
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.heading-h3 {
+  font-family: Roboto;
+  font-size: 3.6875rem; 
+  font-weight: 400; 
+}
+
+.heading-h4 {
+  font-family: Roboto;
+  font-size: 3rem; 
+  font-weight: 400; 
+}
+
+.heading-h5 {
+  font-family: Roboto;
+  font-size: 2.375rem;
+  font-weight: 400; 
+}
+
+.heading-h6 {
+  font-family: Roboto;
+  font-size: 1.875rem; 
+  font-weight: 400; 
+}
+
+.heading-h7 {
+  font-family: Roboto;
+  font-size: 1.5206rem; 
+  font-weight: 400; 
+}
+
+.heading-h8 {
+  font-family: Roboto;
+  font-size: 1.1875rem; 
+  font-weight: 400; 
+}
+
+.heading-h9 {
+  font-family: Roboto;
+  font-size: 1rem; 
+  font-weight: 400; 
+}
+
+.heading-h10 {
+  font-family: Roboto;
+  font-size: 0.8125rem; 
+  font-weight: 400; 
+}
+
+.body-lg {
+  font-family: Roboto;
+  font-size: 1.1875rem;
+  font-weight: 400; 
+}
+
+.body-lg-bold {
+  font-family: Roboto;
+  font-size: 1.1875rem; 
+  font-weight: 700; 
+}
+
+.body-med {
+  font-family: Roboto;
+  font-size: 0.8125rem; 
+  font-weight: 400; 
+}
+
+.body-med-bold {
+  font-family: Roboto;
+  font-size: 0.8125rem; 
+  font-weight: 700; 
+}
+
+.body-sm {
+  font-family: Roboto;
+  font-size: 0.6875rem; 
+  font-weight: 400; 
+}
+
+.body-vsm {
+  font-family: Roboto;
+  font-size: 0.5rem;
+  font-weight: 400; 
+}
+
+.body-sm-bold {
+  font-family: Roboto;
+  font-size: 0.6875rem;
+  font-weight: 700; 
+}
+
+.body-vsm-bold {
+  font-family: Roboto;
+  font-size: 0.5rem; 
+  font-weight: 700; 
 }
