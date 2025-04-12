@@ -1,16 +1,31 @@
+.headerImageIcon {
+    position: absolute;
+    height: 17.72%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 82.28%;
+    left: 0%;
+    max-width: 100%;
+    overflow: hidden;
+    max-height: 100%;
+    object-fit: cover;
+}
 .headingTitle {
     position: absolute;
     top: 0%;
     left: 0%;
 }
 .loginFormTitle {
-    width: 129px;
-    position: relative;
-    height: 22px;
-    z-index: 0;
-    font-size: 19px;
-    color: #0b0c0e;
-    font-family: Roboto;
+    width: 100%;
+  	position: absolute;
+  	margin: 0 !important;
+  	top: 0px;
+  	height: 22px;
+  	text-align: left;
+  	font-size: 19px;
+  	color: #0b0c0e;
+  	font-family: Roboto;
 }
 .userIcon {
     width: 24px;
@@ -23,7 +38,7 @@
     position: relative;
 }
 .userParent {
-    width: 97px;
+    flex:1;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -48,26 +63,33 @@
     top: 42px;
     right: 0%;
     left: 0%;
-    height: 44px;
-    overflow: hidden;
+    height: 44px;    
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    z-index: 1;
+    text-align: left;
+  	font-size: 12px;
+  	color: #9d9d9f;
+  	font-family: Inter;
 }
 .frameParent {
-    align-self: stretch;
-    border-radius: 2px;
-    background-color: #fff;
-    border: 1px solid #38393c;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 3px 10px 4px;
-    gap: 0px;
+    width: 100%;
+  	position: relative;
+  	border-radius: 2px;
+  	background-color: #fff;
+  	border: 1px solid #38393c;
+  	box-sizing: border-box;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: space-between;
+  	padding: 10px 3px 10px 4px;
+  	text-align: left;
+  	font-size: 12px;
+  	color: #9d9d9f;
+  	font-family: Inter;
 }
 .loginFormContainerInner {
     width: 100%;
@@ -77,13 +99,16 @@
     right: 0%;
     left: 0%;
     height: 44px;
-    overflow: hidden;
+    /* overflow: hidden; */
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    z-index: 2;
+    text-align: left;
+  	font-size: 12px;
+  	color: #9d9d9f;
+  	font-family: Inter;
 }
 .forgotPassword {
     width: 100%;
@@ -98,45 +123,157 @@
     display: inline-block;
     z-index: 3;
 }
-.button {
+
+.inputText{    
+    flex: 1;
     width: 100%;
-    margin: 0 !important;
+    position: relative;
+    font-size: 15px;
+    font-family: Roboto;
+    color: var(--color-text-t500);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    height: 22px;  
+    border: 0;
+}
+input.inputText:focus{
+    outline: none;
+}
+
+.button {    
     position: absolute;
     top: 203px;
     right: 0%;
-    left: 0%;
-    border-radius: 2px;
-    background-color: #0065ff;
-    height: 30px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    cursor: pointer;
-    z-index: 4;
-    color: #fefeff;
+    left: 0%;        
+    z-index: 4;    
 }
 .loginFormContainer {
-    width: 100%;
     position: relative;
-    height: 233px;
+    height: 27.35%;
+    width: 83.72%;
+    top: 22.65%;
+    right: 8.14%;
+    bottom: 50%;
+    left: 8.14%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     gap: 20px;
+}
+
+.dividerWithTextChild {
+    width: 44.24%;
+    position: absolute;
+    margin: 0 !important;
+    top: 6px;
+    right: 55.91%;
+    left: -0.15%;
+    border-top: 1px solid #a9acaf;
+    box-sizing: border-box;
+    height: 1px;
+    z-index: 0;
+}
+.dividerWithTextItem {
+    width: 44.24%;
+    position: absolute;
+    margin: 0 !important;
+    top: 6px;
+    right: -0.15%;
+    left: 55.91%;
+    border-top: 1px solid #a9acaf;
+    box-sizing: border-box;
+    height: 1px;
+    z-index: 1;
+}
+.dividerText {
+    width: 26px;
+    position: absolute;
+    margin: 0 !important;
+    top: 0px;
+    left: calc(50% - 13px);
+    display: inline-block;
+    z-index: 2;
+}
+.dividerWithText {
+    position: absolute;
+    width: 83.97%;
+    top: 468px;
+    right: 7.89%;
+    left: 8.14%;
+    height: 13px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0px;
+    font-size: 11px;
+    color: #a9acaf;
+    font-family: Roboto;
+}
+
+.googleGLogosvg1Icon {
+    width: 12px;
+    position: relative;
+    max-height: 100%;
+    object-fit: fill;
+}
+.button2 {
+    align-self: stretch;
+    border-radius: 2px;
+    background-color: #fefeff;
+    border: 1px solid #a9acaf;
+    box-sizing: border-box;
+    height: 30px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 4px;
+}
+.ngK {
+    position: relative;
+    text-decoration: underline;
+    color: #0047b3;
+    cursor: pointer;
+}
+.signUpPromptParent {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-align: center;
+    font-size: 11px;
+    color: #000;
+    font-family: Roboto;
+}
+.socialLoginContainer {
+    position: absolute;
+    width: 83.72%;
+    top: 514px;
+    right: 7.89%;
+    left: 8.4%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    color: #0f1114;
+}
+.signIn {
+    width: 100%;
+    position: relative;
+    background-color: #fff;
+    height: 852px;
+    overflow: hidden;
     text-align: left;
     font-size: 12px;
     color: #9d9d9f;
     font-family: Inter;
-}
-.headerImageIcon {
-    width: 100%;
-    position: relative;
-    max-width: 100%;
-    overflow: hidden;
-    height: 151px;
-    object-fit: cover;
 }

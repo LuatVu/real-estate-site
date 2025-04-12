@@ -2,6 +2,11 @@
 import useScreenSize from "../lib/useScreenSize";
 import Image from "next/image";
 import styles from './index.module.css';
+import MbFooter from "../ui/mobile/footer/mb.footer";
+import Button from "../ui/common/button/button";
+import Submit from "../ui/common/button/submit";
+import btnstyle from '../ui/common/button/btn.module.css';
+import Link from 'next/link';
 
 export default function SignIn() {
     const screenSize = useScreenSize();
@@ -14,60 +19,50 @@ export default function SignIn() {
 
 function MobileSignIn() {
     return (
-        <div className={styles.signIn}>
-            <Image className={styles.headerImageIcon} width={393} height={151} alt="" src="/icons/Header_Image.png" />
-            <div className={styles.loginFormContainer}>
-                <div className={styles.loginFormTitle}>
-                    <div className={styles.headingTitle}>Đăng nhập để tiếp tục</div>
-                </div>
-                <div className={styles.inputFieldsContainer}>
-                    <div className={styles.inputFieldsContainerInner}>
-                        <div className={styles.userParent}>
-                            <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                            <div className={styles.placeHolder}>Số điện thoại</div>
+        <main>
+            <div className={styles.signIn}>
+                <Image className={styles.headerImageIcon} width={393} height={151} alt="" src="/icons/Header_Image.png" />
+                <form className={styles.loginFormContainer} action="/sign-in-action">
+                    <div className={styles.loginFormTitle}>
+                        <div className={styles.headingTitle}>Đăng nhập để tiếp tục</div>
+                    </div>
+                    <div className={styles.inputFieldsContainer}>
+                        <div className={styles.inputFieldsContainerInner}>
+                            <div className={styles.userParent}>
+                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
+                                <input className={styles.inputText} placeholder="Số điện thoại"/>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className={styles.loginFormContainerInner}>
-                    <div className={styles.frameParent}>
-                        <div className={styles.userParent}>
-                            <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                            <div className={styles.placeHolder}>Mật khẩu</div>
+                    <div className={styles.loginFormContainerInner}>
+                        <div className={styles.frameParent}>
+                            <div className={styles.userParent}>
+                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
+                                <input className={styles.inputText} placeholder="Mật khẩu" type="password"/>
+                            </div>
+                            <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/eyeIcon.svg" />
                         </div>
-                        <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/eyeIcon.svg" />
+                    </div>
+                    <Link href="/recover-passwod" className={styles.forgotPassword}>Quên mật khẩu?</Link>
+                    <Submit text="Đăng nhập" cssClass={[styles.button, btnstyle.buttonprimary]} onClick={() => console.log("Click")} />
+                </form>
+                <div className={styles.dividerWithText}>
+                    <div className={styles.dividerText}>Hoặc</div>
+                    <div className={styles.dividerWithTextChild} />
+                    <div className={styles.dividerWithTextItem} />
+                </div>
+                <div className={styles.socialLoginContainer}>
+                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Google" onClick={() => console.log("Click")} icon="/icons/googleIcon.svg" />
+                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Facebook" onClick={() => console.log("Click")} icon="/icons/facebookIcon.svg" />
+                    <div className={styles.signUpPromptParent}>
+                        <div className={styles.signUpPrompt}>Bạn chưa là thành viên?</div>
+                        <Link href="/sign-up" className={styles.ngK}>Đăng Ký</Link>
                     </div>
                 </div>
-                <div className={styles.forgotPassword}>Quên mật khẩu?</div>
-                <div className={styles.button}>
-                    <div className={styles.placeHolder}>Đăng nhập</div>
-                </div>
             </div>
-            <div className={styles.dividerWithText}>
-                <div className={styles.dividerText}>Hoặc</div>
-                <div className={styles.dividerWithTextChild} />
-                <div className={styles.dividerWithTextItem} />
-            </div>
-            <div className={styles.socialLoginContainer}>
-                <div className={styles.button2}>
-                    <Image className={styles.googleGLogosvg1Icon} width={12} height={12} alt="" src="/icons/googleIcon.svg" />
-                    <div className={styles.placeHolder}>Tiếp tục với Google</div>
-                </div>
-                <div className={styles.button2}>
-                    <Image className={styles.googleGLogosvg1Icon} width={12} height={12} alt="" src="/icons/facebookIcon.svg" />
-                    <div className={styles.placeHolder}>Tiếp tục với Facebook</div>
-                </div>
-                <div className={styles.signUpPromptContainer}>
-                    <span>
-                        <span>{`Bạn chưa là thành viên? `}</span>
-                        <span className={styles.ngK}>Đăng Ký</span>
-                    </span>
-                </div>
-            </div>
-            <div className={styles.footer}>
-                <div className={styles.footerChild} />
-                <div className={styles.copyright2025}>Copyright © 2025 - nhadepqua.com.vn</div>
-            </div>
-        </div>
+            <MbFooter />
+        </main>
+
     );
 }
 

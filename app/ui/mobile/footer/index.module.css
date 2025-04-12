@@ -1,0 +1,29 @@
+.footerChild {
+    position: absolute;
+    height: 3.7%;
+    width: 93.13%;
+    top: 31.48%;
+    right: 3.44%;
+    bottom: 64.81%;
+    left: 3.44%;
+    border-top: 1px solid #f2f5fa;
+    box-sizing: border-box;
+}
+.copyright2025 {
+    position: absolute;
+    top: 11px;
+    left: calc(50% - 69.5px);
+}
+.footer {
+    position: absolute;
+  	height: 3.17%;
+  	width: 100%;  	
+  	right: 0%;
+  	bottom: 0;
+  	left: 0%;
+  	background-color: #fff;
+  	overflow: hidden;
+  	font-size: 8px;
+  	color: #949599;
+  	font-family: Roboto;
+}

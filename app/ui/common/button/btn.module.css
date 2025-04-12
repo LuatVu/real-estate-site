@@ -1,0 +1,43 @@
+.searchIcon {
+    width: 12px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.btn{
+    width: 100%;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 4px;
+    text-align: left;
+    font-size: 15px;
+    font-family: Roboto;
+    cursor: pointer;
+}
+
+.buttonprimary {
+    background-color: #0065ff;
+    color: #fefeff;
+}
+
+button.buttonprimary:hover{
+    background-color: var(--color-primary-p100);
+}
+
+.buttonsecondary {    
+    background-color: #fefeff;
+    border: 1px solid #a9acaf;    
+    overflow: hidden;    
+    color: #0f1114;    
+}
+
+button.buttonsecondary:hover{
+    background-color: var(--color-yellow-y75);
+}
