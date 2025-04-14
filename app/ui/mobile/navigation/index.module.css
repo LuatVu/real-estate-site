@@ -1,0 +1,53 @@
+.arrowarcleftIcon {
+    width: 24px;
+    position: absolute;
+    margin: 0 !important;
+    top: 17px;
+    left: 10px;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+    z-index: 0;
+}
+
+.nhPParent {
+    width: 72px;
+    margin: 0 !important;
+    position: absolute;
+    top: 20px;
+    left: calc(50% - 67px);
+    height: 18px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 1;
+}
+
+.navtypenavVisitor {
+    position: absolute;
+  	top: 0px;
+  	left: 0px;
+    width: 100%;    
+    border: 1px solid #e6f0ff;
+    box-sizing: border-box;
+    height: 58px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    gap: 0px;
+    text-align: left;
+    font-size: 8px;
+    color: #003e9c;
+    font-family: Roboto;
+}
+
+
+.button {    
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;    
+}
