@@ -15,12 +15,12 @@
     left: calc(50% - 69.5px);
 }
 .footer {
-    position: absolute;
-  	height: 3.17%;
+    position: relative;    
+  	height: 27px;
   	width: 100%;  	
-  	right: 0%;
-  	bottom: 0;
-  	left: 0%;
+  	/* right: 0%; */
+  	/* bottom: 0; */
+  	/* left: 0%; */
   	background-color: #fff;
   	overflow: hidden;
   	font-size: 8px;

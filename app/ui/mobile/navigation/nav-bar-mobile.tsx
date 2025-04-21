@@ -1,5 +1,3 @@
-
-
 import Image from "next/image";
 import styles from './index.module.css';
 import Button from '../../common/button/button';
@@ -13,8 +11,7 @@ export default function NavBarMobile({displayNav}: any){
       			<Image className={styles.nhPParent} alt="Nha Dep Qua!" width={72} height={18} src="/icons/nhadepqua_logo.svg"/>
 				<div className={styles.button}>
 					<Button cssClass={[btnStyle.buttonprimary]} text="Đăng nhập" onClick={ () => console.log("Đăng Nhập CLick")} />      	
-				</div>
-      			
+				</div>      			
     		</div>
     );
 };

@@ -1,6 +1,830 @@
-.mainContent{
-    position: absolute;
-  	top: 55px;
-  	left: 0px;
-  	width: 100%;
+.mainContent {
+	position: absolute;
+	top: 58px;
+	left: 0px;
+	width: 100%;
+}
+
+
+.arrowarcleftIcon {
+	width: 24px;
+	position: absolute;
+	margin: 0 !important;
+	top: 17px;
+	left: 10px;
+	max-height: 100%;
+	overflow: hidden;
+	flex-shrink: 0;
+	z-index: 0;
+}
+
+.nhP {
+	width: 39px;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	height: 13px;
+	flex-shrink: 0;
+}
+
+.qu {
+	position: relative;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.nhPParent {
+	width: 78px;
+	margin: 0 !important;
+	position: absolute;
+	top: 20px;
+	left: calc(50% - 69.5px);
+	height: 18px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	z-index: 1;
+}
+
+.button {
+	width: 86px;
+	margin: 0 !important;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	border-radius: 2px;
+	background-color: #0065ff;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	box-sizing: border-box;
+	z-index: 2;
+	font-size: 15px;
+	color: #fefeff;
+}
+
+.natigationMobile {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	right: 0%;
+	left: 0%;
+	border: 1px solid #e6f0ff;
+	box-sizing: border-box;
+	height: 55px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px;
+	gap: 0px;
+	font-size: 10px;
+	color: #003e9c;
+}
+
+.buildingofficeIcon {
+	width: 24px;
+	position: relative;
+	max-height: 100%;
+	overflow: hidden;
+}
+
+.button2 {
+	width: 27.74%;
+	margin: 0 !important;
+	position: absolute;
+	height: 100%;
+	top: 0%;
+	right: 0%;
+	bottom: 0%;
+	left: 72.26%;
+	border-radius: 2px;
+	background-color: #f7f9fc;
+	border: 1px solid #f7f9fc;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	padding: 10px;
+	gap: 4px;
+	z-index: 0;
+}
+
+.button4 {
+	width: 27.74%;
+	margin: 0 !important;
+	position: absolute;
+	height: 100%;
+	top: 0%;
+	right: 72.26%;
+	bottom: 0%;
+	left: 0%;
+	border-radius: 2px;
+	background-color: #f7f9fc;
+	border: 1px solid #f7f9fc;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	padding: 10px;
+	gap: 4px;
+	z-index: 1;
+}
+
+.button6 {
+	width: 27.74%;
+	margin: 0 !important;
+	position: absolute;
+	height: 100%;
+	top: 0%;
+	right: 36.13%;
+	bottom: 0%;
+	left: 36.13%;
+	border-radius: 2px;
+	background-color: #f7f9fc;
+	border: 1px solid #f7f9fc;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	padding: 10px;
+	gap: 4px;
+	z-index: 2;
+}
+
+.buttonParent {
+	position: absolute;
+	height: 51.28%;
+	width: 78.88%;
+	top: 23.93%;
+	right: 10.43%;
+	bottom: 24.79%;
+	left: 10.69%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 26px;
+}
+
+.optionFilter {
+	position: relative;
+	width: 100%;
+	/* top: 327px; */
+	right: 0%;
+	left: 0%;
+	height: 117px;
+	overflow: hidden;
+	color: #090a0c;
+}
+
+.placeHolder {
+	flex: 1;
+	position: relative;
+}
+
+.placeHolderWrapper {
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.searchIcon {
+	width: 12px;
+	position: relative;
+	max-height: 100%;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.button8 {
+	width: 30px;
+	border-radius: 2px;
+	background-color: #0065ff;
+	height: 30px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+.frameParent {
+	align-self: stretch;
+	border-radius: 2px;
+	background-color: #fff;
+	border: 1px solid #38393c;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 2px 3px 2px 4px;
+	gap: 0px;
+}
+
+.searchFields {
+	align-self: stretch;
+	height: 36px;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.funnelIcon {
+	width: 24px;
+	/* height: 24px; */
+	position: relative;
+	max-height: 100%;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.filter {
+	flex: 1;
+	position: relative;
+}
+
+.div {
+	width: 8px;
+	position: relative;
+	display: inline-block;
+}
+
+.wrapper {
+	width: 16px;
+	border-radius: 3px;
+	background-color: #ff3a44;
+	height: 16px;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 3px;
+	box-sizing: border-box;
+	font-size: 15px;
+	color: #000;
+}
+
+.button9 {
+	width: 72px;
+	border-radius: 2px;
+	background-color: #fefeff;
+	border: 1px solid #a9acaf;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 1px;
+	gap: 1px;
+	cursor: pointer;
+	color: #0f1114;
+	text-align: left;
+	font-size: 11px;
+	font-family: Roboto;
+}
+
+.inputText{    
+    flex: 1;
+    width: 100%;
+    position: relative;
+    font-size: 15px;
+    font-family: Roboto;
+    color: var(--color-text-t500);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    height: 22px;  
+    border: 0;
+}
+
+input.inputText:focus{
+    outline: none;
+}
+
+.button10 {
+	/* width: 100%; */
+	position: relative;
+	border-radius: 2px;
+	background-color: #fefeff;
+	border: 1px solid #a9acaf;
+	box-sizing: border-box;
+	height: 26px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 3px;
+	gap: 1px;
+	cursor: pointer;
+	text-align: left;
+	font-size: 11px;
+	color: #747577;
+	font-family: Roboto;
+}
+
+.button12 {
+	width: 86px;
+	border-radius: 2px;
+	background-color: #fefeff;
+	border: 1px solid #a9acaf;
+	box-sizing: border-box;
+	height: 26px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 3px;
+	gap: 1px;
+	cursor: pointer;
+	text-align: left;
+	font-size: 11px;
+	color: #747577;
+	font-family: Roboto;
+}
+
+.filterGroup {
+	width: 266px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 9px;
+	font-size: 11px;
+	color: #747577;
+}
+
+.searchFieldsParent {
+	position: absolute;
+	width: 67.68%;
+	top: 33px;
+	right: 16.28%;
+	left: 16.03%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 3px;
+}
+
+.searchingsession {
+	position: relative;
+	width: 100%;
+	/* top: 55px; */
+	right: 0%;
+	left: 0%;
+	height: 131px;
+	overflow: hidden;
+	color: #9d9d9f;
+}
+
+.imagesIcon {
+	position: relative;
+	width: 100%;
+	/* top: 186px; */
+	/* right: 0%;
+	left: 0%; */
+	max-width: 100%;
+	overflow: hidden;
+	height: 141px;
+	object-fit: cover;
+}
+
+.button14 {
+	position: absolute;
+	height: 3%;
+	width: 21.88%;
+	top: 96.2%;
+	right: 39.19%;
+	bottom: 0.81%;
+	left: 38.93%;
+	border-radius: 2px;
+	background-color: #fefeff;
+	border: 1px solid #a9acaf;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 15px;
+	gap: 1px;
+}
+
+.postChild {
+	align-self: stretch;
+	position: relative;
+	max-width: 100%;
+	overflow: hidden;
+	height: 178px;
+	flex-shrink: 0;
+	object-fit: cover;
+}
+
+.bnNh2TngWrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 1px 10px;
+	font-size: 16px;
+}
+
+.t130m2Wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 1px 10px;
+	color: #ad2e24;
+}
+
+.vectorIcon {
+	width: 11px;
+	position: relative;
+	height: 13px;
+}
+
+.vectorParent {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 0px 10px;
+	gap: 4px;
+	color: #38393c;
+}
+
+.post {
+	width: 173.9px;
+	border-radius: 2px;
+	background-color: #fafbfd;
+	height: 242px;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 3px;
+}
+
+.postParent {
+	position: absolute;
+	height: 89.63%;
+	width: 92.88%;
+	top: 4.84%;
+	right: 3.56%;
+	bottom: 5.53%;
+	left: 3.56%;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	/* justify-content: space-between; */
+	flex-wrap: wrap;
+	align-content: flex-start;
+	gap: 10px;
+	text-align: left;
+	font-size: 11px;
+	color: #000;
+	font-family: Roboto;
+}
+
+.headingTitle1 {
+	position: absolute;
+	top: 0%;
+	left: 0%;
+}
+
+.headingTitle {
+	position: absolute;
+	/* height: 2.19%; */
+	height: 19px;
+	width: 93.13%;
+	top: 0.99%;
+	right: 3.56%;
+	bottom: 96.82%;
+	left: 3.31%;
+	font-size: 19px;
+	color: #0b0c0e;
+}
+
+.firstMainContent {
+	position: relative;
+	width: 100%;
+	/* top: 444px; */
+	/* right: 0%; */
+	/* left: 0%; */
+	border-top: 0.5px solid #f7f9fc;
+	border-bottom: 0.5px solid #f7f9fc;
+	box-sizing: border-box;
+	height: 868px;
+	color: #0f1114;
+}
+
+.post6 {
+	width: 174px;
+	border-radius: 2px;
+	background-color: #fafbfd;
+	height: 242px;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 3px;
+}
+
+.postGroup {
+	position: absolute;
+	width: 93.13%;
+	top: 54px;
+	right: 3.56%;
+	left: 3.31%;
+	overflow-x: auto;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 17px;
+}
+
+.headingTitle2 {
+	/* width: 129px; */
+	flex: 1;
+	position: relative;
+	height: 22px;
+}
+
+.xemThm {
+	position: relative;
+	text-decoration: underline;
+}
+
+.arrowrightIcon {
+	width: 10px;
+	position: relative;
+	max-height: 100%;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.xemThmParent {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	font-size: 11px;
+	color: #ad2e24;
+}
+
+.headingTitleParent {
+	position: absolute;
+	width: 93.13%;
+	top: 15px;
+	right: 3.56%;
+	left: 3.31%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	font-size: 19px;
+	color: #0b0c0e;
+}
+
+.secondMainContent {
+	position: relative;
+	width: 100%;
+	/* top: 1312px; */
+	/* right: 0%; */
+	/* left: 0%; */
+	border-bottom: 0.5px solid #f7f9fc;
+	box-sizing: border-box;
+	height: 322px;
+	overflow: hidden;
+	font-size: 11px;
+}
+
+.nativateTextParent {
+	width: 100%;
+	margin: 0 !important;
+	position: absolute;
+	top: 0px;
+	right: 0%;
+	left: 0%;
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	z-index: 0;
+}
+
+.nativateTextGroup {
+	width: 100%;
+	margin: 0 !important;
+	position: absolute;
+	top: 24px;
+	right: 0%;
+	left: 0%;
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	z-index: 1;
+}
+
+.nativateTextContainer {
+	width: 100%;
+	margin: 0 !important;
+	position: absolute;
+	top: 48px;
+	right: 0%;
+	left: 0%;
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	z-index: 2;
+}
+
+.nativateTextParent1 {
+	width: 100%;
+	margin: 0 !important;
+	position: absolute;
+	top: 72px;
+	right: 0%;
+	left: 0%;
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	z-index: 3;
+}
+
+.nativateTextParent2 {
+	width: 100%;
+	margin: 0 !important;
+	position: absolute;
+	top: 96px;
+	right: 0%;
+	left: 0%;
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;
+	z-index: 4;
+}
+
+.instanceParent {
+	position: absolute;
+	width: 94.4%;
+	top: 15px;
+	right: 2.8%;
+	left: 2.8%;
+	height: 109px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 11px;
+}
+
+.homePageInner {
+	position: relative;
+	width: 100%;
+	/* top: 1634px; */
+	/* right: 0%; */
+	/* left: 0%; */
+	border-bottom: 0.5px solid #f7f9fc;
+	box-sizing: border-box;
+	height: 147px;
+	overflow: hidden;
+	font-size: 11px;
+}
+
+.tiNgDngWrapper {
+	position: absolute;
+	width: 96.18%;
+	top: 1px;
+	right: 0%;
+	left: 3.82%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 10px 10px 10px 0px;
+	box-sizing: border-box;
+}
+
+.appleStoreIcon {
+	width: 108px;
+	position: relative;
+	max-height: 100%;
+}
+
+.googlePlay2 {
+	width: 108px;
+	position: relative;
+	height: 32px;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.appleStoreParent {
+	position: absolute;
+	width: 71.25%;
+	top: 40px;
+	right: 25.19%;
+	left: 3.56%;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 64px;
+}
+
+.downloadApp {
+	position: relative;
+	width: 100%;
+	/* top: 1781px; */
+	/* right: 0%; */
+	/* left: 0%; */
+	background-color: #fff;
+	height: 80px;
+	overflow: hidden;
+	font-size: 16px;
+}
+
+.footerChild {
+	position: absolute;
+	height: 3.7%;
+	width: 93.13%;
+	top: 31.48%;
+	right: 3.44%;
+	bottom: 64.81%;
+	left: 3.44%;
+	border-top: 1px solid #f2f5fa;
+	box-sizing: border-box;
+}
+
+.copyright2025 {
+	position: absolute;
+	top: 11px;
+	left: calc(50% - 69.5px);
+}
+
+.footer {
+	position: absolute;
+	width: 100%;
+	top: 1861px;
+	right: 0.25%;
+	left: -0.25%;
+	background-color: #fff;
+	height: 27px;
+	overflow: hidden;
+	font-size: 8px;
+	color: #949599;
+}
+
+.homePage {
+	width: 100%;
+	position: relative;
+	background-color: #fff;
+	/* height: 1888px;	 */
+	height: auto;
+	/* overflow: hidden; */
+	text-align: left;
+	font-size: 15px;
+	color: #000;
+	font-family: Roboto;
 }

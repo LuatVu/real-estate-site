@@ -25,9 +25,9 @@
 }
 
 .navtypenavVisitor {
-    position: absolute;
-  	top: 0px;
-  	left: 0px;
+    position: relative;
+  	/* top: 0px; */
+  	/* left: 0px; */
     width: 100%;    
     border: 1px solid #e6f0ff;
     box-sizing: border-box;

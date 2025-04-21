@@ -52,8 +52,8 @@ function MobileSignIn() {
                     <div className={styles.dividerWithTextItem} />
                 </div>
                 <div className={styles.socialLoginContainer}>
-                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Google" onClick={() => console.log("Click")} icon="/icons/googleIcon.svg" />
-                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Facebook" onClick={() => console.log("Click")} icon="/icons/facebookIcon.svg" />
+                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Google" onClick={() => console.log("Click")} iconInFront="/icons/googleIcon.svg" />
+                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Facebook" onClick={() => console.log("Click")} iconInFront="/icons/facebookIcon.svg" />
                     <div className={styles.signUpPromptParent}>
                         <div className={styles.signUpPrompt}>Bạn chưa là thành viên?</div>
                         <Link href="/sign-up" className={styles.ngK}>Đăng Ký</Link>
