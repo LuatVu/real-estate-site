@@ -5,20 +5,26 @@ import { useState, useCallback } from 'react';
 import useScreenSize from '../lib/useScreenSize';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
-import Button from '../ui/common/button/button';
-import btnStyle from "../ui/common/button/btn.module.css";
 import Link from "next/link";
+import PortalPopup from '../ui/common/portal-popup/portal-popup';
+import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-popup';
+import AddressFilterPopup from '../ui/common/popup-filter-address/popup-filter-address';
 
 export default function MobileHome() {
-
+    const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
+    const [addressPopup, setAddressPopup] = useState(false);
 
 
     const openPopUpFilterPropertyType = useCallback(() => {
-
+        setPropertyTypePopup(true);
     }, []);
 
-    const onButtonContainerClick = useCallback(() => {
-        // Add your code here
+    const closePopUpFilterPropertyType = useCallback(() => {
+        setPropertyTypePopup(false);
+    }, []);
+
+    const onButtonAddressClick = useCallback(() => {
+        setAddressPopup(true);
     }, []);
 
     return (
@@ -38,14 +44,14 @@ export default function MobileHome() {
                         </div>
                     </div>
                     <div className={styles.filterGroup}>
-                        <button className={styles.button9} onClick={onButtonContainerClick}>
+                        <button className={styles.button9} >
                             <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/Funnel.svg" />
                             <div className={styles.filter}>Filter</div>
                             <div className={styles.wrapper}>
-                                <div className={styles.div}>0</div>
+                                <div className={styles.div}>9</div>
                             </div>
                         </button>                        
-                        <button className={styles.button10}>
+                        <button className={styles.button10} onClick={onButtonAddressClick}>
                             <div className={styles.filter}>Toàn quốc</div>
                             <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/CaretDown.svg" />
                         </button>
@@ -63,18 +69,18 @@ export default function MobileHome() {
 
             <div className={styles.optionFilter}>
                 <div className={styles.buttonParent}>
-                    <button className={styles.button2}>
+                    <Link href="/Du-An" className={styles.button2}>
                         <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/BuildingOffice.svg" />
                         <div className={styles.filter}>Dự án</div>
-                    </button>
-                    <button className={styles.button4}>
+                    </Link>
+                    <Link href="/Mua-Ban" className={styles.button4}>
                         <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/HouseLine.svg" />
                         <div className={styles.filter}>Mua bán</div>
-                    </button>
-                    <button className={styles.button6}>
+                    </Link>
+                    <Link href="/Cho-Thue" className={styles.button6}>
                         <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/SealPercent.svg" />
                         <div className={styles.filter}>Cho thuê</div>
-                    </button>
+                    </Link>
                 </div>
             </div>
             <div className={styles.firstMainContent}>
@@ -287,6 +293,15 @@ export default function MobileHome() {
                 </div>
             </div>
             <MbFooter />
+            {isPropertyTypePopupOpen && (
+                <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopUpFilterPropertyType}>
+                    <PropertyTypePopup onClose={closePopUpFilterPropertyType} />
+                </PortalPopup>
+            )}
+            {addressPopup && (
+                <AddressFilterPopup/>
+            )}
+
         </div>
     );
 }

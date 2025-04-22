@@ -1,0 +1,598 @@
+.hNi {
+    position: absolute;
+    top: 32px;
+    left: 50px;
+}
+.hNiWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/HaNoi.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+    cursor: pointer;
+}
+.hChMinh {
+    position: absolute;
+    top: 32px;
+    left: 26px;
+}
+.hChMinhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/HoChiMinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.anGiang {
+    position: absolute;
+    top: 32px;
+    left: 40px;
+}
+.anGiangWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/AnGiang.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.bcNinhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/BacNinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.cMau {
+    position: absolute;
+    top: 32px;
+    left: 46px;
+}
+.cMauWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/CaMau.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.cnTh {
+    position: absolute;
+    top: 32px;
+    left: 43px;
+}
+.cnThWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/CanTho.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.caoBng {
+    position: absolute;
+    top: 32px;
+    left: 38px;
+}
+.caoBngWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/CaoBang.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.nng {
+    position: absolute;
+    top: 32px;
+    left: 42px;
+}
+.nngWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/DaNang.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.cLc {
+    position: absolute;
+    top: 32px;
+    left: 45px;
+}
+.cLcWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/DakLak.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.inBinWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/DienBien.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.ngNai {
+    position: absolute;
+    top: 32px;
+    left: 39px;
+}
+.ngNaiWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/DongNai.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.ngThp {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+}
+.ngThpWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/DongThap.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.giaiLai {
+    position: absolute;
+    top: 32px;
+    left: 47px;
+}
+.giaiLaiWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/GiaLai.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.hTnhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/HaTinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.hiPhng {
+    position: absolute;
+    top: 32px;
+    left: 34px;
+}
+.hiPhngWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/HaiPhong.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.hu {
+    position: absolute;
+    top: 32px;
+    left: 61px;
+}
+.huWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/Hue.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.hngYn {
+    position: absolute;
+    top: 32px;
+    left: 37px;
+}
+.hngYnWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/HungYen.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.khnhHaWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/KhanhHoa.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.laiChu {
+    position: absolute;
+    top: 32px;
+    left: 41px;
+}
+.laiChuWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/LaiChau.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.lmNg {
+    position: absolute;
+    top: 32px;
+    left: 35px;
+}
+.lmNgWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/LamDong.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.lngSnWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/LangSon.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.loCaiWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/LaoCai.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.nghAnWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/NgheAn.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.ninhBnhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/NinhBinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.phThWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/PhuTho.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.qungNgi {
+    position: absolute;
+    top: 32px;
+    left: 29px;
+}
+.qungNgiWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/QuangNgai.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.qungNinhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/QuangNinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.qungTrWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/QuangTri.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.snLa {
+    position: absolute;
+    top: 32px;
+    left: 49px;
+}
+.snLaWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/SonLa.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.tyNinhWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/TayNinh.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.thiNguyn {
+    position: absolute;
+    top: 32px;
+    left: 25px;
+}
+.thiNguynWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/ThaiNguyen.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.thanhHaWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/ThanhHoa.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.tuynQuang {
+    position: absolute;
+    top: 32px;
+    left: 22px;
+}
+.tuynQuangWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/TuyenQuang.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.vnhLongWrapper {
+    width: 157px;
+    position: relative;
+    border-radius: 3px;
+    height: 85px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-image: url('/city/VinhLong.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.frameParent {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 7px 10px;
+}
+.bodyPopup {
+    position: absolute;
+    height: 88.69%;
+    width: 100%;
+    top: 8.43%;
+    right: 0%;
+    bottom: 2.88%;
+    left: 0%;
+    background-color: #fff;
+    overflow: hidden;
+}
+.khuVc {
+    position: relative;
+}
+.xIcon {
+    width: 24px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.khuVcParent {
+    position: absolute;
+    width: 100%;
+    top: 6px;
+    right: 0%;
+    left: 0%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    box-sizing: border-box;
+    gap: 0px;
+}
+.headerPopupAddress {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0%;
+    left: 0%;
+    background-color: #fff;
+    border-bottom: 0.5px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 35px;
+    overflow: hidden;
+    font-size: 16px;
+    color: #000;
+}
+.iphone162 {
+    position: absolute;
+    width: 100%;
+    right: 0%;
+    bottom: 0px;
+    left: 0%;
+    background-color: #fff;
+    height: 13px;
+    overflow: hidden;
+}
+.popUpFilterAddress {
+    width: 100%;
+    position: relative;
+    background-color: #fff;
+    height: 451px;
+    overflow: hidden;
+    text-align: left;
+    font-size: 19px;
+    color: #fff;
+    font-family: Roboto;
+}
+

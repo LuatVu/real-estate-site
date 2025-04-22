@@ -1,0 +1,347 @@
+.button {
+    width: 26.88%;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    right: 73.13%;
+    left: 0%;
+    border-radius: 2px;
+    background-color: #fefeff;
+    border: 1px solid #a9acaf;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    z-index: 0;
+}
+.button2 {
+    width: 63.44%;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    right: 0%;
+    left: 36.56%;
+    border-radius: 2px;
+    background-color: #0065ff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 1;
+    color: #fefeff;
+}
+.buttonParent {
+    position: absolute;
+    width: 88.15%;
+    top: 19px;
+    right: 7.44%;
+    left: 4.41%;
+    height: 38px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 31px;
+}
+.footerPopup {
+    position: absolute;
+    width: 100%;
+    top: 345px;
+    right: 0%;
+    left: 0%;
+    background-color: #fff;
+    border-top: 0.5px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 75px;
+    overflow: hidden;
+    color: #0f1114;
+}
+.buildingapartmentIcon {
+    width: 16px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.ttCNh {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 18px;
+    flex-shrink: 0;
+}
+.buildingapartmentParent {
+    width: 33.01%;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    right: 66.99%;
+    left: 0%;
+    height: 18px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2px;
+    z-index: 0;
+}
+.frameChild {
+    width: 100.16%;
+    position: absolute;
+    margin: 0 !important;
+    top: 18.75px;
+    right: -0.08%;
+    left: -0.08%;
+    border-top: 0.5px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 0.5px;
+    z-index: 1;
+}
+.frameItem {
+    width: 17px;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    left: calc(50% + 139.45px);
+    border-radius: 3px;
+    border: 0.5px solid #a9acaf;
+    box-sizing: border-box;
+    height: 17px;
+    z-index: 2;
+}
+.frameParent {
+    position: absolute;
+    width: 85.94%;
+    top: 27px;
+    right: 8%;
+    left: 6.06%;
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.cnHChung {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 18px;
+    flex-shrink: 0;
+}
+.buildingParent {
+    width: 100%;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    right: 63.45%;
+    left: 0%;
+    height: 18px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2px;
+    z-index: 0;
+}
+.frameInner {
+    width: 17px;
+    margin: 0 !important;
+    position: absolute;
+    top: 0px;
+    left: calc(50% + 139.45px);
+    border-radius: 3px;
+    border: 0.5px solid #a9acaf;
+    box-sizing: border-box;
+    height: 17px;
+    z-index: 1;
+}
+.lineDiv {
+    width: 100.16%;
+    position: absolute;
+    margin: 0 !important;
+    top: 18.75px;
+    right: -0.08%;
+    left: -0.08%;
+    border-top: 0.5px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 0.5px;
+    z-index: 2;
+}
+.frameGroup {
+    position: absolute;
+    width: 85.94%;
+    top: 61px;
+    right: 8%;
+    left: 6.06%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.nhRingBit {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 18px;
+    flex-shrink: 0;
+}
+.frameContainer {
+    position: absolute;
+    width: 85.94%;
+    top: 95px;
+    right: 7.72%;
+    left: 6.34%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.vectorIcon {
+    width: 16px;
+    position: relative;
+    height: 12px;
+}
+.frameParent1 {
+    position: absolute;
+    width: 85.94%;
+    top: 129px;
+    right: 7.71%;
+    left: 6.35%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.frameParent2 {
+    position: absolute;
+    width: 85.94%;
+    top: 163px;
+    right: 7.98%;
+    left: 6.08%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.frameParent3 {
+    position: absolute;
+    width: 85.94%;
+    top: 197px;
+    right: 7.98%;
+    left: 6.08%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.frameParent4 {
+    position: absolute;
+    width: 85.94%;
+    top: 231px;
+    right: 7.71%;
+    left: 6.35%;
+    height: 19px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1px 192px;
+}
+.bodyPopup {
+    position: absolute;
+    width: 99.72%;
+    top: 35px;
+    right: 0%;
+    left: 0.28%;
+    background-color: #fff;
+    height: 310px;
+    overflow: hidden;
+    font-size: 13px;
+}
+.loiBtNg {
+    position: relative;
+}
+.xIcon {
+    width: 24px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.loiBtNgSnParent {
+    position: absolute;
+    width: 100%;
+    top: 6px;
+    right: 0%;
+    left: 0%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 10px;
+    box-sizing: border-box;
+    gap: 0px;
+}
+.headerPopup {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    right: 0%;
+    left: 0%;
+    background-color: #fff;
+    border-bottom: 0.5px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 35px;
+    overflow: hidden;
+    font-size: 16px;
+}
+.popUpFilterPropertyType {
+    width: 363px;
+    position: relative;
+    border-radius: 3px;
+    background-color: #fff;
+    border: 1px solid #f2f5fa;
+    box-sizing: border-box;
+    height: 420px;
+    max-width: 100%;
+    min-width: 100%;
+    overflow: hidden;
+    text-align: left;
+    font-size: 15px;
+    color: #000;
+    font-family: Roboto;
+}
+
