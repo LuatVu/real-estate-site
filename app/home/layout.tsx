@@ -17,11 +17,9 @@ export default function Layout({ children }: Readonly<{
 
 function MobileHomePage({ children }: any) {
     return (                    
-            <main>        
-                {/* <NavBarMobile displayNav={false}/>         */}
-                <div className={style.mainContent}>{children}</div>   
-                {/* <MbFooter />          */}
-            </main>                    
+            <main>                    
+                <div className={style.mainContent}>{children}</div>                
+            </main>
     );
 }
 

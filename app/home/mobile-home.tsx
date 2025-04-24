@@ -8,7 +8,6 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-popup';
-import AddressFilterPopup from '../ui/common/popup-filter-address/popup-filter-address';
 
 export default function MobileHome() {
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
@@ -29,7 +28,7 @@ export default function MobileHome() {
 
     return (
         
-        <div className={styles.homePage }>
+        <div className={styles.homePage }>            
             <NavBarMobile displayNav={false}/>
             <div className={styles.searchingsession}>
                 <div className={styles.searchFieldsParent}>
@@ -51,10 +50,10 @@ export default function MobileHome() {
                                 <div className={styles.div}>9</div>
                             </div>
                         </button>                        
-                        <button className={styles.button10} onClick={onButtonAddressClick}>
+                        <Link href="/home/popup-filter-address" className={styles.button10} onClick={onButtonAddressClick}>
                             <div className={styles.filter}>Toàn quốc</div>
                             <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/CaretDown.svg" />
-                        </button>
+                        </Link>
 
                         <button className={styles.button12} onClick={openPopUpFilterPropertyType}>
                             <div className={styles.filter}>Tất cả bds</div>
@@ -298,9 +297,7 @@ export default function MobileHome() {
                     <PropertyTypePopup onClose={closePopUpFilterPropertyType} />
                 </PortalPopup>
             )}
-            {addressPopup && (
-                <AddressFilterPopup/>
-            )}
+            
 
         </div>
     );
