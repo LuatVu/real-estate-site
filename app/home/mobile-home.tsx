@@ -8,10 +8,13 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-popup';
+import AddressFilterPopup from '../ui/common/popup-filter-address/address-popup';
+import DistrictPopup from '../ui/common/popup-district/district-popup';
 
 export default function MobileHome() {
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
+    const [districtPopup, setDistrictPopup] = useState(false);
 
 
     const openPopUpFilterPropertyType = useCallback(() => {
@@ -25,6 +28,12 @@ export default function MobileHome() {
     const onButtonAddressClick = useCallback(() => {
         setAddressPopup(true);
     }, []);
+
+    const closePopupAddressClick = useCallback(
+        () => {
+            setAddressPopup(false);
+        }, []
+    );
 
     return (
         
@@ -50,10 +59,10 @@ export default function MobileHome() {
                                 <div className={styles.div}>9</div>
                             </div>
                         </button>                        
-                        <Link href="/home/popup-filter-address" className={styles.button10} onClick={onButtonAddressClick}>
+                        <button className={styles.button10} onClick={onButtonAddressClick}>
                             <div className={styles.filter}>Toàn quốc</div>
                             <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/CaretDown.svg" />
-                        </Link>
+                        </button>
 
                         <button className={styles.button12} onClick={openPopUpFilterPropertyType}>
                             <div className={styles.filter}>Tất cả bds</div>
@@ -295,6 +304,17 @@ export default function MobileHome() {
             {isPropertyTypePopupOpen && (
                 <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopUpFilterPropertyType}>
                     <PropertyTypePopup onClose={closePopUpFilterPropertyType} />
+                </PortalPopup>
+            )}
+            {/* {addressPopup && (
+                <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopupAddressClick}>
+                    <AddressFilterPopup onClose={closePopupAddressClick}/>
+                </PortalPopup>
+            )} */}
+
+            {addressPopup &&  (
+                <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopupAddressClick}>
+                    <DistrictPopup/>
                 </PortalPopup>
             )}
             

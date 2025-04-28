@@ -1,0 +1,10 @@
+.districtContainer{
+    width: 363px;
+    height: 420px;
+    border: 1px solid var(--color-secondary-s300);
+    border-radius: 3px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+

@@ -585,7 +585,8 @@
     overflow: hidden;
 }
 .popUpFilterAddress {
-    width: 100%;
+    /* width: 100%; */
+    width: 363px;
     position: relative;
     background-color: #fff;
     height: 451px;
