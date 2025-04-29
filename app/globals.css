@@ -5,6 +5,10 @@
 
 body {
   @apply leading-[normal] m-0;
+  height: 100%;
+}
+html{
+  height: 100%;
 }
 
 *,

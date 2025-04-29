@@ -585,11 +585,12 @@
     overflow: hidden;
 }
 .popUpFilterAddress {
-    /* width: 100%; */
-    width: 363px;
+    width: 100%;
+    /* width: 363px; */
     position: relative;
     background-color: #fff;
-    height: 451px;
+    /* height: 451px; */
+    height: 100%;
     overflow: hidden;
     text-align: left;
     font-size: 19px;
