@@ -12,6 +12,7 @@ import AddressFilterPopup from '../ui/common/popup-filter-address/address-popup'
 import DistrictPopup from '../ui/common/popup-district/district-popup';
 
 export default function MobileHome() {
+    const [homePageVisible, setHomePageVisible] = useState(true);
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
     const [districtPopup, setDistrictPopup] = useState(false);
@@ -23,22 +24,35 @@ export default function MobileHome() {
 
     const closePopUpFilterPropertyType = useCallback(() => {
         setPropertyTypePopup(false);
+        setHomePageVisible(true);
     }, []);
 
     const onButtonAddressClick = useCallback(() => {
         setAddressPopup(true);
+        setHomePageVisible(false);
     }, []);
 
     const closePopupAddressClick = useCallback(
         () => {
             setAddressPopup(false);
+            setHomePageVisible(true);
         }, []
     );
 
+    const selectCity = useCallback(
+        (city: any) => {
+            setAddressPopup(false);
+            setDistrictPopup(true);
+        }, []
+    );
+
+    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false);},[]);
+
     return (
         <div className='h-full'>
-            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} />)}
-            {!addressPopup && (
+            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity}/>)}
+            {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
+            {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
                     <div className={styles.searchingsession}>
@@ -308,19 +322,6 @@ export default function MobileHome() {
                             <PropertyTypePopup onClose={closePopUpFilterPropertyType} />
                         </PortalPopup>
                     )}
-                    {/* {addressPopup && (
-                <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopupAddressClick}>
-                    <AddressFilterPopup onClose={closePopupAddressClick}/>
-                </PortalPopup>
-            )} */}
-
-                    {/* {addressPopup &&  (
-                <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopupAddressClick}>
-                    <DistrictPopup/>
-                </PortalPopup>
-            )} */}
-
-
                 </div>
             )}
         </div>

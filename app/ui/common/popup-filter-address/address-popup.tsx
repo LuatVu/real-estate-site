@@ -1,7 +1,7 @@
 import styles from "./filter-address.module.css";
 import Image from "next/image";
 
-export default function AddressFilterPopup({ onClose }: any) {
+export default function AddressFilterPopup({ onClose, selectCity }: any) {
     return (
         <div className={styles.popUpFilterAddress}>
             <div className={styles.headerPopupAddress}>
@@ -14,7 +14,7 @@ export default function AddressFilterPopup({ onClose }: any) {
             </div>
             <div className={styles.bodyPopup}>
                 <div className={styles.frameParent}>
-                    <div className={styles.hNiWrapper}>
+                    <div className={styles.hNiWrapper} onClick={() => selectCity("HANOI")}>
                         <b className={styles.hNi}>Hà Nội</b>
                     </div>
                     <div className={styles.hChMinhWrapper}>
