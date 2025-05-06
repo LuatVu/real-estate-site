@@ -10,12 +10,14 @@ import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-popup';
 import AddressFilterPopup from '../ui/common/popup-filter-address/address-popup';
 import DistrictPopup from '../ui/common/popup-district/district-popup';
+import FilterPopup from '../ui/common/popup-filter/filter-popup';
 
 export default function MobileHome() {
     const [homePageVisible, setHomePageVisible] = useState(true);
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
     const [districtPopup, setDistrictPopup] = useState(false);
+    const [filterPopup, setFilterPopup] =useState(false);
 
 
     const openPopUpFilterPropertyType = useCallback(() => {
@@ -46,12 +48,23 @@ export default function MobileHome() {
         }, []
     );
 
+    const openFilterPopup = useCallback(() => {
+        setFilterPopup(true);
+        setHomePageVisible(false);
+    }, []);
+
+    const closeFilterPopup = useCallback(() => {
+        setFilterPopup(false);
+        setHomePageVisible(true);
+    }, []);
+
     const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false);},[]);
 
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity}/>)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup}/>)}
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
@@ -68,7 +81,7 @@ export default function MobileHome() {
                                 </div>
                             </div>
                             <div className={styles.filterGroup}>
-                                <button className={styles.button9} >
+                                <button className={styles.button9} onClick={openFilterPopup}>
                                     <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/Funnel.svg" />
                                     <div className={styles.filter}>Filter</div>
                                     <div className={styles.wrapper}>
