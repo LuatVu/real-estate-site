@@ -30,12 +30,73 @@ export default function FilterPopup({ onClose }: any) {
                             </button>
                         </div>
                         <div className={styles.criteria}>
-                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm Đường Cầu Diễn, Bắc Từ Liêm</p>
                             <button>
                                 <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
                             </button>
                         </div>
-                        
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đường Cầu Diễn, Bắc Từ Liêm</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+
+                        <div className={styles.criteria}>
+                            <button>
+                                <Image className={styles.xIcon} width={12} height={12} alt="" src="/icons/Plus.svg" />
+                            </button>
+                            <p className={styles.addTitle}>Thêm</p>
+                        </div>
+
                     </div>
                 </div>
                 <div className={styles.proTypeBlock}>
@@ -43,17 +104,116 @@ export default function FilterPopup({ onClose }: any) {
                         <p>Loại bất động sản</p>
                     </div>
                     <div className={styles.criteriaBlk}>
-
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Nhà mặt phố</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Condotel</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Chung cư</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Biệt thự</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Liền kề</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đất nền</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Dự án</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Nhà mặt phố</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Condotel</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Chung cư</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Biệt thự</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Liền kề</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Đất nền</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <p className={styles.criTitle}>Dự án</p>
+                            <button>
+                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                            </button>
+                        </div>
+                        <div className={styles.criteria}>
+                            <button>
+                                <Image className={styles.xIcon} width={12} height={12} alt="" src="/icons/Plus.svg" />
+                            </button>
+                            <p className={styles.addTitle}>Thêm</p>
+                        </div>
                     </div>
                 </div>
                 <div className={styles.priceBlock}>
                     <div className={styles.itemTitle}>
                         <p>Mức giá</p>
                     </div>
+                    <div className={styles.itemBody}>
+                        <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
+                        <p>Tất cả</p>
+                        <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
+                    </div>
                 </div>
                 <div className={styles.acreageBlock}>
                     <div className={styles.itemTitle}>
                         <p>Diện tích</p>
+                    </div>
+                    <div className={styles.itemBody}>
+                        <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
+                        <p>Tất cả</p>
+                        <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
                     </div>
                 </div>
             </div>

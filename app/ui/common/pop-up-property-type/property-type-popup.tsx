@@ -19,8 +19,7 @@ export default function PropertyTypePopup({ className, onClose }: any) {
                     <div className={styles.buildingapartmentParent}>
                         <Image className={styles.buildingapartmentIcon} width={16} height={16} alt="" src="/icons/BuildingApartment.svg" />
                         <div className={styles.ttCNh}>Tất cả nhà bán</div>
-                    </div>
-                    {/* <div className={styles.frameChild} /> */}
+                    </div>                  
                     <input type="checkbox" name="all_property" value="all_property" className={styles.frameItem} />
                     <div className={styles.lineDiv} />
                 </div>
