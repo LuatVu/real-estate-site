@@ -1,0 +1,54 @@
+.downloadApp {
+	position: relative;
+	width: 100%;	
+	background-color: #fff;
+	height: 80px;
+	overflow: hidden;
+	font-size: 16px;
+}
+
+.tiNgDngWrapper {
+	position: absolute;
+	width: 96.18%;
+	top: 1px;
+	right: 0%;
+	left: 3.82%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 10px 10px 10px 0px;
+	box-sizing: border-box;
+}
+
+.filter {
+	flex: 1;
+	position: relative;	
+}
+
+.appleStoreParent {
+	position: absolute;
+	width: 71.25%;
+	top: 40px;
+	right: 25.19%;
+	left: 3.56%;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 64px;
+}
+
+.appleStoreIcon {
+	width: 108px;
+	position: relative;
+	max-height: 100%;
+}
+
+.googlePlay2 {
+	width: 108px;
+	position: relative;
+	height: 32px;
+	overflow: hidden;
+	flex-shrink: 0;
+}

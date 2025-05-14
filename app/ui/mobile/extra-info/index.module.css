@@ -1,0 +1,45 @@
+.panner {
+	position: relative;
+	width: 100%;	
+	border-bottom: 0.5px solid #f7f9fc;
+	box-sizing: border-box;	
+	font-size: 11px;
+    display: flex;
+    flex-direction: column;    
+    padding: 15px 11px;
+    gap: 11px;
+}
+
+.subPanner {
+	position: relative;	
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 11px;
+}
+
+.nativateText {
+	width: 100%;
+	margin: 0 !important;
+	position: relative;	
+	border-bottom: 0.5px solid #e7e7e8;
+	box-sizing: border-box;
+    height: 13px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0px;	
+}
+
+.filter {
+	flex: 1;
+	position: relative;	
+}
+
+.searchIcon {
+	width: 12px;
+	position: relative;
+	max-height: 100%;
+	overflow: hidden;
+	flex-shrink: 0;
+}

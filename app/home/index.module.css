@@ -725,10 +725,7 @@ input.inputText:focus{
 
 .homePageInner {
 	position: relative;
-	width: 100%;
-	/* top: 1634px; */
-	/* right: 0%; */
-	/* left: 0%; */
+	width: 100%;	
 	border-bottom: 0.5px solid #f7f9fc;
 	box-sizing: border-box;
 	height: 147px;

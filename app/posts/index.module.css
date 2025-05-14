@@ -1,0 +1,19 @@
+.rootContainer{
+    width: 100%;
+    height: 100%;
+	position: relative;
+	background-color: #fff;
+	height: auto;	
+	text-align: left;
+	font-size: 15px;
+	color: #000;
+	font-family: Roboto;
+}
+
+.postContainer{
+    position: absolute;
+    height: auto;
+    top: 58px;
+    bottom: 247px;
+    width: 100%;
+}
