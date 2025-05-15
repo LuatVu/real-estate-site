@@ -8,12 +8,26 @@
 	font-size: 15px;
 	color: #000;
 	font-family: Roboto;
+    display: flex;
+    flex-direction: column;
 }
 
 .postContainer{
-    position: absolute;
-    height: auto;
-    top: 58px;
-    bottom: 247px;
-    width: 100%;
+    position: relative;
+    width: 100%;    
+    overflow: scroll;
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    padding: 0px 12px;
 }
+
+.imageBlk{
+    /* height: 387px; */
+    width: 100%;
+    display: flex;
+    /* flex-direction: column; */
+    align-content: center;
+    flex-wrap: wrap
+}
+
