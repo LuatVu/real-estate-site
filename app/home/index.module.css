@@ -196,7 +196,7 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: flex-start;	
+	justify-content: flex-start;
 }
 
 .searchIcon {
@@ -255,7 +255,7 @@
 
 .filter {
 	flex: 1;
-	position: relative;	
+	position: relative;
 }
 
 .div {
@@ -302,22 +302,22 @@
 	padding-right: 5px;
 }
 
-.inputText{    
-    flex: 1;
-    width: 100%;
-    position: relative;
-    font-size: 15px;
-    font-family: Roboto;
-    color: var(--color-text-t500);
-    text-align: left;
-    display: flex;
-    align-items: center;
-    height: 22px;  
-    border: 0;
+.inputText {
+	flex: 1;
+	width: 100%;
+	position: relative;
+	font-size: 15px;
+	font-family: Roboto;
+	color: var(--color-text-t500);
+	text-align: left;
+	display: flex;
+	align-items: center;
+	height: 22px;
+	border: 0;
 }
 
-input.inputText:focus{
-    outline: none;
+input.inputText:focus {
+	outline: none;
 }
 
 .button10 {
@@ -433,7 +433,7 @@ input.inputText:focus{
 	position: relative;
 	max-width: 100%;
 	overflow: hidden;
-	height: 178px;
+	min-height: 178px;
 	flex-shrink: 0;
 	object-fit: cover;
 }
@@ -473,10 +473,10 @@ input.inputText:focus{
 }
 
 .post {
-	width: 173.9px;
+	min-width: 174px;
 	border-radius: 2px;
 	background-color: #fafbfd;
-	height: 242px;
+	/* height: 242px; */
 	overflow: hidden;
 	flex-shrink: 0;
 	display: flex;
@@ -486,14 +486,44 @@ input.inputText:focus{
 	gap: 3px;
 }
 
+@media screen and (max-width: 386px) {
+	.post {
+		width: 100%;
+	}
+
+	.postChild {
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 387px) and (max-width: 570px) {
+	.post {
+		width: 47%;
+	}
+	.postChild {
+		width: 100%;	
+		height: 250px;	
+	}
+}
+
+
+@media screen and (min-width: 571px) and (max-width: 640px) {
+	.post {
+		width: 32%;
+	}
+	.postChild {
+		width: 100%;	
+		height: 178px;	
+	}
+}
+
+.projectPost{
+	width: 174px;
+	height: 178px;
+}
+
 .postParent {
-	position: absolute;
-	height: 89.63%;
-	width: 92.88%;
-	top: 4.84%;
-	right: 3.56%;
-	bottom: 5.53%;
-	left: 3.56%;
+	position: relative;	
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
@@ -508,20 +538,12 @@ input.inputText:focus{
 }
 
 .headingTitle1 {
-	position: absolute;
-	top: 0%;
-	left: 0%;
+	position: relative;	
 }
 
 .headingTitle {
-	position: absolute;
-	/* height: 2.19%; */
-	height: 19px;
-	width: 93.13%;
-	top: 0.99%;
-	right: 3.56%;
-	bottom: 96.82%;
-	left: 3.31%;
+	position: relative;	
+	height: 19px;	
 	font-size: 19px;
 	color: #0b0c0e;
 }
@@ -529,13 +551,13 @@ input.inputText:focus{
 .firstMainContent {
 	position: relative;
 	width: 100%;
-	/* top: 444px; */
-	/* right: 0%; */
-	/* left: 0%; */
 	border-top: 0.5px solid #f7f9fc;
 	border-bottom: 0.5px solid #f7f9fc;
 	box-sizing: border-box;
-	height: 868px;
+	padding: 14px;
+	display: flex;
+	row-gap: 14px;
+	flex-direction: column;
 	color: #0f1114;
 }
 
@@ -725,7 +747,7 @@ input.inputText:focus{
 
 .homePageInner {
 	position: relative;
-	width: 100%;	
+	width: 100%;
 	border-bottom: 0.5px solid #f7f9fc;
 	box-sizing: border-box;
 	height: 147px;

@@ -126,7 +126,7 @@ export default function MobileHome() {
                         </div>
                         <div className={styles.postParent}>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/1.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -139,7 +139,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/2.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -152,7 +152,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/11.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -165,7 +165,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/13.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -178,7 +178,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/25.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -191,7 +191,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"/a-post-detail"} className={styles.post}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/27.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Bán nhà 2 tầng ...</div>
                                 </div>
@@ -217,7 +217,7 @@ export default function MobileHome() {
                         </div>
                         <div className={styles.postGroup}>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_1.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Vin Global gate</div>
                                 </div>
@@ -230,7 +230,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_2.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Politant tropical</div>
                                 </div>
@@ -243,7 +243,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_3.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Politant tropical</div>
                                 </div>
@@ -256,7 +256,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_4.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Politant tropical</div>
                                 </div>
@@ -269,7 +269,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_5.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Politant tropical</div>
                                 </div>
@@ -282,7 +282,7 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                             <Link href={"du-an"} className={styles.post6}>
-                                <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/Frame_7.jpg" />
+                                <Image className={styles.projectPost} width={174} height={178} alt="" src="/temp/duan_6.jpg" />
                                 <div className={styles.bnNh2TngWrapper}>
                                     <div className={styles.filter}>Politant tropical</div>
                                 </div>

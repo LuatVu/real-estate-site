@@ -64,3 +64,26 @@
     margin-top: 13px;
     margin-bottom: 20px;
 }
+
+.featureProperty{
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+}
+
+.featureItem{
+    display: flex;
+    flex-direction: row;   
+    padding-right: 60px;
+    border-bottom: 0.5px solid var(--color-secondary-s300);
+}
+
+.featureTitle{
+    display: flex;
+    gap: 5px;    
+}
+
+.featureValue{
+    width: 108px;
+    margin-left: auto;
+}

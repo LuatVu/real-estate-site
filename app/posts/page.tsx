@@ -98,6 +98,62 @@ function MobilePosts() {
                                 Cam kết: Thông tin chính xác khách quan - trung thực.</p>
                         </div>
                     </div>
+                    <div className={styles.descrip}>
+                        <div className="heading-h9">
+                            <p>Đặc điểm bất động sản</p>
+                        </div>
+                        <div className={styles.featureProperty}>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Mức giá</p>
+                                </div>
+                                <div className={styles.featureValue}><p>4,3 tỷ</p></div>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Diện tích</p>
+                                </div>
+                                <div className={styles.featureValue}><p>200 m2</p></div>
+                            </div> 
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Số phòng ngủ</p>
+                                </div>
+                                <div className={styles.featureValue}><p>4 phòng</p></div>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Số phòng tắm, vệ sinh</p>
+                                </div>
+                                <div className={styles.featureValue}><p>4 phòng</p></div>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Số tầng</p>
+                                </div>
+                                <div className={styles.featureValue}><p>4 tầng</p></div>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Pháp lý</p>
+                                </div>
+                                <div className={styles.featureValue}><p>Sổ đỏ, sổ hồng</p></div>
+                            </div>
+                            <div className={styles.featureItem}>
+                                <div className={styles.featureTitle}>
+                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
+                                    <p>Nội thất</p>
+                                </div>
+                                <div className={styles.featureValue}><p>Đầy đủ</p></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <ExtraInfo />
                 <DownloadApp />
