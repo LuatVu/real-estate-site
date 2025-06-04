@@ -11,14 +11,14 @@ import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-p
 import AddressFilterPopup from '../ui/common/popup-filter-address/address-popup';
 import DistrictPopup from '../ui/common/popup-district/district-popup';
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
+import Form from 'next/form';
 
 export default function MobileHome() {
     const [homePageVisible, setHomePageVisible] = useState(true);
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
     const [districtPopup, setDistrictPopup] = useState(false);
-    const [filterPopup, setFilterPopup] =useState(false);
-
+    const [filterPopup, setFilterPopup] =useState(false);    
 
     const openPopUpFilterPropertyType = useCallback(() => {
         setPropertyTypePopup(true);
@@ -60,6 +60,10 @@ export default function MobileHome() {
 
     const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false);},[]);
 
+    function search(formData: FormData){
+        console.log(formData.get('searchKeyword'));
+    }
+
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity}/>)}
@@ -68,15 +72,15 @@ export default function MobileHome() {
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
-                    <div className={styles.searchingsession}>
+                    <Form action={search} className={styles.searchingsession}>
                         <div className={styles.searchFieldsParent}>
                             <div className={styles.searchFields}>
                                 <div className={styles.frameParent}>
                                     <div className={styles.placeHolderWrapper}>
-                                        <input className={styles.inputText} placeholder="Nhập thông tin bất kỳ ..." />
+                                        <input name="searchKeyword" className={styles.inputText} placeholder="Nhập thông tin bất kỳ ..." />
                                     </div>
-                                    <button className={styles.button8}>
-                                        <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/search.svg" />
+                                    <button type="submit" className={styles.button8}>
+                                        <Image className={styles.searchIcon} width={24} height={24} alt="" src="/icons/search.svg" />
                                     </button>
                                 </div>
                             </div>
@@ -99,7 +103,7 @@ export default function MobileHome() {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </Form>
                     <div >
                         <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/icons/Header_Image.png" />
                     </div>
@@ -338,7 +342,6 @@ export default function MobileHome() {
                 </div>
             )}
         </div>
-
     );
 }
 

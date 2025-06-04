@@ -200,15 +200,15 @@
 }
 
 .searchIcon {
-	width: 12px;
+	width: 24px;
 	position: relative;
 	max-height: 100%;
 	overflow: hidden;
-	flex-shrink: 0;
+	flex-shrink: 0;	
 }
 
 .button8 {
-	width: 30px;
+	width: 40px;
 	border-radius: 5px;
 	background-color: #0065ff;
 	height: 30px;
@@ -216,7 +216,7 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	padding: 10px;
+	padding: 6px;
 	box-sizing: border-box;
 }
 
