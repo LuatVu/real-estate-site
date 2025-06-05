@@ -18,7 +18,10 @@ export default function MobileHome() {
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
     const [districtPopup, setDistrictPopup] = useState(false);
-    const [filterPopup, setFilterPopup] =useState(false);    
+    const [filterPopup, setFilterPopup] = useState(false);
+    const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
+        minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
+        districtCode: undefined, wardCode: undefined, tab: "BUY"});    
 
     const openPopUpFilterPropertyType = useCallback(() => {
         setPropertyTypePopup(true);
@@ -55,20 +58,30 @@ export default function MobileHome() {
 
     const closeFilterPopup = useCallback(() => {
         setFilterPopup(false);
-        setHomePageVisible(true);
+        setHomePageVisible(true);       
     }, []);
 
-    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false);},[]);
+    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false); }, []);
 
-    function search(formData: FormData){
+    function search(formData: FormData) {
         console.log(formData.get('searchKeyword'));
+        console.log(searchRequest);
+    }
+
+    const handleSearchRequest = (data: any) => {
+        setSearchRequest({
+            ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
+            minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
+            typeCode: data.typeCode, provinceCode: data.provinceCode,
+            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab
+        })        
     }
 
     return (
         <div className='h-full'>
-            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity}/>)}
+            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
-            {filterPopup && (<FilterPopup onClose={closeFilterPopup}/>)}
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={handleSearchRequest} filterParam={searchRequest} />)}
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />

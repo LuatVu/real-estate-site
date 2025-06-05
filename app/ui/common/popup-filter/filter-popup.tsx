@@ -1,9 +1,33 @@
+"use client";
 import styles from "./filter-popup.module.css";
 import Image from "next/image";
+import Form from "next/form";
+import { useState, useCallback } from 'react';
 
-export default function FilterPopup({ onClose }: any) {
+export default function FilterPopup({ onClose, setFilterParam, filterParam }: any) {
+    const [searchRequest, setSearchRequest] = useState(filterParam);
+    const [tabBtnState, setTabBtnState] = useState({
+        btnBuy: filterParam.tab == "BUY"?styles.btnBuy + " " + styles.primaryBtn: styles.btnBuy,
+        btnRent: filterParam.tab == "RENT"?styles.btnRent + " " + styles.primaryBtn: styles.btnRent,
+        btnProj: filterParam.tab == "PROJECT"?styles.btnProj + " " + styles.primaryBtn: styles.btnProj
+    });
+
+    function applyFilter(formData: FormData) {
+        setFilterParam(searchRequest);
+    }
+
+    function selectTab(value: string) {
+        setSearchRequest({...searchRequest, tab: value});
+        switch(value){
+            case "BUY": setTabBtnState({...tabBtnState, btnBuy: styles.btnBuy + " " + styles.primaryBtn, btnRent: styles.btnRent, btnProj: styles.btnProj}); break;
+            case "RENT": setTabBtnState({...tabBtnState, btnBuy: styles.btnBuy, btnRent: styles.btnRent + " " + styles.primaryBtn, btnProj: styles.btnProj}); break;
+            case "PROJECT": setTabBtnState({...tabBtnState, btnBuy: styles.btnBuy, btnRent: styles.btnRent, btnProj: styles.btnProj + " " + styles.primaryBtn }); break;
+        }
+    }
+    
+
     return (
-        <div className={styles.filterContainer}>
+        <Form action={applyFilter} className={styles.filterContainer}>
             <div className={styles.headerFilter}>
                 <div className={styles.khuVcParent}>
                     <div className={styles.khuVc}>Bộ lọc</div>
@@ -14,9 +38,9 @@ export default function FilterPopup({ onClose }: any) {
             </div>
             <div className={styles.filterBody}>
                 <div className={styles.btnTab}>
-                    <button className={styles.btnBuy}>Mua bán</button>
-                    <button className={styles.btnRent}>Cho thuê</button>
-                    <button className={styles.btnProj}>Dự án</button>
+                    <button name="btnBuy" className={tabBtnState.btnBuy} onClick={() => selectTab("BUY")}>Mua bán</button>
+                    <button name="btnRent" className={tabBtnState.btnRent} onClick={() => selectTab("RENT")}>Cho thuê</button>
+                    <button name="btnProject" className={tabBtnState.btnProj} onClick={() => selectTab("PROJECT")}>Dự án</button>
                 </div>
                 <div className={styles.areaBlock}>
                     <div className={styles.itemTitle}>
@@ -222,9 +246,9 @@ export default function FilterPopup({ onClose }: any) {
                     <button className={styles.btnReset}>Đặt lại</button>
                 </div>
                 <div className={styles.applyBlock}>
-                    <button className={styles.btnApply}>Áp dụng</button>
+                    <button type="submit" className={styles.btnApply} onClick={onClose}>Áp dụng</button>
                 </div>
             </div>
-        </div>
+        </Form>
     );
 }

@@ -124,12 +124,10 @@
     width: 33.33%;
     height: 25px;
     border-radius: 3px 0px 0px 3px;
-    padding: 5px 10px;
-    border: 1px solid var(--color-primary-p300);
-    background-color: var(--color-primary-p300);
-    color: var(--color-secondary-s50);
+    padding: 5px 10px;    
     font-family: Roboto;
     font-size: 13px;
+    border: 1px solid var(--color-secondary-s300);
 }
 
 .btnRent{
@@ -149,6 +147,16 @@
     border: 1px solid var(--color-secondary-s300);
     font-family: Roboto;
     font-size: 13px;
+}
+
+.primaryBtn{    
+    border: 1px solid var(--color-primary-p300);
+    background-color: var(--color-primary-p300);
+    color: var(--color-secondary-s50);    
+}
+
+.secondaryBtn{    
+    border: 1px solid var(--color-secondary-s300);    
 }
 
 .resetBlock{
