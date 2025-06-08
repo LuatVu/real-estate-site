@@ -227,6 +227,14 @@
     margin: 3px;
 }
 
+.addBtn{
+    display: flex;
+    align-items: center;
+    border: 0.5px solid var(--color-secondary-s400);
+    border-radius: 10px;
+    padding: 3px;    
+}
+
 .xIcon {    
     position: relative;
     max-height: 100%;
