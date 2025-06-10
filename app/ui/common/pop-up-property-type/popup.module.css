@@ -87,20 +87,21 @@
     flex-shrink: 0;
 }
 .buildingapartmentParent {
-    width: 33.01%;
-    margin: 0 !important;
-    position: absolute;
-    top: 0px;
-    right: 66.99%;
-    left: 0%;
-    height: 18px;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    gap: 2px;
-    z-index: 0;
 }
+
+.checkbox{
+    width: 17px;
+    height: 17px;    
+}
+
+.checkboxBlock{    
+    display: flex;
+    position: absolute;
+    right: 21px;
+}
+
 .frameChild {
     width: 100.16%;
     position: absolute;
@@ -116,8 +117,7 @@
 .frameItem {
     width: 17px;
     margin: 0 !important;
-    position: absolute;
-    top: 0px;
+    position: relative;
     left: calc(50% + 139.45px);
     border-radius: 3px;
     border: 0.5px solid #a9acaf;
@@ -126,19 +126,9 @@
     z-index: 2;
 }
 .frameParent {
-    position: absolute;
-    width: 85.94%;
-    top: 27px;
-    right: 8%;
-    left: 6.06%;
-    height: 24px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
+    width: 100%;
+    display: grid;
+    gap: 15px;
 }
 .cnHChung {
     width: 100%;
@@ -177,11 +167,8 @@
 }
 .lineDiv {
     width: 100.16%;
-    position: absolute;
+    position: relative;
     margin: 0 !important;
-    top: 18.75px;
-    right: -0.08%;
-    left: -0.08%;
     border-top: 0.5px solid #f2f5fa;
     box-sizing: border-box;
     height: 0.5px;
@@ -292,14 +279,14 @@
 }
 .bodyPopup {
     position: absolute;
-    width: 99.72%;
-    top: 35px;
-    right: 0%;
-    left: 0.28%;
-    background-color: #fff;
-    height: 310px;
-    overflow: hidden;
-    font-size: 13px;
+    padding: 5px 21px;
+    top: 35px;        
+    bottom: 75px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: scroll;    
 }
 .loiBtNg {
     position: relative;
