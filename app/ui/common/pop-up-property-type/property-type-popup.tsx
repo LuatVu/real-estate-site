@@ -1,17 +1,19 @@
 import Image from "next/image";
 import styles from "./popup.module.css";
+import Form from "next/form";
 
-export default function PropertyTypePopup({ className, onClose }: any) {
+export default function PropertyTypePopup({onClose }: any) {
+    const submit = () =>{
+
+    }
     return (
-        <div className={[styles.popUpFilterPropertyType, className].join(' ')}>
-            <div className={styles.footerPopup}>
-                <div className={styles.buttonParent}>
-                    <div className={styles.button}>
-                        <div className={styles.loiBtNg}>Đặt lại</div>
-                    </div>
-                    <div className={styles.button2}>
-                        <div className={styles.loiBtNg}>Áp dụng</div>
-                    </div>
+        <Form action={submit} className={styles.container}>            
+            <div className={styles.headerPopup}>
+                <div className={styles.loiBtNgSnParent}>
+                    <div className={styles.loiBtNg}>Loại bất động sản</div>
+                    <button onClick={onClose}>
+                        <Image className={styles.xIcon} width={24} height={24} alt="" src="/icons/X.svg" />
+                    </button>
                 </div>
             </div>
             <div className={styles.bodyPopup}>
@@ -72,13 +74,8 @@ export default function PropertyTypePopup({ className, onClose }: any) {
                     <div className={styles.lineDiv} />
                 </div>
             </div>
-            <div className={styles.headerPopup}>
-                <div className={styles.loiBtNgSnParent}>
-                    <div className={styles.loiBtNg}>Loại bất động sản</div>
-                    <button onClick={onClose}>
-                        <Image className={styles.xIcon} width={24} height={24} alt="" src="/icons/X.svg" />
-                    </button>
-                </div>
+            <div className={styles.footerPopup}>
+                <button type="submit" className={styles.btnApply}>Áp dụng</button>
             </div>
-        </div>);
+        </Form>);
 }
