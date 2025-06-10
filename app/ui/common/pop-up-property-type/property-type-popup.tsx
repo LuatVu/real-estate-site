@@ -4,9 +4,10 @@ import Form from "next/form";
 
 export default function PropertyTypePopup({ onClose }: any) {
 
-    const properTypes = [{ name: "Tất cả nhà bán", value: "ALL", checked: false }, { name: "Căn hộ chung cư", value: "CHCC", checked: false }, { name: "Nhà riêng, biệt thự, nhà phố", value: "NHA_RIENG", checked: false },
-    { name: "Đất nền", value: "DAT_NEN", checked: false }, { name: "Condotel", value: "CONDOTEL", checked: false },
-    { name: "Kho, nhà xưởng", value: "KHO_NHA_XUONG", checked: false }, { name: "Bất động sản khác", value: "BDS_KHAC", checked: false }        
+    const properTypes = [{ name: "Tất cả nhà bán", value: "ALL", checked: false, image: "/icons/BuildingApartment.svg" }, { name: "Căn hộ chung cư", value: "CHCC", checked: false, image:"/icons/Building.svg" },
+         { name: "Nhà riêng, biệt thự, nhà phố", value: "NHA_RIENG", checked: false, image: "/icons/HouseLine.svg" },
+    { name: "Đất nền", value: "DAT_NEN", checked: false, image: "/icons/BaseSquare.svg" }, { name: "Condotel", value: "CONDOTEL", checked: false, image: "/icons/Condotel.svg" },
+    { name: "Kho, nhà xưởng", value: "KHO_NHA_XUONG", checked: false, image: "/icons/Warehouse.svg" }, { name: "Bất động sản khác", value: "BDS_KHAC", checked: false, image: "/icons/OtherProperty.svg" }        
     ];
 
     const submit = () => {
@@ -26,7 +27,7 @@ export default function PropertyTypePopup({ onClose }: any) {
                 {properTypes.map((element: any) => (
                     <div className={styles.frameParent} key={element.value}>
                         <div className={styles.buildingapartmentParent}>
-                            <Image className={styles.buildingapartmentIcon} width={16} height={16} alt="" src="/icons/BuildingApartment.svg" />
+                            <Image className={styles.buildingapartmentIcon} width={16} height={16} alt="" src={element.image} />
                             <p>{element.name}</p>
                         </div>
                         <div className={styles.checkboxBlock}>
