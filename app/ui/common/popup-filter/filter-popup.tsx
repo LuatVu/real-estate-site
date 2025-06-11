@@ -1,7 +1,6 @@
 "use client";
 import styles from "./filter-popup.module.css";
 import Image from "next/image";
-import Form from "next/form";
 import { useState, useCallback } from 'react';
 import AddressFilterPopup from "../popup-filter-address/address-popup";
 import DistrictPopup from "../popup-district/district-popup";
@@ -22,11 +21,13 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
 
     const [districts, setDistricts] = useState([]);
     const [city, setCity] = useState();
+    const [propertyTypes, setPropertyType] = useState([]);
 
     const districtList = [{ name: "Hoàn Kiếm", value: "001", checked: false }, { name: "Cửa Nam", value: "002", checked: false }, { name: "Ba Đình", value: "003", checked: false },
     { name: "Ngọc Hà", value: "004", checked: false }, { name: "Giảng Võ", value: "005", checked: false }, { name: "Hà Bà Trưng", value: "006", checked: false },
     { name: "Vĩnh Tuy", value: "007", checked: false }, { name: "Bạch Mai", value: "008", checked: false }, { name: "Đống Đa", value: "009", checked: false },
-    { name: "Kim Liên", value: "010", checked: false }];
+    { name: "Kim Liên", value: "010", checked: false }
+    ];
 
     const cities = [{ name: "Hà Nội", code: "01", image: "/city/HaNoi.jpg" }, { name: "Hồ Chí Minh", code: "02", image: "/city/HoChiMinh.jpg" }, { name: "An Giang", code: "03", image: "/city/AnGiang.jpg" }, { name: "Bắc Ninh", code: "04", image: "/city/BacNinh.jpg" }, { name: "Cà Mau", code: "05", image: "/city/CaMau.jpg" },
     { name: "Cần Thơ", code: "06", image: "/city/CanTho.jpg" }, { name: "Cao Bằng", code: "07", image: "/city/CaoBang.jpg" }, { name: "Đà Nẵng", code: "08", image: "/city/DaNang.jpg" }, { name: "Đắc Lắc", code: "09", image: "/city/DakLak.jpg" }, { name: "Điện Biên", code: "10", image: "/city/DienBien.jpg" }, { name: "Đồng Nai", code: "11", image: "/city/DongNai.jpg" },
@@ -37,10 +38,16 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     ];
 
     const selectedDistrict = useCallback((values: any) => { setDistricts(values) }, []);
-    const removeDistrict = (item: any) => {setDistricts(districts.filter((ele:any) => ele.value !== item.value))};
+    const removeDistrict = (item: any) => { setDistricts(districts.filter((ele: any) => ele.value !== item.value)) };
 
-    function applyFilter(formData: FormData) {
-        setFilterParam(searchRequest);
+    const selectProperType = useCallback((values: any) => { setPropertyType(values) }, []);
+    const removeProperType = (item: any) => { setPropertyType(propertyTypes.filter((ele: any) => ele.value !== item.value)) };
+
+    function applyFilter() {       
+        const updateRequest = {...searchRequest, city: city, districts: districts, propertyTypes: propertyTypes};
+        setSearchRequest(updateRequest); 
+        setFilterParam(updateRequest);
+        onClose();
     }
 
     function selectTab(value: string) {
@@ -56,17 +63,17 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const selectCity = useCallback((city: any) => { setAddressPopup(false); setDistrictPopup(true); setCity(city) }, []);
     const closeDistrict = useCallback(() => { setFilterPopup(true); setAddressPopup(false); setDistrictPopup(false); }, []);
     const onBtnAddressClick = useCallback(() => { setAddressPopup(true); setFilterPopup(false); }, []);
-    const closeProperType = useCallback(() =>{setFilterPopup(true); setProperTypePopup(false); },[]);
-    const onBtnProTypeClick = useCallback(() => {setProperTypePopup(true);setFilterPopup(false);}, []);
+    const closeProperType = useCallback(() => { setFilterPopup(true); setProperTypePopup(false); }, []);
+    const onBtnProTypeClick = useCallback(() => { setProperTypePopup(true); setFilterPopup(false); }, []);
 
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={districtList} selectDistrict={selectedDistrict} />)}
-            {properTypePopup && (<PropertyTypePopup onClose={closeProperType}/>)}
+            {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
             {filterPopup && (
                 <div>
-                    <Form action={applyFilter} className={styles.filterContainer}>
+                    <div className={styles.filterContainer}>
                         <div className={styles.headerFilter}>
                             <div className={styles.khuVcParent}>
                                 <div className={styles.khuVc}>Bộ lọc</div>
@@ -85,7 +92,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 <div className={styles.itemTitle}>
                                     <p>Khu vực</p>
                                 </div>
-                                <div className={styles.criteriaBlk}>                                    
+                                <div className={styles.criteriaBlk}>
                                     {districts.map((element: any) => (
                                         <div className={styles.criteria} key={element.value}>
                                             <p className={styles.criTitle}>{element.name}</p>
@@ -107,18 +114,14 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                     <p>Loại bất động sản</p>
                                 </div>
                                 <div className={styles.criteriaBlk}>
-                                    <div className={styles.criteria}>
-                                        <p className={styles.criTitle}>Nhà mặt phố</p>
-                                        <button>
-                                            <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
-                                        </button>
-                                    </div>
-                                    <div className={styles.criteria}>
-                                        <p className={styles.criTitle}>Condotel</p>
-                                        <button>
-                                            <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
-                                        </button>
-                                    </div>
+                                    {propertyTypes.map((element: any) => (
+                                        <div className={styles.criteria} key={element.value}>
+                                            <p className={styles.criTitle}>{element.name}</p>
+                                            <button onClick={() =>removeProperType(element)}>
+                                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                                            </button>
+                                        </div>
+                                    ))}                                   
                                     <div>
                                         <button className={styles.addBtn} onClick={onBtnProTypeClick}>
                                             <Image className={styles.xIcon} width={12} height={12} alt="" src="/icons/Plus.svg" />
@@ -153,10 +156,10 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 <button className={styles.btnReset}>Đặt lại</button>
                             </div>
                             <div className={styles.applyBlock}>
-                                <button type="submit" className={styles.btnApply} onClick={onClose}>Áp dụng</button>
+                                <button className={styles.btnApply} onClick={applyFilter}>Áp dụng</button>
                             </div>
                         </div>
-                    </Form>
+                    </div>
                 </div>
             )}
 

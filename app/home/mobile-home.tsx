@@ -21,7 +21,7 @@ export default function MobileHome() {
     const [filterPopup, setFilterPopup] = useState(false);
     const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
-        districtCode: undefined, wardCode: undefined, tab: "BUY"});    
+        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, city: undefined});    
 
     const openPopUpFilterPropertyType = useCallback(() => {
         setPropertyTypePopup(true);
@@ -68,12 +68,13 @@ export default function MobileHome() {
         console.log(searchRequest);
     }
 
-    const handleSearchRequest = (data: any) => {
+    const setFilterParam = (data: any) => {
         setSearchRequest({
             ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
             minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
             typeCode: data.typeCode, provinceCode: data.provinceCode,
-            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab
+            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab, 
+            districts: data.districts, propertyTypes: data.propertyTypes, city: data.city
         })        
     }
 
@@ -81,7 +82,7 @@ export default function MobileHome() {
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
-            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={handleSearchRequest} filterParam={searchRequest} />)}
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
