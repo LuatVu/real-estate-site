@@ -18,7 +18,7 @@ export default function MobileHome() {
     const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
     const [addressPopup, setAddressPopup] = useState(false);
     const [districtPopup, setDistrictPopup] = useState(false);
-    const [filterPopup, setFilterPopup] = useState(false);
+    const [filterPopup, setFilterPopup] = useState(false);    
     const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
         districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, city: undefined});    
@@ -61,7 +61,7 @@ export default function MobileHome() {
         setHomePageVisible(true);       
     }, []);
 
-    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false); }, []);
+    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false); }, []);    
 
     function search(formData: FormData) {
         console.log(formData.get('searchKeyword'));
@@ -82,7 +82,7 @@ export default function MobileHome() {
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
-            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}            
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />

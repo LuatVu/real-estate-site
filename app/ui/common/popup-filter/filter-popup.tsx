@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react';
 import AddressFilterPopup from "../popup-filter-address/address-popup";
 import DistrictPopup from "../popup-district/district-popup";
 import PropertyTypePopup from "../pop-up-property-type/property-type-popup";
+import PricePopup from "../popup-price/price-popup";
 
 
 export default function FilterPopup({ onClose, setFilterParam, filterParam }: any) {
@@ -18,6 +19,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [districtPopup, setDistrictPopup] = useState(false);
     const [filterPopup, setFilterPopup] = useState(true);
     const [properTypePopup, setProperTypePopup] = useState(false);
+    const [pricePopup, setPricePopup] = useState(false);
 
     const [districts, setDistricts] = useState([]);
     const [city, setCity] = useState();
@@ -42,6 +44,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
 
     const selectProperType = useCallback((values: any) => { setPropertyType(values) }, []);
     const removeProperType = (item: any) => { setPropertyType(propertyTypes.filter((ele: any) => ele.value !== item.value)) };
+    const setRangeMethod = (item: any) => { console.log("Price Range: " + item[0] + " - " + item[1])};
 
     function applyFilter() {       
         const updateRequest = {...searchRequest, city: city, districts: districts, propertyTypes: propertyTypes};
@@ -65,12 +68,15 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const onBtnAddressClick = useCallback(() => { setAddressPopup(true); setFilterPopup(false); }, []);
     const closeProperType = useCallback(() => { setFilterPopup(true); setProperTypePopup(false); }, []);
     const onBtnProTypeClick = useCallback(() => { setProperTypePopup(true); setFilterPopup(false); }, []);
+    const openPricePopup = useCallback(() => {setFilterPopup(false);setPricePopup(true)},[]);
+    const closePricePopup = useCallback(() => {setFilterPopup(true); setPricePopup(false)}, []);
 
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={districtList} selectDistrict={selectedDistrict} />)}
             {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
+            {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setRangeMethod}/>)}
             {filterPopup && (
                 <div>
                     <div className={styles.filterContainer}>
@@ -134,11 +140,11 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 <div className={styles.itemTitle}>
                                     <p>Mức giá</p>
                                 </div>
-                                <div className={styles.itemBody}>
+                                <button className={styles.itemBody} onClick={openPricePopup}>
                                     <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
                                     <p>Tất cả</p>
                                     <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
-                                </div>
+                                </button>
                             </div>
                             <div className={styles.acreageBlock}>
                                 <div className={styles.itemTitle}>
