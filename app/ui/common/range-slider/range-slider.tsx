@@ -1,5 +1,5 @@
 
-// import "./range-slider.module.css"
+"use client";
 import { useState, useRef, useCallback, useEffect } from "react";
 
 export default function RangeSlider({
@@ -17,10 +17,20 @@ export default function RangeSlider({
     const sliderRef: any = useRef(null);
 
     // Sync input values when slider values change
-  useEffect(() => {
-    setMinInputValue(minValue.toString());
-    setMaxInputValue(maxValue.toString());
-  }, [minValue, maxValue]);
+    useEffect(() => {
+        setMinInputValue(minValue.toString());
+        setMaxInputValue(maxValue.toString());
+    }, [minValue, maxValue]);
+
+    const validateAndSetValues = useCallback((newMin: any, newMax: any) => {
+        // Ensure values are within bounds and maintain proper order
+        const validMin = Math.max(min, Math.min(newMin, newMax - step));
+        const validMax = Math.min(max, Math.max(newMax, newMin + step));
+
+        setMinValue(validMin);
+        setMaxValue(validMax);
+        onChange?.([validMin, validMax]);
+    }, [min, max, step, onChange]);
 
     const updateValue = useCallback((clientX: any, thumbType: any) => {
         if (!sliderRef.current) return;
@@ -38,13 +48,14 @@ export default function RangeSlider({
             setMaxValue(Math.min(max, clampedValue));
             onChange?.([minValue, Math.min(max, clampedValue)]);
         }
-    }, [min, max, step, minValue, maxValue, onChange]);
+    }, [min, max, step, minValue, maxValue, validateAndSetValues]);
 
     const handleTrackClick = (e: any) => {
         if (disabled || isDragging) return;
 
         const rect = sliderRef.current.getBoundingClientRect();
-        const percentage = (e.clientX - rect.left) / rect.width;
+        const clientX = getClientX(e);        
+        const percentage = (clientX - rect.left) / rect.width;        
         const clickValue = min + percentage * (max - min);
 
         // Determine which thumb is closer to the click
@@ -65,6 +76,14 @@ export default function RangeSlider({
         setIsDragging(true);
     };
 
+    const handleThumbTouchStart = (e: any, thumbType: any) => {
+        if (disabled) return;
+        e.stopPropagation();
+        e.preventDefault(); // Prevent scrolling while dragging
+        setActiveThumb(thumbType);
+        setIsDragging(true);
+    };
+
     const handleMouseMove = useCallback((e: any) => {
         if (isDragging && activeThumb && !disabled) {
             updateValue(e.clientX, activeThumb);
@@ -76,24 +95,58 @@ export default function RangeSlider({
         setActiveThumb(null);
     }, []);
 
+    const handleTouchMove = useCallback((e: any) => {
+        if (isDragging && activeThumb && !disabled) {
+            e.preventDefault(); // Prevent scrolling
+            const clientX = getClientX(e);
+            updateValue(clientX, activeThumb);
+        }
+    }, [isDragging, activeThumb, disabled, updateValue]);
+
+    const handleTouchEnd = useCallback(() => {
+        setIsDragging(false);
+        setActiveThumb(null);
+    }, []);
+
+    const getClientX = (e: any) => {
+        return e.touches ? e.touches[0].clientX : e.clientX;
+    };
+
     // Global mouse event listeners for dragging
     useEffect(() => {
         if (isDragging) {
+            // Mouse events
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
+
+            // Touch events
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleTouchEnd);
+
             document.body.style.userSelect = 'none'; // Prevent text selection while dragging
         } else {
+            // Mouse events
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
+
+            // Touch events
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
             document.body.style.userSelect = '';
         }
 
         return () => {
+            // Mouse events cleanup
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
+
+            // Touch events cleanup
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+
             document.body.style.userSelect = '';
         };
-    }, [isDragging, handleMouseMove, handleMouseUp]);
+    }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
     const handleKeyDown = (e: any, thumbType: any) => {
         if (disabled) return;
@@ -137,21 +190,10 @@ export default function RangeSlider({
         }
 
         e.preventDefault();
-        // setMinValue(newMinValue);
-        // setMaxValue(newMaxValue);
-        // onChange?.([newMinValue, newMaxValue]);
         validateAndSetValues(newMinValue, newMaxValue);
     };
 
-    const validateAndSetValues = useCallback((newMin: any, newMax: any) => {
-        // Ensure values are within bounds and maintain proper order
-        const validMin = Math.max(min, Math.min(newMin, newMax - step));
-        const validMax = Math.min(max, Math.max(newMax, newMin + step));
-
-        setMinValue(validMin);
-        setMaxValue(validMax);
-        onChange?.([validMin, validMax]);
-    }, [min, max, step, onChange]);
+    
 
     const handleMinInputChange = (e: any) => {
         const value = e.target.value;
@@ -297,6 +339,7 @@ export default function RangeSlider({
                     className={`relative h-2 bg-gray-200 rounded-full transition-all duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-300'
                         }`}
                     onClick={handleTrackClick}
+                    // onTouchStart={handleTrackClick}
                 >
                     {/* Selected range */}
                     <div
@@ -310,8 +353,8 @@ export default function RangeSlider({
                     {/* Min thumb */}
                     <div
                         className={`absolute top-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full transform -translate-y-1/2 z-10 transition-all duration-200 ${disabled
-                                ? 'cursor-not-allowed opacity-50'
-                                : 'cursor-grab hover:scale-110 focus:scale-110 hover:shadow-lg focus:shadow-lg'
+                            ? 'cursor-not-allowed opacity-50'
+                            : 'cursor-grab hover:scale-110 focus:scale-110 hover:shadow-lg focus:shadow-lg'
                             } ${activeThumb === 'min' ? 'scale-110 shadow-lg cursor-grabbing border-blue-600' : ''}`}
                         style={{ left: `calc(${minPercentage}% - 10px)` }}
                         tabIndex={disabled ? -1 : 0}
@@ -321,6 +364,7 @@ export default function RangeSlider({
                         aria-valuenow={minValue}
                         aria-label={`${label} minimum value`}
                         onMouseDown={(e) => handleThumbMouseDown(e, 'min')}
+                        onTouchStart={(e) => handleThumbTouchStart(e, 'min')}
                         onKeyDown={(e) => handleKeyDown(e, 'min')}
                         onFocus={(e) => e.target.style.outline = '2px solid #3b82f6'}
                         onBlur={(e) => e.target.style.outline = 'none'}
@@ -329,8 +373,8 @@ export default function RangeSlider({
                     {/* Max thumb */}
                     <div
                         className={`absolute top-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full transform -translate-y-1/2 z-10 transition-all duration-200 ${disabled
-                                ? 'cursor-not-allowed opacity-50'
-                                : 'cursor-grab hover:scale-110 focus:scale-110 hover:shadow-lg focus:shadow-lg'
+                            ? 'cursor-not-allowed opacity-50'
+                            : 'cursor-grab hover:scale-110 focus:scale-110 hover:shadow-lg focus:shadow-lg'
                             } ${activeThumb === 'max' ? 'scale-110 shadow-lg cursor-grabbing border-blue-600' : ''}`}
                         style={{ left: `calc(${maxPercentage}% - 10px)` }}
                         tabIndex={disabled ? -1 : 0}
@@ -340,6 +384,7 @@ export default function RangeSlider({
                         aria-valuenow={maxValue}
                         aria-label={`${label} maximum value`}
                         onMouseDown={(e) => handleThumbMouseDown(e, 'max')}
+                        onTouchStart={(e) => handleThumbTouchStart(e, 'max')}
                         onKeyDown={(e) => handleKeyDown(e, 'max')}
                         onFocus={(e) => e.target.style.outline = '2px solid #3b82f6'}
                         onBlur={(e) => e.target.style.outline = 'none'}
