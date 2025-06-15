@@ -4,7 +4,9 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 export default function RangeSlider({
     min = 0, max = 100, step = 1, defaultMin = 20, defaultMax = 80, onChange,
-    label = "Range Slider", showValues = true, disabled = false, className = "", inputClassName = "", prefix = "", suffix = "" }: any) {
+    label = "Range Slider", showValues = true, disabled = false, className = "",
+    inputClassName = "", prefix = "", suffix = "",
+    minLabel="Min Value", maxLabel="Max Value" }: any) {
 
     const [minValue, setMinValue] = useState(defaultMin);
     const [maxValue, setMaxValue] = useState(defaultMax);
@@ -256,7 +258,7 @@ export default function RangeSlider({
 
             <div className="flex items-center gap-3 mb-4">
                 <div className="flex-1">
-                    <label className="block text-xs text-gray-500 mb-1">Min Value</label>
+                    <label className="block text-xs text-gray-500 mb-1">{minLabel}</label>
                     <div className="relative">
                         {prefix && (
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
@@ -285,10 +287,10 @@ export default function RangeSlider({
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 text-gray-400 font-medium">to</div>
+                <div className="flex-shrink-0 text-gray-400 font-medium"></div>
 
                 <div className="flex-1">
-                    <label className="block text-xs text-gray-500 mb-1">Max Value</label>
+                    <label className="block text-xs text-gray-500 mb-1">{maxLabel}</label>
                     <div className="relative">
                         {prefix && (
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">

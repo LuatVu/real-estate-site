@@ -25,7 +25,7 @@ export default function PricePopup({ onClose, setRangeMethod }: any) {
                 
                     
                     <RangeSlider
-                        label="Giá (VNĐ)"
+                        label="Giá (Tỷ)"
                         min={0}
                         max={100}
                         step={1}
@@ -33,14 +33,14 @@ export default function PricePopup({ onClose, setRangeMethod }: any) {
                         defaultMax={priceRange[1]}
                         onChange={setPriceRange}
                         prefix=""
-                    />
-                    
-                
+                        suffix="Tỷ"
+                        minLabel="Giá tối thiểu"
+                        maxLabel="Giá tối đa"
+                    />                                    
             </div>
             <div className={styles.footer}>
                 <button type="submit" className={styles.btnApply}>Áp dụng</button>
             </div>
-
         </Form>
     )
 }

@@ -6,7 +6,7 @@ import AddressFilterPopup from "../popup-filter-address/address-popup";
 import DistrictPopup from "../popup-district/district-popup";
 import PropertyTypePopup from "../pop-up-property-type/property-type-popup";
 import PricePopup from "../popup-price/price-popup";
-
+import AcreagePopup from "../acreage-popup/acreage-popup";
 
 export default function FilterPopup({ onClose, setFilterParam, filterParam }: any) {
     const [searchRequest, setSearchRequest] = useState(filterParam);
@@ -20,6 +20,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [filterPopup, setFilterPopup] = useState(true);
     const [properTypePopup, setProperTypePopup] = useState(false);
     const [pricePopup, setPricePopup] = useState(false);
+    const [acreagePopup, setAcreagePopup] = useState(false);
 
     const [districts, setDistricts] = useState([]);
     const [city, setCity] = useState();
@@ -45,6 +46,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const selectProperType = useCallback((values: any) => { setPropertyType(values) }, []);
     const removeProperType = (item: any) => { setPropertyType(propertyTypes.filter((ele: any) => ele.value !== item.value)) };
     const setRangeMethod = (item: any) => { console.log("Price Range: " + item[0] + " - " + item[1])};
+    const setAcreageRangeMethod = (item: any) => {console.log("Price Range: " + item[0] + " - " + item[1])};
 
     function applyFilter() {       
         const updateRequest = {...searchRequest, city: city, districts: districts, propertyTypes: propertyTypes};
@@ -68,8 +70,12 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const onBtnAddressClick = useCallback(() => { setAddressPopup(true); setFilterPopup(false); }, []);
     const closeProperType = useCallback(() => { setFilterPopup(true); setProperTypePopup(false); }, []);
     const onBtnProTypeClick = useCallback(() => { setProperTypePopup(true); setFilterPopup(false); }, []);
+    
     const openPricePopup = useCallback(() => {setFilterPopup(false);setPricePopup(true)},[]);
     const closePricePopup = useCallback(() => {setFilterPopup(true); setPricePopup(false)}, []);
+
+    const openAcreagePopup = useCallback(() => {setFilterPopup(false);setAcreagePopup(true)},[]);
+    const closeAcreagePopup = useCallback(() => {setFilterPopup(true); setAcreagePopup(false)}, []);
 
     return (
         <div className='h-full'>
@@ -77,6 +83,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
             {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={districtList} selectDistrict={selectedDistrict} />)}
             {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
             {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setRangeMethod}/>)}
+            {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod}/>)}
             {filterPopup && (
                 <div>
                     <div className={styles.filterContainer}>
@@ -150,11 +157,11 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 <div className={styles.itemTitle}>
                                     <p>Diện tích</p>
                                 </div>
-                                <div className={styles.itemBody}>
+                                <button className={styles.itemBody} onClick={openAcreagePopup}>
                                     <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
                                     <p>Tất cả</p>
                                     <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
-                                </div>
+                                </button>
                             </div>
                         </div>
                         <div className={styles.footer}>
