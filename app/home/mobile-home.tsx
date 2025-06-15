@@ -6,50 +6,16 @@ import useScreenSize from '../lib/useScreenSize';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
-import PortalPopup from '../ui/common/portal-popup/portal-popup';
-import PropertyTypePopup from '../ui/common/pop-up-property-type/property-type-popup';
-import AddressFilterPopup from '../ui/common/popup-filter-address/address-popup';
-import DistrictPopup from '../ui/common/popup-district/district-popup';
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import Form from 'next/form';
 
 export default function MobileHome() {
-    const [homePageVisible, setHomePageVisible] = useState(true);
-    const [isPropertyTypePopupOpen, setPropertyTypePopup] = useState(false);
-    const [addressPopup, setAddressPopup] = useState(false);
-    const [districtPopup, setDistrictPopup] = useState(false);
+    const [homePageVisible, setHomePageVisible] = useState(true);        
     const [filterPopup, setFilterPopup] = useState(false);    
     const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
-        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, city: undefined});    
-
-    const openPopUpFilterPropertyType = useCallback(() => {
-        setPropertyTypePopup(true);
-    }, []);
-
-    const closePopUpFilterPropertyType = useCallback(() => {
-        setPropertyTypePopup(false);
-        setHomePageVisible(true);
-    }, []);
-
-    const onButtonAddressClick = useCallback(() => {
-        setAddressPopup(true);
-        setHomePageVisible(false);
-    }, []);
-
-    const closePopupAddressClick = useCallback(
-        () => {
-            setAddressPopup(false);
-            setHomePageVisible(true);
-        }, []
-    );
-
-    const selectCity = useCallback(
-        (city: any) => {
-            setAddressPopup(false);
-            setDistrictPopup(true);
-        }, []
-    );
+        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, 
+        city: undefined, priceRange: undefined, acreageRange: undefined});        
 
     const openFilterPopup = useCallback(() => {
         setFilterPopup(true);
@@ -59,9 +25,7 @@ export default function MobileHome() {
     const closeFilterPopup = useCallback(() => {
         setFilterPopup(false);
         setHomePageVisible(true);       
-    }, []);
-
-    const closeDistrict = useCallback(() => { setAddressPopup(true); setDistrictPopup(false); }, []);    
+    }, []);    
 
     function search(formData: FormData) {
         console.log(formData.get('searchKeyword'));
@@ -74,14 +38,13 @@ export default function MobileHome() {
             minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
             typeCode: data.typeCode, provinceCode: data.provinceCode,
             districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab, 
-            districts: data.districts, propertyTypes: data.propertyTypes, city: data.city
+            districts: data.districts, propertyTypes: data.propertyTypes, city: data.city,
+            priceRange: data.priceRange, acreageRange: data.acreageRange
         })        
     }
 
     return (
-        <div className='h-full'>
-            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} selectCity={selectCity} />)}
-            {districtPopup && (<DistrictPopup onClose={closeDistrict} />)}
+        <div className='h-full'>            
             {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}            
             {homePageVisible && (
                 <div className={styles.homePage}>
@@ -105,16 +68,7 @@ export default function MobileHome() {
                                     <div className={styles.wrapper}>
                                         <div className={styles.div}>9</div>
                                     </div>
-                                </button>
-                                <button className={styles.button10} onClick={onButtonAddressClick}>
-                                    <div className={styles.filter}>Toàn quốc</div>
-                                    <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/CaretDown.svg" />
-                                </button>
-
-                                <button className={styles.button12} onClick={openPopUpFilterPropertyType}>
-                                    <div className={styles.filter}>Tất cả bds</div>
-                                    <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/CaretDown.svg" />
-                                </button>
+                                </button>                                
                             </div>
                         </div>
                     </Form>
@@ -347,12 +301,7 @@ export default function MobileHome() {
                             <Image className={styles.googlePlay2} width={108} height={32} alt="" src="/icons/google_play.svg" />
                         </div>
                     </div>
-                    <MbFooter />
-                    {isPropertyTypePopupOpen && (
-                        <PortalPopup overlayColor="rgba(113, 113, 113, 0.3)" placement="Centered" onOutsideClick={closePopUpFilterPropertyType}>
-                            <PropertyTypePopup onClose={closePopUpFilterPropertyType} />
-                        </PortalPopup>
-                    )}
+                    <MbFooter />                    
                 </div>
             )}
         </div>

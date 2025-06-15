@@ -25,6 +25,8 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [districts, setDistricts] = useState([]);
     const [city, setCity] = useState();
     const [propertyTypes, setPropertyType] = useState([]);
+    const [priceRange, setPriceRange] = useState([]);
+    const [acreageRange, setAcreageRange] = useState([]);
 
     const districtList = [{ name: "Hoàn Kiếm", value: "001", checked: false }, { name: "Cửa Nam", value: "002", checked: false }, { name: "Ba Đình", value: "003", checked: false },
     { name: "Ngọc Hà", value: "004", checked: false }, { name: "Giảng Võ", value: "005", checked: false }, { name: "Hà Bà Trưng", value: "006", checked: false },
@@ -45,11 +47,12 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
 
     const selectProperType = useCallback((values: any) => { setPropertyType(values) }, []);
     const removeProperType = (item: any) => { setPropertyType(propertyTypes.filter((ele: any) => ele.value !== item.value)) };
-    const setRangeMethod = (item: any) => { console.log("Price Range: " + item[0] + " - " + item[1])};
-    const setAcreageRangeMethod = (item: any) => {console.log("Price Range: " + item[0] + " - " + item[1])};
+    const setPriceRangeMethod = (item: any) => { console.log("Price Range: " + item[0] + " - " + item[1]); setPriceRange(item);   };
+    const setAcreageRangeMethod = (item: any) => {console.log("Price Range: " + item[0] + " - " + item[1]); setAcreageRange(item) };
 
     function applyFilter() {       
-        const updateRequest = {...searchRequest, city: city, districts: districts, propertyTypes: propertyTypes};
+        const updateRequest = {...searchRequest, city: city, districts: districts, 
+            propertyTypes: propertyTypes, priceRange: priceRange, acreageRange: acreageRange };
         setSearchRequest(updateRequest); 
         setFilterParam(updateRequest);
         onClose();
@@ -82,7 +85,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
             {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={districtList} selectDistrict={selectedDistrict} />)}
             {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
-            {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setRangeMethod}/>)}
+            {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod}/>)}
             {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod}/>)}
             {filterPopup && (
                 <div>
@@ -149,7 +152,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 </div>
                                 <button className={styles.itemBody} onClick={openPricePopup}>
                                     <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
-                                    <p>Tất cả</p>
+                                    {priceRange.length ==0?(<p>Tất cả</p>):(<p>{priceRange[0]} - {priceRange[1]} tỷ</p>) }
                                     <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
                                 </button>
                             </div>
@@ -159,7 +162,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 </div>
                                 <button className={styles.itemBody} onClick={openAcreagePopup}>
                                     <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
-                                    <p>Tất cả</p>
+                                    {acreageRange.length ==0?(<p>Tất cả</p>):(<p>{acreageRange[0]} - {acreageRange[1]} m2</p>) }
                                     <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
                                 </button>
                             </div>
