@@ -15,7 +15,8 @@ export default function MobileHome() {
     const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
         districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, 
-        city: undefined, priceRange: undefined, acreageRange: undefined});        
+        city: undefined, priceRange: undefined, acreageRange: undefined});  
+    const [filterNum, setFilterNum]  = useState(0);    
 
     const openFilterPopup = useCallback(() => {
         setFilterPopup(true);
@@ -24,7 +25,7 @@ export default function MobileHome() {
 
     const closeFilterPopup = useCallback(() => {
         setFilterPopup(false);
-        setHomePageVisible(true);       
+        setHomePageVisible(true);        
     }, []);    
 
     function search(formData: FormData) {
@@ -33,14 +34,46 @@ export default function MobileHome() {
     }
 
     const setFilterParam = (data: any) => {
-        setSearchRequest({
+        const updatedSearchRequest  = {
             ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
             minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
             typeCode: data.typeCode, provinceCode: data.provinceCode,
             districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab, 
             districts: data.districts, propertyTypes: data.propertyTypes, city: data.city,
             priceRange: data.priceRange, acreageRange: data.acreageRange
-        })        
+        };
+        setSearchRequest(updatedSearchRequest);
+        const numFilter = countParamNum(updatedSearchRequest);
+        setFilterNum(numFilter);
+    }
+
+    const countParamNum = (searchRequest: any) =>{
+        let count: number = 0;
+        for(let key in searchRequest){
+            if(searchRequest.hasOwnProperty(key) && isReleventKey(key)){
+                if(searchRequest[key] instanceof Array){
+                    if(searchRequest[key].length > 0){
+                        count = count + 1;
+                    }
+                }else if(searchRequest[key] != undefined){
+                    count = count + 1;
+                }
+            }
+        }
+        return count;
+    }
+
+    const isReleventKey = (key: string) =>{
+        let result: boolean = false;
+        switch(key){
+            case "acreageRange":  ;            
+            case "districts":;
+            case "priceRange":;
+            case "propertyTypes":;
+            case "tab": result = true;break;
+            default: result = false;
+        }
+        return result;
     }
 
     return (
@@ -64,9 +97,9 @@ export default function MobileHome() {
                             <div className={styles.filterGroup}>
                                 <button className={styles.button9} onClick={openFilterPopup}>
                                     <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/Funnel.svg" />
-                                    <div className={styles.filter}>Filter</div>
-                                    <div className={styles.wrapper}>
-                                        <div className={styles.div}>9</div>
+                                    <div className={styles.filter}>Lọc</div>
+                                    <div>
+                                        {filterNum== 0?(<p className={styles.filterNumZero +" " + styles.wrapper}>{filterNum}</p>): (<p className={styles.filterNum +" " + styles.wrapper}>{filterNum}</p>)}
                                     </div>
                                 </button>                                
                             </div>

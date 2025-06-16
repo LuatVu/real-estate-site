@@ -258,25 +258,25 @@
 	position: relative;
 }
 
-.div {
-	width: 8px;
-	position: relative;
-	display: inline-block;
+.filterNum {
+	background-color: var(--color-primary-p300);	
 }
 
-.wrapper {
-	/* width: 16px; */
+.filterNumZero{
+	background-color: var(--color-secondary-s300);	
+}
+
+.wrapper {	
 	width: 24px;
 	border-radius: 5px;
-	background-color: #ff3a44;
-	height: 20px;
-	/* overflow: hidden; */
+	position: relative;
+	display: inline-block;
+	height: 20px;	
 	flex-shrink: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	/* padding: 2px; */
+	justify-content: center;	
 	box-sizing: border-box;
 	font-size: 15px;
 	color: #000;
