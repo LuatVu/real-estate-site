@@ -259,11 +259,13 @@
 }
 
 .filterNum {
-	background-color: var(--color-primary-p300);	
+	background-color: var(--color-primary-p300);
+	color: var(--color-primary-p50);
 }
 
 .filterNumZero{
 	background-color: var(--color-secondary-s300);	
+	color: #000;
 }
 
 .wrapper {	
@@ -278,8 +280,7 @@
 	align-items: center;
 	justify-content: center;	
 	box-sizing: border-box;
-	font-size: 15px;
-	color: #000;
+	font-size: 15px;	
 }
 
 .button9 {
