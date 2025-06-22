@@ -2,21 +2,22 @@
 import styles from './index.module.css';
 import Image from 'next/image';
 import { useState, useCallback } from 'react';
-import useScreenSize from '../lib/useScreenSize';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import Form from 'next/form';
+import { useRouter } from 'next/navigation';
 
 export default function MobileHome() {
+    const router = useRouter()
     const [homePageVisible, setHomePageVisible] = useState(true);        
-    const [filterPopup, setFilterPopup] = useState(false);    
+    const [filterPopup, setFilterPopup] = useState(false);
     const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
         districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, 
-        city: undefined, priceRange: undefined, acreageRange: undefined});  
-    const [filterNum, setFilterNum]  = useState(0);    
+        city: undefined, priceRange: undefined, acreageRange: undefined, query: ""});  
+    const [filterNum, setFilterNum]  = useState(0);        
 
     const openFilterPopup = useCallback(() => {
         setFilterPopup(true);
@@ -28,10 +29,37 @@ export default function MobileHome() {
         setHomePageVisible(true);        
     }, []);    
 
-    function search(formData: FormData) {
-        console.log(formData.get('searchKeyword'));
-        console.log(searchRequest);
+    async function search(formData: FormData) {        
+        const query : any = formData.get('searchKeyword');
+        searchRequest.query = query?query:"";
+        const postSearchRequest = transformSearchRequest(searchRequest);
+        console.log(postSearchRequest);
+
+        router.push( `/posts?query=${query}`);
+
+        // const response = await fetch('/api/posts', {
+        //     method: 'POST',
+        //     headers:{'Content-Type': 'application/json'},
+        //     body: JSON.stringify(postSearchRequest)
+        // });
+        // const searchResults = await response.json();
+        // console.log(searchResults);
+               
     }
+
+    function transformSearchRequest(sr: any){
+        const postSearchRequest = {query: sr.query, 
+            minPrice: sr.priceRange?sr.priceRange[0]: undefined, 
+            maxPrice: sr.priceRange?sr.priceRange[1]: undefined,
+            minAcreage: sr.acreageRange?sr.acreageRange[0]: undefined,
+            maxAcreage: sr.acreageRange?sr.acreageRange[1]: undefined,
+            cityCode: sr.city?.code,
+            typeCodes: sr.propertyTypes?.map((e: any) => e.value),
+            wardCodes: sr.districts?.map((e: any) => e.value)
+        };
+        return postSearchRequest;
+    }
+
 
     const setFilterParam = (data: any) => {
         const updatedSearchRequest  = {

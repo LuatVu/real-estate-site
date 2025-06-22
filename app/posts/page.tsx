@@ -1,171 +1,229 @@
 "use client";
-import useScreenSize from "../lib/useScreenSize";
-import Image from "next/image";
 import styles from './index.module.css';
+import useScreenSize from '../lib/useScreenSize';
+import { useState, useCallback, useEffect } from 'react';
+import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
-import MbFooter from "../ui/mobile/footer/mb.footer";
-import DownloadApp from "../ui/mobile/download-app/mb.download";
-import ExtraInfo from "../ui/mobile/extra-info/mb.extra.info";
-import Link from "next/link";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
-
+import Form from 'next/form';
+import Image from 'next/image';
+import Link from 'next/link';
+import MbFooter from '../ui/mobile/footer/mb.footer';
+import { useSearchParams  } from 'next/navigation';
 
 export default function Posts() {
     const screenSize = useScreenSize();
 
     return (
         <div>
-            {screenSize === 'sm' ? (<MobilePosts />) : (<DesktopPosts />)}
+            {screenSize === 'sm' ? (<PostsOnMobile />) : (<PostOnDesktop />)}
         </div>
     );
-
 }
 
-function MobilePosts() {
-    const images = [
-        // {
-        //     url: "/temp/Frame_7.jpg",
-        //     caption: "Image for test"
-        // },
-        {
-            url: "/temp/1.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/2.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/11.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/13.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/25.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/27.jpg",
-            caption: "Image for test"
+function PostsOnMobile() {
+    const searchParams = useSearchParams();
+    const [posts, setPosts] = useState([]);
+    const [filterPopup, setFilterPopup] = useState(false);
+    const [homePageVisible, setHomePageVisible] = useState(true);
+    const [searchRequest, setSearchRequest] = useState({
+        minPrice: undefined, maxPrice: undefined,
+        minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
+        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined,
+        city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
+    });
+    const [filterNum, setFilterNum] = useState(0);    
+
+    const fetchPosts = async () => {
+        try{
+            const body = {query: searchParams.get("query")};
+
+            const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers:{'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+        const searchResults = await response.json();
+        setPosts(searchResults.content);
+        }catch(error){
+
         }
-    ];
+    }
+
+    useEffect(()=> {
+        fetchPosts();
+    }, [searchParams])
+
+    const setFilterParam = (data: any) => {
+        const updatedSearchRequest = {
+            ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
+            minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
+            typeCode: data.typeCode, provinceCode: data.provinceCode,
+            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab,
+            districts: data.districts, propertyTypes: data.propertyTypes, city: data.city,
+            priceRange: data.priceRange, acreageRange: data.acreageRange
+        };
+        setSearchRequest(updatedSearchRequest);
+        const numFilter = countParamNum(updatedSearchRequest);
+        setFilterNum(numFilter);
+    }
+
+    const countParamNum = (searchRequest: any) => {
+        let count: number = 0;
+        for (let key in searchRequest) {
+            if (searchRequest.hasOwnProperty(key) && isReleventKey(key)) {
+                if (searchRequest[key] instanceof Array) {
+                    if (searchRequest[key].length > 0) {
+                        count = count + 1;
+                    }
+                } else if (searchRequest[key] != undefined) {
+                    count = count + 1;
+                }
+            }
+        }
+        return count;
+    }
+
+    const isReleventKey = (key: string) => {
+        let result: boolean = false;
+        switch (key) {
+            case "acreageRange": ;
+            case "districts": ;
+            case "priceRange": ;
+            case "propertyTypes": ;
+            case "tab": result = true; break;
+            default: result = false;
+        }
+        return result;
+    }
+
+    async function search(formData: FormData) {
+        const query: any = formData.get('searchKeyword');
+        searchRequest.query = query ? query : "";
+        const postSearchRequest = transformSearchRequest(searchRequest);
+        console.log(postSearchRequest);
+
+        const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postSearchRequest)
+        });
+        const searchResults = await response.json();
+        console.log(searchResults);
+
+    }
+
+    function transformSearchRequest(sr: any) {
+        const postSearchRequest = {
+            query: sr.query,
+            minPrice: sr.priceRange ? sr.priceRange[0] : undefined,
+            maxPrice: sr.priceRange ? sr.priceRange[1] : undefined,
+            minAcreage: sr.acreageRange ? sr.acreageRange[0] : undefined,
+            maxAcreage: sr.acreageRange ? sr.acreageRange[1] : undefined,
+            cityCode: sr.city?.code,
+            typeCodes: sr.propertyTypes?.map((e: any) => e.value),
+            wardCodes: sr.districts?.map((e: any) => e.value)
+        };
+        return postSearchRequest;
+    }
+
+    const closeFilterPopup = useCallback(() => {
+        setFilterPopup(false);
+        setHomePageVisible(true);
+    }, []);
+
+    const openFilterPopup = useCallback(() => {
+        setFilterPopup(true);
+        setHomePageVisible(false);
+    }, []);
 
     return (
-        <div className="h-full">
-            <div className={styles.rootContainer}>
-                <NavBarMobile displayNav={true} />
-                <div className={styles.postContainer}>
-                    <div className="slide-container">
-                        <Carousel infiniteLoop dynamicHeight={true}>
-                            {images.map((img, index) => (
-                                <img alt="" src={img.url} />
+        <div className='h-full'>
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
+            {homePageVisible && (
+                <div className={styles.homePage}>
+                    <NavBarMobile displayNav={false} />
+                    <Form action={search} className={styles.searchingsession}>
+                        <div className={styles.searchFieldsParent}>
+                            <div className={styles.searchFields}>
+                                <div className={styles.frameParent}>
+                                    <div className={styles.placeHolderWrapper}>
+                                        <input name="searchKeyword" className={styles.inputText} placeholder="Nhập thông tin bất kỳ ..." />
+                                    </div>
+                                    <button type="submit" className={styles.button8}>
+                                        <Image className={styles.searchIcon} width={24} height={24} alt="" src="/icons/search.svg" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className={styles.filterGroup}>
+                                <button className={styles.button9} onClick={openFilterPopup}>
+                                    <Image className={styles.funnelIcon} width={24} height={24} alt="" src="/icons/Funnel.svg" />
+                                    <div className={styles.filter}>Lọc</div>
+                                    <div>
+                                        {filterNum == 0 ? (<p className={styles.filterNumZero + " " + styles.wrapper}>{filterNum}</p>) : (<p className={styles.filterNum + " " + styles.wrapper}>{filterNum}</p>)}
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </Form>
+                    <div className={styles.firstMainContent}>
+                        <div className={styles.postParent}>
+                            {posts.map((element: any) => (
+                                <Link href={element.postId} className={styles.post} key={element.postId}>
+                                    <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/13.jpg" />
+                                    <div className={styles.bnNh2TngWrapper}>
+                                        <div className={styles.filter}>{element.title}</div>
+                                    </div>
+                                    <div className={styles.t130m2Wrapper}>
+                                        <div className={styles.filter}>{element.price} vnd - {element.acreage} m2</div>
+                                    </div>
+                                    <div className={styles.vectorParent}>
+                                        <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />
+                                        <div className={styles.filter}>{element.address}</div>
+                                    </div>
+                                </Link>
                             ))}
-                        </Carousel>
-                    </div>
-                    <div className={styles.headingBlock}>
-                        <h1 className="heading-h9">Nhà mới đẹp ở ngay, HTX vào nhà Nguyễn Văn Nghị P7 Gò Vấp, 3PN 7.7 tỷ</h1>
-                        <p className={styles.subHeading + " body-sm"}>Đường nguyễn văn nghi, phường 7, quận Gò Vấp, Hồ Chí Minh</p>
-                    </div>
-                    <div className={styles.briefProperty}>
-                        <div>
-                            <p className={styles.subHeading + " body-sm"}>Mức giá</p>
-                            <p className="body-sm">4.56 tỷ</p>
-                        </div>
-                        <div>
-                            <p className={styles.subHeading + " body-sm"}>Diện tích</p>
-                            <p className="body-sm">57m2</p>
-                        </div>
-                        <div>
-                            <p className={styles.subHeading + " body-sm"}>Phòng ngủ</p>
-                            <p className="body-sm">4 PN</p>
                         </div>
                     </div>
-                    <div className={styles.descrip}>
-                        <div className="heading-h9">
-                            <p>Thông tin mô tả</p>
-                        </div>
-                        <div className="body-sm">
-                            <p>Giảm gấp 400 triệu  nhà Nguyễn Văn Nghi 4 tầng - 57m2 bán để đi định cư Mỹ cùng gia đình.</p>
-                            <p>Vị trí: Đường Nguyễn Văn Nghi, phường 7, Quận Gò Vấp.</p>
-                            <p>Diện tích: 56m2</p>
-                            <p>Gồm 4 phòng ngủ và 4 nhà vệ sinh, gara oto, phòng bếp, ban công.</p>
-                            <p>Đang có hợp đồng cho thuê 19 triệu/ thang.
-                                Sổ hồng riêng chính chủ, bao công chứng, thẩm định vay được 70%.
-                                Cam kết: Thông tin chính xác khách quan - trung thực.</p>
-                        </div>
-                    </div>
-                    <div className={styles.descrip}>
-                        <div className="heading-h9">
-                            <p>Đặc điểm bất động sản</p>
-                        </div>
-                        <div className={styles.featureProperty}>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Mức giá</p>
-                                </div>
-                                <div className={styles.featureValue}><p>4,3 tỷ</p></div>
-                            </div>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Diện tích</p>
-                                </div>
-                                <div className={styles.featureValue}><p>200 m2</p></div>
-                            </div> 
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Số phòng ngủ</p>
-                                </div>
-                                <div className={styles.featureValue}><p>4 phòng</p></div>
-                            </div>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Số phòng tắm, vệ sinh</p>
-                                </div>
-                                <div className={styles.featureValue}><p>4 phòng</p></div>
-                            </div>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Số tầng</p>
-                                </div>
-                                <div className={styles.featureValue}><p>4 tầng</p></div>
-                            </div>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Pháp lý</p>
-                                </div>
-                                <div className={styles.featureValue}><p>Sổ đỏ, sổ hồng</p></div>
-                            </div>
-                            <div className={styles.featureItem}>
-                                <div className={styles.featureTitle}>
-                                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
-                                    <p>Nội thất</p>
-                                </div>
-                                <div className={styles.featureValue}><p>Đầy đủ</p></div>
-                            </div>
+                    <div className={styles.homePageInner}>
+                        <div className={styles.instanceParent}>
+                            <Link href="to-be/continue" className={styles.nativateTextParent}>
+                                <div className={styles.filter}>Chủ đề nổi bật</div>
+                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
+                            </Link>
+                            <Link href="to-be/continue" className={styles.nativateTextGroup}>
+                                <div className={styles.filter}>Bất động sản bán</div>
+                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
+                            </Link>
+                            <Link href="to-be/continue" className={styles.nativateTextContainer}>
+                                <div className={styles.filter}>Bất động sản cho thuê</div>
+                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
+                            </Link>
+                            <Link href="to-be/continue" className={styles.nativateTextParent1}>
+                                <div className={styles.filter}>Dự án nổi bật</div>
+                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
+                            </Link>
+                            <Link href="to-be/continue" className={styles.nativateTextParent2}>
+                                <div className={styles.filter}>Chủ đầu tư nổi bật</div>
+                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
+                            </Link>
                         </div>
                     </div>
+                    <div className={styles.downloadApp}>
+                        <div className={styles.tiNgDngWrapper}>
+                            <div className={styles.filter}>{`Tải ứng dụng `}</div>
+                        </div>
+                        <div className={styles.appleStoreParent}>
+                            <Image className={styles.appleStoreIcon} width={108} height={32} alt="" src="/icons/apple_store.svg" />
+                            <Image className={styles.googlePlay2} width={108} height={32} alt="" src="/icons/google_play.svg" />
+                        </div>
+                    </div>
+                    <MbFooter />
                 </div>
-                <ExtraInfo />
-                <DownloadApp />
-                <MbFooter />
-
-            </div>
+            )}
         </div>
     );
 }
 
-function DesktopPosts() {
-    return (
-        <div></div>
-    );
+function PostOnDesktop() {
+    return (<div>Desktop Page</div>);
 }
