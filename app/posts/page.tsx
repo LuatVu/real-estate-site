@@ -14,7 +14,7 @@ export default function Posts() {
     const screenSize = useScreenSize();
 
     return (
-        <div>
+        <div className="h-full">
             {screenSize === 'sm' ? (<PostsOnMobile />) : (<PostOnDesktop />)}
         </div>
     );
