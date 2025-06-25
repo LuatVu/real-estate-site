@@ -6,8 +6,6 @@
 	height: 100%;
 }
 
-
-
 .arrowarcleftIcon {
 	width: 24px;
 	position: absolute;
@@ -186,72 +184,6 @@
 	color: #090a0c;
 }
 
-.placeHolder {
-	flex: 1;
-	position: relative;
-}
-
-.placeHolderWrapper {
-	flex: 1;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-}
-
-.searchIcon {
-	width: 24px;
-	position: relative;
-	max-height: 100%;
-	overflow: hidden;
-	flex-shrink: 0;	
-}
-
-.button8 {
-	width: 40px;
-	border-radius: 5px;
-	background-color: #0065ff;
-	height: 30px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 6px;
-	box-sizing: border-box;
-}
-
-.frameParent {
-	align-self: stretch;
-	border-radius: 5px;
-	background-color: #fff;
-	border: 1px solid #38393c;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	padding: 2px 3px 2px 4px;
-	gap: 0px;
-}
-
-.searchFields {
-	align-self: stretch;
-	height: 36px;
-	overflow: hidden;
-	flex-shrink: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-}
-
-.funnelIcon {
-	width: 24px;
-	/* height: 24px; */
-	position: relative;
-	max-height: 100%;
-	overflow: hidden;
-	flex-shrink: 0;
-}
 
 .filter {
 	flex: 1;
@@ -647,114 +579,6 @@ input.inputText:focus {
 	font-size: 11px;
 }
 
-.nativateTextParent {
-	width: 100%;
-	margin: 0 !important;
-	position: absolute;
-	top: 0px;
-	right: 0%;
-	left: 0%;
-	border-bottom: 0.5px solid #e7e7e8;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0px;
-	z-index: 0;
-}
-
-.nativateTextGroup {
-	width: 100%;
-	margin: 0 !important;
-	position: absolute;
-	top: 24px;
-	right: 0%;
-	left: 0%;
-	border-bottom: 0.5px solid #e7e7e8;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0px;
-	z-index: 1;
-}
-
-.nativateTextContainer {
-	width: 100%;
-	margin: 0 !important;
-	position: absolute;
-	top: 48px;
-	right: 0%;
-	left: 0%;
-	border-bottom: 0.5px solid #e7e7e8;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0px;
-	z-index: 2;
-}
-
-.nativateTextParent1 {
-	width: 100%;
-	margin: 0 !important;
-	position: absolute;
-	top: 72px;
-	right: 0%;
-	left: 0%;
-	border-bottom: 0.5px solid #e7e7e8;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0px;
-	z-index: 3;
-}
-
-.nativateTextParent2 {
-	width: 100%;
-	margin: 0 !important;
-	position: absolute;
-	top: 96px;
-	right: 0%;
-	left: 0%;
-	border-bottom: 0.5px solid #e7e7e8;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0px;
-	z-index: 4;
-}
-
-.instanceParent {
-	position: absolute;
-	width: 94.4%;
-	top: 15px;
-	right: 2.8%;
-	left: 2.8%;
-	height: 109px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	gap: 11px;
-}
-
-.homePageInner {
-	position: relative;
-	width: 100%;
-	border-bottom: 0.5px solid #f7f9fc;
-	box-sizing: border-box;
-	height: 147px;
-	overflow: hidden;
-	font-size: 11px;
-}
 
 .tiNgDngWrapper {
 	position: absolute;

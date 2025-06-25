@@ -1,23 +1,21 @@
 .downloadApp {
 	position: relative;
 	width: 100%;	
-	background-color: #fff;
-	height: 80px;
+	background-color: #fff;	
 	overflow: hidden;
 	font-size: 16px;
+	padding: 10px 13px;
+	display: flex;
+	flex-direction: column;
 }
 
 .tiNgDngWrapper {
-	position: absolute;
-	width: 96.18%;
-	top: 1px;
-	right: 0%;
-	left: 3.82%;
+	position: relative;	
+	width: 100%;	
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: flex-start;
-	padding: 10px 10px 10px 0px;
+	justify-content: flex-start;	
 	box-sizing: border-box;
 }
 
@@ -27,11 +25,7 @@
 }
 
 .appleStoreParent {
-	position: absolute;
-	width: 71.25%;
-	top: 40px;
-	right: 25.19%;
-	left: 3.56%;
+	position: relative;	
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;

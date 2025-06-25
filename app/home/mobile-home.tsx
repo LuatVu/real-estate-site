@@ -8,6 +8,8 @@ import Link from "next/link";
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import { useRouter } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
+import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
+import DownloadApp from '../ui/mobile/download-app/mb.download';
 
 export default function MobileHome() {
     const router = useRouter()
@@ -307,40 +309,10 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                         </div>
-                    </div>
-                    <div className={styles.homePageInner}>
-                        <div className={styles.instanceParent}>
-                            <Link href="to-be/continue" className={styles.nativateTextParent}>
-                                <div className={styles.filter}>Chủ đề nổi bật</div>
-                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
-                            </Link>
-                            <Link href="to-be/continue" className={styles.nativateTextGroup}>
-                                <div className={styles.filter}>Bất động sản bán</div>
-                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
-                            </Link>
-                            <Link href="to-be/continue" className={styles.nativateTextContainer}>
-                                <div className={styles.filter}>Bất động sản cho thuê</div>
-                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
-                            </Link>
-                            <Link href="to-be/continue" className={styles.nativateTextParent1}>
-                                <div className={styles.filter}>Dự án nổi bật</div>
-                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
-                            </Link>
-                            <Link href="to-be/continue" className={styles.nativateTextParent2}>
-                                <div className={styles.filter}>Chủ đầu tư nổi bật</div>
-                                <Image className={styles.searchIcon} width={12} height={12} alt="" src="/icons/CaretRight.svg" />
-                            </Link>
-                        </div>
-                    </div>
-                    <div className={styles.downloadApp}>
-                        <div className={styles.tiNgDngWrapper}>
-                            <div className={styles.filter}>{`Tải ứng dụng `}</div>
-                        </div>
-                        <div className={styles.appleStoreParent}>
-                            <Image className={styles.appleStoreIcon} width={108} height={32} alt="" src="/icons/apple_store.svg" />
-                            <Image className={styles.googlePlay2} width={108} height={32} alt="" src="/icons/google_play.svg" />
-                        </div>
-                    </div>
+                    </div>                    
+
+                    <ExtraInfo/>
+                    <DownloadApp/>
                     <MbFooter />                    
                 </div>
             )}
