@@ -6,9 +6,10 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import DownloadApp from "../ui/mobile/download-app/mb.download";
 import ExtraInfo from "../ui/mobile/extra-info/mb.extra.info";
-import Link from "next/link";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
 export default function Posts() {
@@ -23,11 +24,29 @@ export default function Posts() {
 }
 
 function MobilePosts() {
-    const images = [
-        // {
-        //     url: "/temp/Frame_7.jpg",
-        //     caption: "Image for test"
-        // },
+    const searchParams = useSearchParams();
+    const [post, setPost] = useState<any>(undefined);
+    
+
+    const fetchPost = async() =>{
+        try{
+            const postId = searchParams.get("postId");            
+            const response = await fetch(`api/posts?postId=${postId}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            });
+            const searchResult = await response.json();
+            setPost(searchResult.response);
+        }catch (error){
+
+        }
+    }
+
+    useEffect(()=>{
+        fetchPost();
+    }, [searchParams]);
+
+    const images = [        
         {
             url: "/temp/1.jpg",
             caption: "Image for test"
@@ -67,21 +86,21 @@ function MobilePosts() {
                         </Carousel>
                     </div>
                     <div className={styles.headingBlock}>
-                        <h1 className="heading-h9">Nhà mới đẹp ở ngay, HTX vào nhà Nguyễn Văn Nghị P7 Gò Vấp, 3PN 7.7 tỷ</h1>
-                        <p className={styles.subHeading + " body-sm"}>Đường nguyễn văn nghi, phường 7, quận Gò Vấp, Hồ Chí Minh</p>
+                        <h1 className="heading-h9">{post?.title}</h1>
+                        <p className={styles.subHeading + " body-sm"}>{post?.address}</p>
                     </div>
                     <div className={styles.briefProperty}>
                         <div>
                             <p className={styles.subHeading + " body-sm"}>Mức giá</p>
-                            <p className="body-sm">4.56 tỷ</p>
+                            <p className="body-sm">{post?.price}</p>
                         </div>
                         <div>
                             <p className={styles.subHeading + " body-sm"}>Diện tích</p>
-                            <p className="body-sm">57m2</p>
+                            <p className="body-sm">{post?.acreage}</p>
                         </div>
                         <div>
                             <p className={styles.subHeading + " body-sm"}>Phòng ngủ</p>
-                            <p className="body-sm">4 PN</p>
+                            <p className="body-sm">{post?.bedrooms}</p>
                         </div>
                     </div>
                     <div className={styles.descrip}>
@@ -89,13 +108,7 @@ function MobilePosts() {
                             <p>Thông tin mô tả</p>
                         </div>
                         <div className="body-sm">
-                            <p>Giảm gấp 400 triệu  nhà Nguyễn Văn Nghi 4 tầng - 57m2 bán để đi định cư Mỹ cùng gia đình.</p>
-                            <p>Vị trí: Đường Nguyễn Văn Nghi, phường 7, Quận Gò Vấp.</p>
-                            <p>Diện tích: 56m2</p>
-                            <p>Gồm 4 phòng ngủ và 4 nhà vệ sinh, gara oto, phòng bếp, ban công.</p>
-                            <p>Đang có hợp đồng cho thuê 19 triệu/ thang.
-                                Sổ hồng riêng chính chủ, bao công chứng, thẩm định vay được 70%.
-                                Cam kết: Thông tin chính xác khách quan - trung thực.</p>
+                            {post?.description}
                         </div>
                     </div>
                     <div className={styles.descrip}>
@@ -108,49 +121,49 @@ function MobilePosts() {
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Mức giá</p>
                                 </div>
-                                <div className={styles.featureValue}><p>4,3 tỷ</p></div>
+                                <div className={styles.featureValue}><p>{post?.price}</p></div>
                             </div>
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Diện tích</p>
                                 </div>
-                                <div className={styles.featureValue}><p>200 m2</p></div>
+                                <div className={styles.featureValue}><p>{post?.acreage}</p></div>
                             </div> 
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Số phòng ngủ</p>
                                 </div>
-                                <div className={styles.featureValue}><p>4 phòng</p></div>
+                                <div className={styles.featureValue}><p>{post?.bedrooms}</p></div>
                             </div>
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Số phòng tắm, vệ sinh</p>
                                 </div>
-                                <div className={styles.featureValue}><p>4 phòng</p></div>
+                                <div className={styles.featureValue}><p>{post?.bathrooms}</p></div>
                             </div>
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Số tầng</p>
                                 </div>
-                                <div className={styles.featureValue}><p>4 tầng</p></div>
+                                <div className={styles.featureValue}><p>{post?.floors}</p></div>
                             </div>
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Pháp lý</p>
                                 </div>
-                                <div className={styles.featureValue}><p>Sổ đỏ, sổ hồng</p></div>
+                                <div className={styles.featureValue}><p>{post?.legal}</p></div>
                             </div>
                             <div className={styles.featureItem}>
                                 <div className={styles.featureTitle}>
                                     <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt=""></Image>
                                     <p>Nội thất</p>
                                 </div>
-                                <div className={styles.featureValue}><p>Đầy đủ</p></div>
+                                <div className={styles.featureValue}><p>{post?.furniture}</p></div>
                             </div>
                         </div>
                     </div>

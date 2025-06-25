@@ -36,17 +36,7 @@ export default function MobileHome() {
         searchRequest.query = query?query:"";
         const postSearchRequest = transformSearchRequest(searchRequest);
         console.log(postSearchRequest);
-
-        router.push( `/posts?query=${query}`);
-
-        // const response = await fetch('/api/posts', {
-        //     method: 'POST',
-        //     headers:{'Content-Type': 'application/json'},
-        //     body: JSON.stringify(postSearchRequest)
-        // });
-        // const searchResults = await response.json();
-        // console.log(searchResults);
-               
+        router.push( `/posts?query=${query}`);         
     }
 
     function transformSearchRequest(sr: any){

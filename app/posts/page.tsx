@@ -7,7 +7,7 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Image from 'next/image';
 import Link from 'next/link';
 import MbFooter from '../ui/mobile/footer/mb.footer';
-import { useSearchParams  } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
 import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
 import DownloadApp from '../ui/mobile/download-app/mb.download';
@@ -33,25 +33,25 @@ function PostsOnMobile() {
         districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined,
         city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
     });
-    const [filterNum, setFilterNum] = useState(0);    
+    const [filterNum, setFilterNum] = useState(0);
 
     const fetchPosts = async () => {
-        try{
-            const body = {query: searchParams.get("query")};
+        try {
+            const body = { query: searchParams.get("query") };
 
             const response = await fetch('/api/posts', {
-            method: 'POST',
-            headers:{'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-        const searchResults = await response.json();
-        setPosts(searchResults.content);
-        }catch(error){
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const searchResults = await response.json();
+            setPosts(searchResults.content);
+        } catch (error) {
 
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchPosts();
     }, [searchParams])
 
@@ -144,11 +144,11 @@ function PostsOnMobile() {
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
-                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum}/>
+                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum} />
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
                             {posts.map((element: any) => (
-                                <Link href={element.postId} className={styles.post} key={element.postId}>
+                                <Link href={"/post?postId=" + element.postId} className={styles.post} key={element.postId}>
                                     <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/13.jpg" />
                                     <div className={styles.bnNh2TngWrapper}>
                                         <div className={styles.filter}>{element.title}</div>
@@ -163,9 +163,9 @@ function PostsOnMobile() {
                                 </Link>
                             ))}
                         </div>
-                    </div>                    
-                    <ExtraInfo/>                    
-                    <DownloadApp/>
+                    </div>
+                    <ExtraInfo />
+                    <DownloadApp />
                     <MbFooter />
                 </div>
             )}
