@@ -7,9 +7,14 @@ import MbFooter from "../ui/mobile/footer/mb.footer";
 import DownloadApp from "../ui/mobile/download-app/mb.download";
 import ExtraInfo from "../ui/mobile/extra-info/mb.extra.info";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
 
 
 export default function Posts() {
@@ -79,11 +84,15 @@ function MobilePosts() {
                 <NavBarMobile displayNav={true} />
                 <div className={styles.postContainer}>
                     <div className="slide-container">
-                        <Carousel infiniteLoop dynamicHeight={true}>
-                            {images.map((img, index) => (
-                                <img alt="" src={img.url} />
+                        <Swiper loop={true} navigation pagination={{type: 'bullets', clickable: true}} modules={[Navigation, Pagination]} onSwiper={swiper => console.log(swiper)} className='h-100 w-full rounded-lg'>
+                            {images.map((img, index) =>(
+                                <SwiperSlide key={index}>
+                                    <div className='flex h-full w-full items-center justify-center'>
+                                        <Image src={img.url} width={1000} height={1000} alt="" className='block h-full w-full object-cover'/>
+                                    </div>
+                                </SwiperSlide>
                             ))}
-                        </Carousel>
+                        </Swiper>
                     </div>
                     <div className={styles.headingBlock}>
                         <h1 className="heading-h9">{post?.title}</h1>
