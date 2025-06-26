@@ -6,26 +6,21 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import DownloadApp from "../ui/mobile/download-app/mb.download";
 import ExtraInfo from "../ui/mobile/extra-info/mb.extra.info";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-
-
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 export default function Posts() {
     const screenSize = useScreenSize();
-
     return (
         <div>
             {screenSize === 'sm' ? (<MobilePosts />) : (<DesktopPosts />)}
         </div>
     );
-
 }
 
 function MobilePosts() {
