@@ -80,10 +80,10 @@ function MobilePosts() {
                 <div className={styles.postContainer}>
                     <div className="slide-container">
                         <Swiper loop={true} navigation pagination={{type: 'bullets', clickable: true}} modules={[Navigation, Pagination]} onSwiper={swiper => console.log(swiper)} className='h-100 w-full rounded-lg'>
-                            {images.map((img, index) =>(
+                            {post?.images?.map((img: any, index: any) =>(
                                 <SwiperSlide key={index}>
                                     <div className='flex h-full w-full items-center justify-center'>
-                                        <Image src={img.url} width={1000} height={1000} alt="" className='block h-full w-full object-cover'/>
+                                        <Image src={img.fileName} width={800} height={500} alt="" className='block h-full w-full object-cover'/>
                                     </div>
                                 </SwiperSlide>
                             ))}
