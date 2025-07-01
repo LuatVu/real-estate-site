@@ -83,7 +83,7 @@ function MobilePosts() {
                             {post?.images?.map((img: any, index: any) =>(
                                 <SwiperSlide key={index}>
                                     <div className='flex h-full w-full items-center justify-center'>
-                                        <Image src={img.fileName} width={800} height={500} alt="" className='block h-full w-full object-cover'/>
+                                        <Image src={"http://localhost:8080/api/images/" + img.fileName} width={800} height={500} alt="" className='block h-full w-full object-cover' loading={index < 1? "eager": "lazy"}/>
                                     </div>
                                 </SwiperSlide>
                             ))}
