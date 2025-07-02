@@ -147,9 +147,9 @@ function PostsOnMobile() {
                     <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum} />
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
-                            {posts.map((element: any) => (
-                                <Link href={"/post?postId=" + element.postId} className={styles.post} key={element.postId}>
-                                    <Image className={styles.postChild} width={174} height={178} alt="" src="/temp/13.jpg" />
+                            {posts.map((element: any, index: any) => (
+                                <Link href={"/post?postId=" + element.postId} className={styles.post} key={index}>
+                                    <Image className={styles.postChild} width={174} height={178} alt="" src={"http://localhost:8080/api/images/" + element.imageName} loading={index < 3? "eager": "lazy"}/>
                                     <div className={styles.bnNh2TngWrapper}>
                                         <div className={styles.filter}>{element.title}</div>
                                     </div>

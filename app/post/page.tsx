@@ -44,34 +44,7 @@ function MobilePosts() {
 
     useEffect(()=>{
         fetchPost();
-    }, [searchParams]);
-
-    const images = [        
-        {
-            url: "/temp/1.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/2.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/11.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/13.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/25.jpg",
-            caption: "Image for test"
-        },
-        {
-            url: "/temp/27.jpg",
-            caption: "Image for test"
-        }
-    ];
+    }, [searchParams]);    
 
     return (
         <div className="h-full">
