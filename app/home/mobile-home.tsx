@@ -10,16 +10,19 @@ import { useRouter } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
 import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
 import DownloadApp from '../ui/mobile/download-app/mb.download';
+import { transformSearchRequest } from '../utils/transform.param';
 
 export default function MobileHome() {
     const router = useRouter()
-    const [homePageVisible, setHomePageVisible] = useState(true);        
+    const [homePageVisible, setHomePageVisible] = useState(true);
     const [filterPopup, setFilterPopup] = useState(false);
-    const [searchRequest, setSearchRequest] = useState({minPrice: undefined, maxPrice: undefined, 
+    const [searchRequest, setSearchRequest] = useState({
+        minPrice: undefined, maxPrice: undefined,
         minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
-        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined, 
-        city: undefined, priceRange: undefined, acreageRange: undefined, query: ""});  
-    const [filterNum, setFilterNum]  = useState(0);        
+        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined,
+        city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
+    });
+    const [filterNum, setFilterNum] = useState(0);
 
     const openFilterPopup = useCallback(() => {
         setFilterPopup(true);
@@ -28,37 +31,23 @@ export default function MobileHome() {
 
     const closeFilterPopup = useCallback(() => {
         setFilterPopup(false);
-        setHomePageVisible(true);        
-    }, []);    
+        setHomePageVisible(true);
+    }, []);
 
-    async function search(formData: FormData) {        
-        const query : any = formData.get('searchKeyword');
-        searchRequest.query = query?query:"";
+    async function search(formData: FormData) {
+        const query: any = formData.get('searchKeyword');
+        searchRequest.query = query ? query : "";
         const postSearchRequest = transformSearchRequest(searchRequest);
-        console.log(postSearchRequest);
-        router.push( `/posts?query=${query}`);         
-    }
-
-    function transformSearchRequest(sr: any){
-        const postSearchRequest = {query: sr.query, 
-            minPrice: sr.priceRange?sr.priceRange[0]: undefined, 
-            maxPrice: sr.priceRange?sr.priceRange[1]: undefined,
-            minAcreage: sr.acreageRange?sr.acreageRange[0]: undefined,
-            maxAcreage: sr.acreageRange?sr.acreageRange[1]: undefined,
-            cityCode: sr.city?.code,
-            typeCodes: sr.propertyTypes?.map((e: any) => e.value),
-            wardCodes: sr.districts?.map((e: any) => e.value)
-        };
-        return postSearchRequest;
-    }
+        router.push(`/posts?${postSearchRequest}&page=0`);
+    }    
 
 
     const setFilterParam = (data: any) => {
-        const updatedSearchRequest  = {
+        const updatedSearchRequest = {
             ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
             minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
             typeCode: data.typeCode, provinceCode: data.provinceCode,
-            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab, 
+            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab,
             districts: data.districts, propertyTypes: data.propertyTypes, city: data.city,
             priceRange: data.priceRange, acreageRange: data.acreageRange
         };
@@ -67,15 +56,15 @@ export default function MobileHome() {
         setFilterNum(numFilter);
     }
 
-    const countParamNum = (searchRequest: any) =>{
+    const countParamNum = (searchRequest: any) => {
         let count: number = 0;
-        for(let key in searchRequest){
-            if(searchRequest.hasOwnProperty(key) && isReleventKey(key)){
-                if(searchRequest[key] instanceof Array){
-                    if(searchRequest[key].length > 0){
+        for (let key in searchRequest) {
+            if (searchRequest.hasOwnProperty(key) && isReleventKey(key)) {
+                if (searchRequest[key] instanceof Array) {
+                    if (searchRequest[key].length > 0) {
                         count = count + 1;
                     }
-                }else if(searchRequest[key] != undefined){
+                } else if (searchRequest[key] != undefined) {
                     count = count + 1;
                 }
             }
@@ -83,26 +72,26 @@ export default function MobileHome() {
         return count;
     }
 
-    const isReleventKey = (key: string) =>{
+    const isReleventKey = (key: string) => {
         let result: boolean = false;
-        switch(key){
-            case "acreageRange":  ;            
-            case "districts":;
-            case "priceRange":;
-            case "propertyTypes":;
-            case "tab": result = true;break;
+        switch (key) {
+            case "acreageRange": ;
+            case "districts": ;
+            case "priceRange": ;
+            case "propertyTypes": ;
+            case "tab": result = true; break;
             default: result = false;
         }
         return result;
     }
 
     return (
-        <div className='h-full'>            
-            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}            
+        <div className='h-full'>
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
             {homePageVisible && (
                 <div className={styles.homePage}>
-                    <NavBarMobile displayNav={false} />                    
-                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum}/>
+                    <NavBarMobile displayNav={false} />
+                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum} />
 
                     <div >
                         <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/icons/Header_Image.png" />
@@ -299,11 +288,11 @@ export default function MobileHome() {
                                 </div>
                             </Link>
                         </div>
-                    </div>                    
+                    </div>
 
-                    <ExtraInfo/>
-                    <DownloadApp/>
-                    <MbFooter />                    
+                    <ExtraInfo />
+                    <DownloadApp />
+                    <MbFooter />
                 </div>
             )}
         </div>

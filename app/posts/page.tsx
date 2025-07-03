@@ -11,10 +11,16 @@ import { useSearchParams } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
 import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
 import DownloadApp from '../ui/mobile/download-app/mb.download';
+import { Suspense } from 'react';
+import Pagination from '../ui/mobile/pagination/pagination';
+import { calculatePagination } from '../utils/pagination';
+import { usePagination } from '../hook/usePagination';
+import { PaginationData } from '../types/pagination';
+import { transformSearchRequest } from '../utils/transform.param';
+import { useRouter } from 'next/navigation';
 
 export default function Posts() {
     const screenSize = useScreenSize();
-
     return (
         <div className="h-full">
             {screenSize === 'sm' ? (<PostsOnMobile />) : (<PostOnDesktop />)}
@@ -23,6 +29,7 @@ export default function Posts() {
 }
 
 function PostsOnMobile() {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const [posts, setPosts] = useState([]);
     const [filterPopup, setFilterPopup] = useState(false);
@@ -33,19 +40,24 @@ function PostsOnMobile() {
         districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined,
         city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
     });
-    const [filterNum, setFilterNum] = useState(0);
+    const [filterNum, setFilterNum] = useState(0);    
+    const [pagination, setPagination] = useState<PaginationData>();
+    const {currentPage} = usePagination();
+    
 
     const fetchPosts = async () => {
         try {
             const body = { query: searchParams.get("query") };
-
-            const response = await fetch('/api/posts', {
+            const page = searchParams.get("page");
+            const response = await fetch(`/api/posts?page=${page}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
             const searchResults = await response.json();
-            setPosts(searchResults.content);
+            setPosts(searchResults.content);            
+            const pagi = calculatePagination(searchResults.totalElements, 10, currentPage);
+            setPagination(pagi);
         } catch (error) {
 
         }
@@ -101,32 +113,9 @@ function PostsOnMobile() {
     async function search(formData: FormData) {
         const query: any = formData.get('searchKeyword');
         searchRequest.query = query ? query : "";
-        const postSearchRequest = transformSearchRequest(searchRequest);
-        console.log(postSearchRequest);
-
-        const response = await fetch('/api/posts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(postSearchRequest)
-        });
-        const searchResults = await response.json();
-        console.log(searchResults);
-
-    }
-
-    function transformSearchRequest(sr: any) {
-        const postSearchRequest = {
-            query: sr.query,
-            minPrice: sr.priceRange ? sr.priceRange[0] : undefined,
-            maxPrice: sr.priceRange ? sr.priceRange[1] : undefined,
-            minAcreage: sr.acreageRange ? sr.acreageRange[0] : undefined,
-            maxAcreage: sr.acreageRange ? sr.acreageRange[1] : undefined,
-            cityCode: sr.city?.code,
-            typeCodes: sr.propertyTypes?.map((e: any) => e.value),
-            wardCodes: sr.districts?.map((e: any) => e.value)
-        };
-        return postSearchRequest;
-    }
+        const postSearchRequest = transformSearchRequest(searchRequest); 
+        router.push(`/posts?${postSearchRequest}&page=0`);
+    }    
 
     const closeFilterPopup = useCallback(() => {
         setFilterPopup(false);
@@ -164,6 +153,9 @@ function PostsOnMobile() {
                             ))}
                         </div>
                     </div>
+                    <Suspense fallback={<div>Loading pagination...</div>}>
+                            <Pagination currentPage={ pagination?.currentPage || 1} totalPages={pagination?.totalPages || 2} className='mt-8'/>
+                    </Suspense>
                     <ExtraInfo />
                     <DownloadApp />
                     <MbFooter />
