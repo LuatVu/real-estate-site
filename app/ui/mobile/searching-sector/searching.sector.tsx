@@ -1,9 +1,19 @@
 import Image from 'next/image';
 import Form from 'next/form';
 import styles from './index.module.css'
+import { useRouter } from 'next/navigation';
+import { transformSearchRequest } from '@/app/utils/transform.param';
 
 
-export default function SearchingSector({search, openFilterPopup, filterNum}: any) {    
+export default function SearchingSector({searchRequest, openFilterPopup, filterNum}: any) {  
+    const router = useRouter(); 
+    
+    async function search(formData: FormData) {
+        const query: any = formData.get('searchKeyword');
+        searchRequest.query = query ? query : "";
+        const postSearchRequest = transformSearchRequest(searchRequest); 
+        router.push(`/posts?${postSearchRequest}&page=1`);
+    }
 
     return (
         <div className='h-full'>

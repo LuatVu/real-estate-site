@@ -16,8 +16,7 @@ import Pagination from '../ui/mobile/pagination/pagination';
 import { calculatePagination } from '../utils/pagination';
 import { usePagination } from '../hook/usePagination';
 import { PaginationData } from '../types/pagination';
-import { transformSearchRequest } from '../utils/transform.param';
-import { useRouter } from 'next/navigation';
+import { extractSearchRequest } from '../utils/transform.param';
 
 export default function Posts() {
     const screenSize = useScreenSize();
@@ -28,8 +27,7 @@ export default function Posts() {
     );
 }
 
-function PostsOnMobile() {
-    const router = useRouter()
+function PostsOnMobile() {    
     const searchParams = useSearchParams();
     const [posts, setPosts] = useState([]);
     const [filterPopup, setFilterPopup] = useState(false);
@@ -47,8 +45,8 @@ function PostsOnMobile() {
 
     const fetchPosts = async () => {
         try {
-            const body = { query: searchParams.get("query") };
-            const page = searchParams.get("page");
+            const body = extractSearchRequest(searchParams);            
+            const page = searchParams.get("page") || 1;
             const response = await fetch(`/api/posts?page=${page}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -108,13 +106,6 @@ function PostsOnMobile() {
             default: result = false;
         }
         return result;
-    }
-
-    async function search(formData: FormData) {
-        const query: any = formData.get('searchKeyword');
-        searchRequest.query = query ? query : "";
-        const postSearchRequest = transformSearchRequest(searchRequest); 
-        router.push(`/posts?${postSearchRequest}&page=0`);
     }    
 
     const closeFilterPopup = useCallback(() => {
@@ -133,7 +124,7 @@ function PostsOnMobile() {
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
-                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum} />
+                    <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
                             {posts.map((element: any, index: any) => (
@@ -154,7 +145,7 @@ function PostsOnMobile() {
                         </div>
                     </div>
                     <Suspense fallback={<div>Loading pagination...</div>}>
-                            <Pagination currentPage={ pagination?.currentPage || 1} totalPages={pagination?.totalPages || 2} className='mt-8'/>
+                            <Pagination currentPage={ pagination?.currentPage || 0} totalPages={pagination?.totalPages || 0} className='mt-8'/>
                     </Suspense>
                     <ExtraInfo />
                     <DownloadApp />

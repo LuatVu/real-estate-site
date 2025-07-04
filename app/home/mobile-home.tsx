@@ -6,14 +6,11 @@ import MbFooter from "../ui/mobile/footer/mb.footer";
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
-import { useRouter } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
 import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
 import DownloadApp from '../ui/mobile/download-app/mb.download';
-import { transformSearchRequest } from '../utils/transform.param';
 
-export default function MobileHome() {
-    const router = useRouter()
+export default function MobileHome() {    
     const [homePageVisible, setHomePageVisible] = useState(true);
     const [filterPopup, setFilterPopup] = useState(false);
     const [searchRequest, setSearchRequest] = useState({
@@ -33,15 +30,7 @@ export default function MobileHome() {
         setFilterPopup(false);
         setHomePageVisible(true);
     }, []);
-
-    async function search(formData: FormData) {
-        const query: any = formData.get('searchKeyword');
-        searchRequest.query = query ? query : "";
-        const postSearchRequest = transformSearchRequest(searchRequest);
-        router.push(`/posts?${postSearchRequest}&page=0`);
-    }    
-
-
+    
     const setFilterParam = (data: any) => {
         const updatedSearchRequest = {
             ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
@@ -91,7 +80,7 @@ export default function MobileHome() {
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} />
-                    <SearchingSector search={search} openFilterPopup={openFilterPopup} filterNum={filterNum} />
+                    <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
 
                     <div >
                         <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/icons/Header_Image.png" />
