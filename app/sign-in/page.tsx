@@ -5,6 +5,7 @@ import styles from './index.module.css';
 import MbFooter from "../ui/mobile/footer/mb.footer";
 import Link from 'next/link';
 import Form from 'next/form';
+import { useState } from "react";
 
 export default function SignIn() {
     const screenSize = useScreenSize();
@@ -16,6 +17,16 @@ export default function SignIn() {
 }
 
 function MobileSignIn() {
+    const [inputText, setInputText] = useState({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
+
+    const changeInputType = () => {
+        if (inputText.type == 'password') {
+            setInputText({ type: "text", imagePath: "/icons/EyeOpen.svg"});
+        } else {
+            setInputText({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
+        }
+    }
+
     return (
         <div className="h-full">
             <div className={styles.container}>
@@ -37,9 +48,9 @@ function MobileSignIn() {
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                <input className={styles.inputText} placeholder="Mật khẩu" type="password" />
+                                <input className={styles.inputText} placeholder="Mật khẩu" type={inputText.type} />
                             </div>
-                            <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/eyeIcon.svg" />
+                            <Image className={styles.userIcon} width={24} height={24} alt="" src={inputText.imagePath} onClick={changeInputType} />
                         </div>
                     </div>
                     <div>
@@ -52,14 +63,14 @@ function MobileSignIn() {
                     <div className={styles.dividerText}>Hoặc</div>
                     <div className={styles.dividerWithTextItem} />
                 </div>
-                <div className={styles.socialLoginContainer}>                    
-                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" onClick={() => "/sign-in/google"}/>Tiếp tục với Google</button>
-                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" onClick={() => "/sign-in/google"}/>Tiếp tục với Facebook</button>    
+                <div className={styles.socialLoginContainer}>
+                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" onClick={() => "/sign-in/google"} />Tiếp tục với Google</button>
+                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" onClick={() => "/sign-in/google"} />Tiếp tục với Facebook</button>
                     <div className={styles.signUpPromptParent}>
                         <div className={styles.signUpPrompt}>Bạn chưa là thành viên?</div>
                         <Link href="/sign-up" className={styles.ngK}>Đăng Ký</Link>
                     </div>
-                </div>                
+                </div>
             </div>
             <MbFooter />
         </div>
