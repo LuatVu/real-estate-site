@@ -3,8 +3,6 @@ import useScreenSize from "../lib/useScreenSize";
 import Image from "next/image";
 import styles from './index.module.css';
 import MbFooter from "../ui/mobile/footer/mb.footer";
-import Button from "../ui/common/button/button";
-import btnstyle from '../ui/common/button/btn.module.css';
 import Link from 'next/link';
 import Form from 'next/form';
 
@@ -47,23 +45,23 @@ function MobileSignIn() {
                     <div>
                         <Link href="/recover-passwod" className={styles.forgotPassword}>Quên mật khẩu?</Link>
                     </div>
-                    <button type="submit" className={styles.btnSubmit}>Đăng nhập</button>
+                    <button type="submit" className={styles.btnSubmit + " hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"}>Đăng nhập</button>
                 </Form>
                 <div className={styles.dividerWithText}>
                     <div className={styles.dividerWithTextItem} />
                     <div className={styles.dividerText}>Hoặc</div>
                     <div className={styles.dividerWithTextItem} />
                 </div>
-                <div className={styles.socialLoginContainer}>
-                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Google" onClick={() => console.log("Click")} iconInFront="/icons/googleIcon.svg" />
-                    <Button cssClass={[styles.button2, btnstyle.buttonsecondary]} text="Tiếp tục với Facebook" onClick={() => console.log("Click")} iconInFront="/icons/facebookIcon.svg" />
+                <div className={styles.socialLoginContainer}>                    
+                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" onClick={() => "/sign-in/google"}/>Tiếp tục với Google</button>
+                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" onClick={() => "/sign-in/google"}/>Tiếp tục với Facebook</button>    
                     <div className={styles.signUpPromptParent}>
                         <div className={styles.signUpPrompt}>Bạn chưa là thành viên?</div>
                         <Link href="/sign-up" className={styles.ngK}>Đăng Ký</Link>
                     </div>
-                </div>
-                <MbFooter />
+                </div>                
             </div>
+            <MbFooter />
         </div>
 
     );
