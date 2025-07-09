@@ -42,7 +42,7 @@ function MobileSignIn() {
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input className={styles.inputText} placeholder="Số điện thoại" />
+                                <input className={styles.inputText} placeholder="Số điện thoại / Email" />
                             </div>
                         </div>
                         <div className={styles.inputFieldsContainerInner}>
