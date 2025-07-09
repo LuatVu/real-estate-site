@@ -6,6 +6,8 @@ import MbFooter from "../ui/mobile/footer/mb.footer";
 import Link from 'next/link';
 import Form from 'next/form';
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
     const screenSize = useScreenSize();
@@ -18,12 +20,30 @@ export default function SignIn() {
 
 function MobileSignIn() {
     const [inputText, setInputText] = useState({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
+    const router = useRouter();
 
     const changeInputType = () => {
         if (inputText.type == 'password') {
             setInputText({ type: "text", imagePath: "/icons/EyeOpen.svg"});
         } else {
             setInputText({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
+        }
+    }
+
+    const signInHandle = async (formData: FormData) => {
+        const userAccount = formData.get('account');
+        const password = formData.get('password');
+        console.log(userAccount + " - " + password);
+
+        const result = await signIn("Credentials", {
+            email: userAccount,
+            password: password            
+        });
+        if(result?.error){
+            console.log(result?.error);
+        }else{
+            console.log(result);
+            router.push("/");
         }
     }
 
@@ -34,7 +54,7 @@ function MobileSignIn() {
                     <Image className={styles.headerImageIcon} width={393} height={151} alt="" src="/icons/Header_Image.png" />
                 </div>
 
-                <Form className={styles.loginFormContainer} action="/sign-in-action">
+                <Form className={styles.loginFormContainer} action={signInHandle}>
                     <div className={styles.loginFormTitle}>
                         <p>Đăng nhập để tiếp tục</p>
                     </div>
@@ -42,13 +62,13 @@ function MobileSignIn() {
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input className={styles.inputText} placeholder="Số điện thoại / Email" />
+                                <input className={styles.inputText} name="account" placeholder="Số điện thoại / Email" />
                             </div>
                         </div>
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                <input className={styles.inputText} placeholder="Mật khẩu" type={inputText.type} />
+                                <input className={styles.inputText} name="password" placeholder="Mật khẩu" type={inputText.type} />
                             </div>
                             <Image className={styles.userIcon} width={24} height={24} alt="" src={inputText.imagePath} onClick={changeInputType} />
                         </div>
