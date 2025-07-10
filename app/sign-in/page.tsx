@@ -35,15 +35,14 @@ function MobileSignIn() {
         const password = formData.get('password');
         console.log(userAccount + " - " + password);
 
-        const result = await signIn("Credentials", {
+        const result = await signIn("credentials", {
+            redirect: true,
             email: userAccount,
-            password: password            
+            password: password,
+            callbackUrl: '/'
         });
-        if(result?.error){
+        if(result?.error){            
             console.log(result?.error);
-        }else{
-            console.log(result);
-            router.push("/");
         }
     }
 
