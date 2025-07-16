@@ -24,6 +24,7 @@ export const options: NextAuthOptions = {
                     body: JSON.stringify({ email: credentials?.email, phoneNumber: credentials?.phoneNumber, password: credentials?.password })
                 })
                 const data = await res.json();
+                console.log(data);
                 if (res.ok && data) {
                     const user = data.response;
                     return {
@@ -41,16 +42,25 @@ export const options: NextAuthOptions = {
     session: {
         strategy: "jwt",
     },
+    jwt: {
+        
+    },
     callbacks: {
-        async jwt({ token, account }) {
+        async jwt({ token, account, user }) {
             if (account) {
                 token.accessToken = account?.access_token;
+                token.id = user.id;
+                token.name = user.name;
             }
             return token;
         },
-        async session({ session, token }) {
-            if (token!.accessToken) {
-            }
+        async session({ session, token, user}) {         
+             if(token){
+                session.user = {
+                    ...session.user,
+                    name: token.name
+                }                
+             }
             return session;
         },
         async redirect({ url, baseUrl }) {            

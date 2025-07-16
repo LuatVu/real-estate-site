@@ -9,6 +9,7 @@ import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
 import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
 import DownloadApp from '../ui/mobile/download-app/mb.download';
+import { useSession } from 'next-auth/react';
 
 export default function MobileHome() {    
     const [homePageVisible, setHomePageVisible] = useState(true);
@@ -20,6 +21,7 @@ export default function MobileHome() {
         city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
     });
     const [filterNum, setFilterNum] = useState(0);
+    const {data: session} = useSession();
 
     const openFilterPopup = useCallback(() => {
         setFilterPopup(true);
@@ -79,7 +81,7 @@ export default function MobileHome() {
             {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
             {homePageVisible && (
                 <div className={styles.homePage}>
-                    <NavBarMobile displayNav={false} />
+                    <NavBarMobile displayNav={false} session={session}/>
                     <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
 
                     <div >
