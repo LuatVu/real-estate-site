@@ -61,8 +61,7 @@ export const options: NextAuthOptions = {
                         password: credentials?.password 
                     })
                 })
-                const data = await res.json();
-                console.log(data);
+                const data = await res.json();                
                 
                 if (res.ok && data && data.status === "200 OK") {
                     const user = data.response;
