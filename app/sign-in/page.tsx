@@ -20,6 +20,8 @@ export default function SignIn() {
 
 function MobileSignIn() {
     const [inputText, setInputText] = useState({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const changeInputType = () => {
@@ -43,6 +45,35 @@ function MobileSignIn() {
         });
         if(result?.error){            
             console.log(result?.error);
+        }
+    }
+
+    const handleGoogleSignIn = async () => {
+        setIsLoading(true);
+        setError("");
+        
+        try {
+            const result = await signIn("google", {
+                redirect: false, // Don't redirect immediately to handle errors
+                callbackUrl: '/'
+            });
+            
+            if(result?.error){
+                console.log("Google sign-in error:", result.error);
+                if (result.error.includes("ENOTFOUND") || result.error.includes("network")) {
+                    setError("Không thể kết nối đến Google. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.");
+                } else {
+                    setError("Đăng nhập Google thất bại. Vui lòng thử lại.");
+                }
+            } else if (result?.ok) {
+                // Successful sign-in, redirect manually
+                window.location.href = result.url || '/';
+            }
+        } catch (err) {
+            console.error("Google sign-in error:", err);
+            setError("Không thể kết nối đến Google. Vui lòng kiểm tra kết nối mạng.");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -77,13 +108,27 @@ function MobileSignIn() {
                     </div>
                     <button type="submit" className={styles.btnSubmit + " hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"}>Đăng nhập</button>
                 </Form>
+                
+                {error && (
+                    <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
+                
                 <div className={styles.dividerWithText}>
                     <div className={styles.dividerWithTextItem} />
                     <div className={styles.dividerText}>Hoặc</div>
                     <div className={styles.dividerWithTextItem} />
                 </div>
                 <div className={styles.socialLoginContainer}>
-                    <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" onClick={() => "/sign-in/google"} />Tiếp tục với Google</button>
+                    <button 
+                        className={styles.btnSecondary} 
+                        onClick={handleGoogleSignIn}
+                        disabled={isLoading}
+                    >
+                        <Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" />
+                        {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
+                    </button>
                     <button className={styles.btnSecondary}><Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" onClick={() => "/sign-in/google"} />Tiếp tục với Facebook</button>
                     <div className={styles.signUpPromptParent}>
                         <div className={styles.signUpPrompt}>Bạn chưa là thành viên?</div>

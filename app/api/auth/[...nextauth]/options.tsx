@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -38,6 +39,20 @@ declare module "next-auth/jwt" {
 export const options: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+            authorization: {
+                params: {
+                    prompt: "consent",
+                    access_type: "offline",
+                    response_type: "code"
+                }
+            },
+            httpOptions: {
+                timeout: 10000, // 10 seconds timeout
+            }
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -87,12 +102,23 @@ export const options: NextAuthOptions = {
     callbacks: {
         async jwt({ token, account, user }) {
             if (account && user) {
-                token.accessToken = user.accessToken;
-                token.tokenType = user.tokenType;
-                token.id = user.id;
-                token.username = user.username;
-                token.email = user.email;
-                token.permissions = user.permissions;
+                if (account.provider === "google") {
+                    // Handle Google OAuth sign-in
+                    token.accessToken = account.access_token || "";
+                    token.tokenType = account.token_type || "Bearer";
+                    token.id = user.id;
+                    token.username = user.name || user.email?.split('@')[0] || "";
+                    token.email = user.email || "";
+                    token.permissions = []; // Default permissions for Google users
+                } else if (account.provider === "credentials") {
+                    // Handle credentials sign-in
+                    token.accessToken = user.accessToken;
+                    token.tokenType = user.tokenType;
+                    token.id = user.id;
+                    token.username = user.username;
+                    token.email = user.email;
+                    token.permissions = user.permissions;
+                }
             }
             return token;
         },
