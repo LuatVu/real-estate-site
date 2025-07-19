@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from "next-auth/providers/facebook";
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -49,6 +50,13 @@ export const options: NextAuthOptions = {
                     response_type: "code"
                 }
             },
+            httpOptions: {
+                timeout: 10000, // 10 seconds timeout
+            }
+        }),
+        FacebookProvider({
+            clientId: process.env.FACEBOOK_CLIENT_ID as string,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
             httpOptions: {
                 timeout: 10000, // 10 seconds timeout
             }
