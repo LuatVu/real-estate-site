@@ -57,6 +57,16 @@ export const options: NextAuthOptions = {
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID as string,
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+            authorization: {
+                params: {
+                    scope: "email,public_profile" // Request additional permissions
+                }
+            },
+            userinfo: {
+                params: {
+                    fields: "id,name,email,picture,first_name,last_name" // Request specific fields
+                }
+            },
             httpOptions: {
                 timeout: 10000, // 10 seconds timeout
             }
@@ -108,7 +118,7 @@ export const options: NextAuthOptions = {
         
     },
     callbacks: {
-        async jwt({ token, account, user }) {
+        async jwt({ token, account, user, profile }) {
             if (account && user) {
                 if (account.provider === "google") {
                     // Handle Google OAuth sign-in
@@ -118,6 +128,14 @@ export const options: NextAuthOptions = {
                     token.username = user.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Google users
+                } else if (account.provider === "facebook") {
+                    // Handle Facebook OAuth sign-in
+                    token.accessToken = account.access_token || "";
+                    token.tokenType = account.token_type || "Bearer";
+                    token.id = user.id;
+                    token.username = user.name || profile?.name || user.email?.split('@')[0] || "";
+                    token.email = user.email || "";
+                    token.permissions = []; // Default permissions for Facebook users
                 } else if (account.provider === "credentials") {
                     // Handle credentials sign-in
                     token.accessToken = user.accessToken;
