@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "8080",
-        pathname: "/api/images/**"
+        pathname: "/api/public/images/**"
       },
     ],
     formats: ['image/webp', 'image/avif'],
