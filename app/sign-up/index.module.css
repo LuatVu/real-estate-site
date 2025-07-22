@@ -1,0 +1,192 @@
+.container{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #fff;
+    height: auto;
+    text-align: left;
+    font-size: 15px;
+    color: #000;
+    font-family: Roboto;
+    display: flex;
+    flex-direction: column;
+    display: flex;
+    flex-direction: column;
+}
+
+.headerImageIcon {
+    position: relative;
+    height: 17.72%;
+    width: 100%;   
+    max-width: 100%;
+    overflow: hidden;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.dividerWithText {
+    position: relative;
+    width: 100%;    
+    height: 13px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0px;
+    font-size: 11px;
+    color: #a9acaf;
+    font-family: Roboto;
+    margin: 33px 0px;
+    padding: 0px 32px;
+}
+
+.dividerWithTextItem {
+    width: 44.24%;
+    position: relative;
+    margin: 0 !important;    
+    border-top: 1px solid #a9acaf;
+    box-sizing: border-box;
+    height: 1px;
+    z-index: 1;
+}
+
+.dividerText {
+    width: 26px;
+    position: relative;
+    margin: 0 !important;    
+    display: inline-block;    
+}
+
+.socialLoginContainer {
+    position: relative;
+    width: 100%;    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    color: #0f1114;
+    padding: 0px 32px;
+}
+
+.btnSecondary{
+    width: 100%;
+    height: 35px;
+    border-radius: 10px;
+    border: 1px solid var(--color-secondary-s400);
+    padding: 10px;    
+    background-color: var(--color-secondary-s50);
+    font-family: Roboto;
+    font-size: 15px;    
+    color: var(--color-text-t300);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.btnSubmit{
+    width: 100%;
+    height: 38px;
+    border-radius: 10px;
+    padding: 10px;
+    gap: 4px;
+    background-color: var(--color-primary-p300);
+    font-family: Roboto;
+    font-size: 15px;
+    margin-top: 20px;
+    color: var(--color-secondary-s50);
+}
+
+.searchIcon {   
+    width: 24px;
+	height: 24px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.signUpForm{
+    position: relative;    
+    width: 100%;
+    padding: 0px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.signUpFormHeader{
+    width: 100%;
+  	position: relative;
+  	margin: 0 !important;  
+  	height: 22px;
+  	text-align: left;
+  	font-size: 19px;
+  	color: #0b0c0e;
+  	font-family: Roboto;
+}
+
+.signUpFormBody{
+    width: 100%;
+    margin: 20px 0px 0px 0px;
+    position: relative;   
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  	font-size: 12px;
+  	color: #9d9d9f;
+  	font-family: Inter;
+    gap: 20px;
+}
+
+.inputFieldsContainerInner {
+    align-self: stretch;
+    border-radius: 10px;
+    background-color: #fff;
+    border: 1px solid #38393c;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px 3px 10px 4px;
+}
+
+.userParent {
+    flex:1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+}
+
+.userIcon {
+    width: 24px;
+    position: relative;
+    max-height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.inputText{    
+    flex: 1;
+    width: 100%;
+    position: relative;
+    font-size: 15px;
+    font-family: Roboto;
+    color: var(--color-text-t500);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    height: 22px;  
+    border: 0;
+}
+input.inputText:focus{
+    outline: none;
+}
