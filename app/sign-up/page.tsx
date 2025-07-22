@@ -7,18 +7,29 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from 'next/link';
 import { validateVietnamesePhoneNumber, formatPhoneNumberInput, getCarrierDisplayName } from '../utils/phone-validation';
+import Form from "next/form";
 
 export default function SignUp() {
     const screenSize = useScreenSize();
 
+    const signUpAction = async (formData: FormData) => {
+        const fullName = formData.get('fullName') as string;
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
+        let phoneNumber = formData.get('phoneNumber') as string;
+        phoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digit characters
+        
+        console.log(`Full Name: ${fullName}, Email: ${email}, Password: ${password}, Confirm Password: ${confirmPassword}, Phone Number: ${phoneNumber}`);
+    }
+
     return (
         <div className="h-full">
-            {screenSize === 'sm' ? (<MobileSignUp />) : (<DesktopSignUp />)}
+            {screenSize === 'sm' ? (<MobileSignUp signUpAction={signUpAction} />) : (<DesktopSignUp signUpAction={signUpAction} />)}
         </div>
     );
 }
-
-function MobileSignUp() {
+function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => Promise<void> }) {
     const [step, setStep] = useState<number>(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -131,46 +142,47 @@ function MobileSignUp() {
                         <p className="text-red-700 text-sm">{error}</p>
                     </div>
                 )}
-                {step === 1 && (<div className={styles.signUpForm}>
-                    <div className={styles.signUpFormHeader}>
-                        <p>Đăng ký tài khoản mới</p>
-                    </div>
-                    <div className={styles.signUpFormBody}>
-                        <div className={styles.inputFieldsContainerInner}>
-                            <div className={styles.userParent}>
-                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input 
-                                    className={`${styles.inputText} ${phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : ''}`}
-                                    name="phoneNumber" 
-                                    placeholder="Số điện thoại (0xxx xxx xxx)" 
-                                    value={phoneNumber}
-                                    onChange={handlePhoneChange}
-                                    maxLength={13} // Max length for formatted input
-                                />
-                            </div>
+                {step === 1 &&
+                    (<div className={styles.signUpForm}>
+                        <div className={styles.signUpFormHeader}>
+                            <p>Đăng ký tài khoản mới</p>
                         </div>
-                        {phoneError && (
-                            <div className="mt-1 text-red-500 text-sm px-2">
-                                {phoneError}
+                        <div className={styles.signUpFormBody}>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
+                                    <input
+                                        className={`${styles.inputText} ${phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : ''}`}
+                                        name="phoneNumber"
+                                        placeholder="Số điện thoại (0xxx xxx xxx)"
+                                        value={phoneNumber}
+                                        onChange={handlePhoneChange}
+                                        maxLength={13} // Max length for formatted input
+                                    />
+                                </div>
                             </div>
-                        )}
-                        {isPhoneValid && phoneNumber && (
-                            <div className="mt-1 text-green-600 text-sm px-2">
-                                ✓ Số điện thoại hợp lệ {(() => {
-                                    const validation = validateVietnamesePhoneNumber(phoneNumber);
-                                    return validation.carrier ? `(${getCarrierDisplayName(validation.carrier)})` : '';
-                                })()}
-                            </div>
-                        )}
-                    </div>
-                    <button 
-                        className={`${styles.btnSubmit} ${!isPhoneValid ? 'opacity-50 cursor-not-allowed' : ''} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}
-                        onClick={handleContinue}
-                        disabled={!isPhoneValid}
-                    >
-                        Tiếp tục
-                    </button>
-                </div>)}
+                            {phoneError && (
+                                <div className="mt-1 text-red-500 text-sm px-2">
+                                    {phoneError}
+                                </div>
+                            )}
+                            {isPhoneValid && phoneNumber && (
+                                <div className="mt-1 text-green-600 text-sm px-2">
+                                    ✓ Số điện thoại hợp lệ {(() => {
+                                        const validation = validateVietnamesePhoneNumber(phoneNumber);
+                                        return validation.carrier ? `(${getCarrierDisplayName(validation.carrier)})` : '';
+                                    })()}
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            className={`${styles.btnSubmit} ${!isPhoneValid ? 'opacity-50 cursor-not-allowed' : ''} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}
+                            onClick={handleContinue}
+                            disabled={!isPhoneValid}
+                        >
+                            Tiếp tục
+                        </button>
+                    </div>)}
                 {step === 2 && (<div className={styles.signUpForm}>
                     <div className={styles.signUpFormHeader}>
                         <p>Xác thực số điện thoại</p>
@@ -187,9 +199,9 @@ function MobileSignUp() {
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input 
+                                <input
                                     className={styles.inputText}
-                                    name="verificationCode" 
+                                    name="verificationCode"
                                     placeholder="Nhập mã xác thực 6 chữ số"
                                     maxLength={6}
                                     pattern="[0-9]{6}"
@@ -197,7 +209,7 @@ function MobileSignUp() {
                             </div>
                         </div>
                         <div className="text-center mt-3">
-                            <button 
+                            <button
                                 className="text-sm text-blue-600 hover:text-blue-500"
                                 onClick={() => setStep(1)}
                             >
@@ -209,82 +221,100 @@ function MobileSignUp() {
                         Xác thực
                     </button>
                 </div>)}
-                {step === 3 && (<div className={styles.signUpForm}>
-                    <div className={styles.signUpFormHeader}>
-                        <p>Hoàn tất đăng ký</p>
+                {step === 3 &&
+                    (<Form className={styles.signUpForm} action={signUpAction}>
+                        <div className={styles.signUpFormHeader}>
+                            <p>Hoàn tất đăng ký</p>
+                        </div>
+                        <div className={styles.signUpFormBody}>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
+                                    <input
+                                        className={`${styles.inputText} ${phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : ''}`}
+                                        name="phoneNumber"
+                                        value={phoneNumber}                                        
+                                        readOnly={true} // Disable input since phone is already verified
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
+                                    <input className={styles.inputText} name="fullName" placeholder="Họ và tên" />
+                                </div>
+                            </div>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
+                                    <input className={styles.inputText} name="email" placeholder="Email (tùy chọn)" type="email" />
+                                </div>
+                            </div>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
+                                    <input className={styles.inputText} name="password" placeholder="Mật khẩu" type="password" />
+                                </div>
+                            </div>
+                            <div className={styles.inputFieldsContainerInner}>
+                                <div className={styles.userParent}>
+                                    <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
+                                    <input className={styles.inputText} name="confirmPassword" placeholder="Xác nhận mật khẩu" type="password" />
+                                </div>
+                            </div>
+                            <div className="text-center mt-3">
+                                <button
+                                    className="text-sm text-blue-600 hover:text-blue-500"
+                                    onClick={() => setStep(2)}
+                                >
+                                    ← Quay lại bước trước
+                                </button>
+                            </div>
+                        </div>
+                        <button className={styles.btnSubmit + " hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"}>
+                            Hoàn tất đăng ký
+                        </button>
+                    </Form>)}
+
+                {/* Only display in step 1 */}
+                {step === 1 && (
+                    <div className={styles.dividerWithText}>
+                        <div className={styles.dividerWithTextItem} />
+                        <div className={styles.dividerText}>Hoặc</div>
+                        <div className={styles.dividerWithTextItem} />
                     </div>
-                    <div className={styles.signUpFormBody}>
-                        <div className={styles.inputFieldsContainerInner}>
-                            <div className={styles.userParent}>
-                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input className={styles.inputText} name="fullName" placeholder="Họ và tên" />
-                            </div>
-                        </div>
-                        <div className={styles.inputFieldsContainerInner}>
-                            <div className={styles.userParent}>
-                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input className={styles.inputText} name="email" placeholder="Email (tùy chọn)" type="email" />
-                            </div>
-                        </div>
-                        <div className={styles.inputFieldsContainerInner}>
-                            <div className={styles.userParent}>
-                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                <input className={styles.inputText} name="password" placeholder="Mật khẩu" type="password" />
-                            </div>
-                        </div>
-                        <div className={styles.inputFieldsContainerInner}>
-                            <div className={styles.userParent}>
-                                <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                <input className={styles.inputText} name="confirmPassword" placeholder="Xác nhận mật khẩu" type="password" />
-                            </div>
-                        </div>
-                        <div className="text-center mt-3">
-                            <button 
-                                className="text-sm text-blue-600 hover:text-blue-500"
-                                onClick={() => setStep(2)}
-                            >
-                                ← Quay lại bước trước
-                            </button>
+                )}
+
+                {step === 1 && (
+                    <div className={styles.socialLoginContainer}>
+                        <button
+                            className={styles.btnSecondary}
+                            onClick={handleGoogleSignIn}
+                            disabled={isLoading}
+                        >
+                            <Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" />
+                            {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
+                        </button>
+                        <button
+                            className={styles.btnSecondary}
+                            onClick={handleFacebookSignIn}
+                            disabled={isLoading}
+                        >
+                            <Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" />
+                            {isLoading ? "Đang kết nối..." : "Tiếp tục với Facebook"}
+                        </button>
+                        <div className={styles.signUpPromptParent}>
+                            <div className={styles.signUpPrompt}>Đã có tài khoản?</div>
+                            <Link href="/sign-in" className={styles.ngK}>Đăng nhập</Link>
                         </div>
                     </div>
-                    <button className={styles.btnSubmit + " hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"}>
-                        Hoàn tất đăng ký
-                    </button>
-                </div>)}
-                <div className={styles.dividerWithText}>
-                    <div className={styles.dividerWithTextItem} />
-                    <div className={styles.dividerText}>Hoặc</div>
-                    <div className={styles.dividerWithTextItem} />
-                </div>
-                <div className={styles.socialLoginContainer}>
-                    <button
-                        className={styles.btnSecondary}
-                        onClick={handleGoogleSignIn}
-                        disabled={isLoading}
-                    >
-                        <Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" />
-                        {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
-                    </button>
-                    <button
-                        className={styles.btnSecondary}
-                        onClick={handleFacebookSignIn}
-                        disabled={isLoading}
-                    >
-                        <Image className={styles.searchIcon} width={24} height={24} alt="facebook" src="/icons/facebookIcon.svg" />
-                        {isLoading ? "Đang kết nối..." : "Tiếp tục với Facebook"}
-                    </button>
-                    <div className={styles.signUpPromptParent}>
-                        <div className={styles.signUpPrompt}>Đã có tài khoản?</div>
-                        <Link href="/sign-in" className={styles.ngK}>Đăng nhập</Link>
-                    </div>    
-                </div>
+                )}
             </div>
             <MbFooter />
         </div>
     );
 }
-
-function DesktopSignUp() {
+function DesktopSignUp({ signUpAction }: { signUpAction: (formData: FormData) => Promise<void> }) {
     const [step, setStep] = useState<number>(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -412,9 +442,8 @@ function DesktopSignUp() {
                                 name="phoneNumber"
                                 type="tel"
                                 required
-                                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
-                                    phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : 'border-gray-300'
-                                }`}
+                                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : 'border-gray-300'
+                                    }`}
                                 placeholder="0xxx xxx xxx"
                                 value={phoneNumber}
                                 onChange={handlePhoneChange}
@@ -436,11 +465,10 @@ function DesktopSignUp() {
                         <button
                             onClick={handleContinue}
                             disabled={!isPhoneValid}
-                            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                                !isPhoneValid 
-                                    ? 'bg-gray-400 cursor-not-allowed' 
-                                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                            }`}
+                            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${!isPhoneValid
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                                }`}
                         >
                             Tiếp tục
                         </button>
@@ -472,7 +500,7 @@ function DesktopSignUp() {
                             />
                             {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
                         </button>
-                        
+
                         <button
                             onClick={handleFacebookSignIn}
                             disabled={isLoading}
@@ -487,7 +515,7 @@ function DesktopSignUp() {
                             />
                             {isLoading ? "Đang kết nối..." : "Tiếp tục với Facebook"}
                         </button>
-                        
+
                         <div className="text-center">
                             <span className="text-sm text-gray-600">Đã có tài khoản? </span>
                             <Link href="/sign-in" className="text-sm text-blue-600 hover:text-blue-500">
