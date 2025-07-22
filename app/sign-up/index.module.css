@@ -190,3 +190,23 @@
 input.inputText:focus{
     outline: none;
 }
+
+.signUpPromptParent {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-align: center;
+    font-size: 11px;
+    color: #000;
+    font-family: Roboto;
+}
+
+.ngK {
+    position: relative;
+    text-decoration: underline;
+    color: #0047b3;
+    cursor: pointer;
+}
