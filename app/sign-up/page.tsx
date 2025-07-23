@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 export default function SignUp() {
     const router = useRouter();
-    const screenSize = useScreenSize();    
+    const screenSize = useScreenSize();
 
     const signUpAction = async (formData: FormData) => {
         try {
@@ -36,10 +36,10 @@ export default function SignUp() {
                 })
             });
             const data = await response.json();
-            if (!response.ok) { 
+            if (!response.ok) {
 
             }
-            if(data.status === "200 OK" || data.success) {
+            if (data.status === "200 OK" || data.success) {
                 alert('Đăng ký thành công! Vui lòng đăng nhập.');
                 router.push('/sign-in');
             }
@@ -63,6 +63,12 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
     const [phoneNumber, setPhoneNumber] = useState("");
     const [phoneError, setPhoneError] = useState("");
     const [isPhoneValid, setIsPhoneValid] = useState(false);
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState("");
+    const [isValidRegister, setIsValidRegister] = useState(false);
+    const [fullName, setFullName] = useState("");
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -81,6 +87,42 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
             setPhoneError("");
             setIsPhoneValid(true);
         }
+    };
+
+    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const confirmPassword = e.target.value;
+        setConfirmPassword(confirmPassword);
+        // Validate confirm password
+        if (confirmPassword !== password || confirmPassword === "" || password === "") {
+            setConfirmPasswordError("Mật khẩu xác nhận không khớp, vui lòng kiểm tra lại.");
+            setConfirmPasswordSuccess("");
+            setIsValidRegister(fullName.trim() !== "" && isPhoneValid && password !== "" && false);
+        } else {
+            setConfirmPasswordError("");
+            setConfirmPasswordSuccess("Mật khẩu xác nhận khớp.");
+            setIsValidRegister(fullName.trim() !== "" && isPhoneValid && password !== "" && true); 
+        }
+               
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newPassword = e.target.value;
+        setPassword(newPassword);
+        if(confirmPassword !== "" && confirmPassword !== newPassword) {
+            setConfirmPasswordError("Mật khẩu xác nhận không khớp, vui lòng kiểm tra lại.");
+            setConfirmPasswordSuccess("");
+            setIsValidRegister(fullName.trim() !== "" && isPhoneValid && newPassword !== "" && false);
+        }else if(confirmPassword === newPassword && confirmPassword !== "") {
+            setConfirmPasswordError("");
+            setConfirmPasswordSuccess("Mật khẩu xác nhận khớp.");
+            setIsValidRegister(fullName.trim() !== "" && isPhoneValid && newPassword !== "" && true);   
+        }
+    };
+
+    const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const fname = e.target.value;
+        setFullName(fname.trim());
+        setIsValidRegister(fname.trim() !== "" && isPhoneValid && password !== "" && confirmPasswordSuccess === "Mật khẩu xác nhận khớp.");
     };
 
     const handleContinue = () => {
@@ -268,7 +310,7 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
                             <div className={styles.inputFieldsContainerInner}>
                                 <div className={styles.userParent}>
                                     <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                    <input className={styles.inputText} name="fullName" placeholder="Họ và tên" />
+                                    <input className={styles.inputText} name="fullName" placeholder="Họ và tên" onChange={handleFullNameChange} />
                                 </div>
                             </div>
                             <div className={styles.inputFieldsContainerInner}>
@@ -280,15 +322,25 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
                             <div className={styles.inputFieldsContainerInner}>
                                 <div className={styles.userParent}>
                                     <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                    <input className={styles.inputText} name="password" placeholder="Mật khẩu" type="password" />
+                                    <input className={styles.inputText} name="password" placeholder="Mật khẩu" type="password" onChange={handlePasswordChange} />
                                 </div>
                             </div>
                             <div className={styles.inputFieldsContainerInner}>
                                 <div className={styles.userParent}>
                                     <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/lockIcon.svg" />
-                                    <input className={styles.inputText} name="confirmPassword" placeholder="Xác nhận mật khẩu" type="password" />
+                                    <input className={styles.inputText} name="confirmPassword" placeholder="Xác nhận mật khẩu" type="password" onChange={handleConfirmPasswordChange} />
                                 </div>
                             </div>
+                            {confirmPasswordError && (
+                                <div className="mt-2 text-sm text-red-600">
+                                    {confirmPasswordError}
+                                </div>
+                            )}
+                            {confirmPasswordSuccess && (
+                                <div className="mt-2 text-sm text-green-600">
+                                    {confirmPasswordSuccess}
+                                </div>
+                            )}
                             <div className="text-center mt-3">
                                 <button
                                     className="text-sm text-blue-600 hover:text-blue-500"
@@ -298,7 +350,10 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
                                 </button>
                             </div>
                         </div>
-                        <button className={styles.btnSubmit + " hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"}>
+                        <button
+                            className={`${styles.btnSubmit} ${!isValidRegister ? 'opacity-50 cursor-not-allowed' : ''} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}
+                            disabled={!isValidRegister}
+                        >
                             Hoàn tất đăng ký
                         </button>
                     </Form>)}
