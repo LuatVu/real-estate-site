@@ -7,7 +7,6 @@ import Link from 'next/link';
 import Form from 'next/form';
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function SignIn() {
     const screenSize = useScreenSize();
@@ -21,8 +20,7 @@ export default function SignIn() {
 function MobileSignIn() {
     const [inputText, setInputText] = useState({ type: "password", imagePath: "/icons/eyeIconClose.svg" });
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
-    const router = useRouter();
+    const [error, setError] = useState("");    
 
     const changeInputType = () => {
         if (inputText.type == 'password') {

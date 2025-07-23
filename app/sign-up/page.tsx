@@ -8,19 +8,46 @@ import { signIn } from "next-auth/react";
 import Link from 'next/link';
 import { validateVietnamesePhoneNumber, formatPhoneNumberInput, getCarrierDisplayName } from '../utils/phone-validation';
 import Form from "next/form";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
-    const screenSize = useScreenSize();
+    const router = useRouter();
+    const screenSize = useScreenSize();    
 
     const signUpAction = async (formData: FormData) => {
-        const fullName = formData.get('fullName') as string;
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string;
-        const confirmPassword = formData.get('confirmPassword') as string;
-        let phoneNumber = formData.get('phoneNumber') as string;
-        phoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digit characters
-        
-        console.log(`Full Name: ${fullName}, Email: ${email}, Password: ${password}, Confirm Password: ${confirmPassword}, Phone Number: ${phoneNumber}`);
+        try {
+            const fullName = formData.get('fullName') as string;
+            const email = formData.get('email') as string;
+            const password = formData.get('password') as string;
+            // const confirmPassword = formData.get('confirmPassword') as string;
+            let phoneNumber = formData.get('phoneNumber') as string;
+            phoneNumber = phoneNumber.replace(/\D/g, ''); // Remove non-digit characters
+
+            const response = await fetch("/api/auth/register", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: fullName.trim(),
+                    email: email,
+                    password: password,
+                    phoneNumber: phoneNumber
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) { 
+
+            }
+            if(data.status === "200 OK" || data.success) {
+                alert('Đăng ký thành công! Vui lòng đăng nhập.');
+                router.push('/sign-in');
+            }
+
+        } catch (error) {
+            console.error("Sign up error:", error);
+            throw new Error("Đăng ký không thành công. Vui lòng thử lại sau.");
+        }
     }
 
     return (
@@ -233,7 +260,7 @@ function MobileSignUp({ signUpAction }: { signUpAction: (formData: FormData) => 
                                     <input
                                         className={`${styles.inputText} ${phoneError ? 'border-red-500' : isPhoneValid ? 'border-green-500' : ''}`}
                                         name="phoneNumber"
-                                        value={phoneNumber}                                        
+                                        value={phoneNumber}
                                         readOnly={true} // Disable input since phone is already verified
                                     />
                                 </div>
