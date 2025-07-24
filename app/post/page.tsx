@@ -13,17 +13,19 @@ import { Navigation, Pagination } from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useSession } from "next-auth/react";
 
 export default function Posts() {
     const screenSize = useScreenSize();
+    const { data: session } = useSession();
     return (
         <div>
-            {screenSize === 'sm' ? (<MobilePosts />) : (<DesktopPosts />)}
+            {screenSize === 'sm' ? (<MobilePosts session={session} />) : (<DesktopPosts />)}
         </div>
     );
 }
 
-function MobilePosts() {
+function MobilePosts({session}: {session?: any}) {
     const searchParams = useSearchParams();
     const [post, setPost] = useState<any>(undefined);
     
@@ -49,7 +51,7 @@ function MobilePosts() {
     return (
         <div className="h-full">
             <div className={styles.rootContainer}>
-                <NavBarMobile displayNav={true} />
+                <NavBarMobile displayNav={true} session={session}/>
                 <div className={styles.postContainer}>
                     <div className="slide-container">
                         <Swiper loop={true} navigation pagination={{type: 'bullets', clickable: true}} modules={[Navigation, Pagination]} onSwiper={swiper => console.log(swiper)} className='h-100 w-full rounded-lg'>
@@ -154,7 +156,7 @@ function MobilePosts() {
     );
 }
 
-function DesktopPosts() {
+function DesktopPosts({session}: {session?: any}) {
     return (
         <div></div>
     );

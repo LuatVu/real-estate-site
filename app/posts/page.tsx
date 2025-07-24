@@ -17,17 +17,19 @@ import { calculatePagination } from '../utils/pagination';
 import { usePagination } from '../hook/usePagination';
 import { PaginationData } from '../types/pagination';
 import { extractSearchRequest } from '../utils/transform.param';
+import { useSession } from 'next-auth/react';
 
 export default function Posts() {
     const screenSize = useScreenSize();
+    const { data: session } = useSession();
     return (
         <div className="h-full">
-            {screenSize === 'sm' ? (<PostsOnMobile />) : (<PostOnDesktop />)}
+            {screenSize === 'sm' ? (<PostsOnMobile session={session} />) : (<PostOnDesktop session={session} />)}
         </div>
     );
 }
 
-function PostsOnMobile() {    
+function PostsOnMobile({session}: {session?: any}) {
     const searchParams = useSearchParams();
     const [posts, setPosts] = useState([]);
     const [filterPopup, setFilterPopup] = useState(false);
@@ -123,7 +125,7 @@ function PostsOnMobile() {
             {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
             {homePageVisible && (
                 <div className={styles.homePage}>
-                    <NavBarMobile displayNav={false} />
+                    <NavBarMobile displayNav={false} session={session} />
                     <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
@@ -156,6 +158,6 @@ function PostsOnMobile() {
     );
 }
 
-function PostOnDesktop() {
+function PostOnDesktop({session}: {session?: any}) {
     return (<div>Desktop Page</div>);
 }
