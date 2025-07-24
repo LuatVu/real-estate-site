@@ -4,7 +4,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const page = Number(req?.nextUrl?.searchParams.get('page')) - 1; // aim to start with zero    
 
-    const response = await fetch(`http://localhost:8080/api/public/search-post?page=${page}`, {
+    const response = await fetch(`${process.env.SPRING_API}/api/public/search-post?page=${page}`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(request: NextRequest) {        
     const postId = request?.nextUrl?.searchParams.get('postId');
-    const response = await fetch(`http://localhost:8080/api/posts/get-post?postId=${postId}`, {
+    const response = await fetch(`${process.env.SPRING_API}/api/public/get-post?postId=${postId}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},        
     });
