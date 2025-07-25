@@ -29,10 +29,22 @@ export default function NavBarMobile({displayNav, session}: any){
 		window.location.href = '/sign-in';
 	};
 
+	const handleBackClick = () => {
+		window.history.back();
+	};
+
   	return (
 		<>
     		<div className={styles.navtypenavVisitor}>
-                {displayNav?<Image className={styles.arrowarcleftIcon} width={24} height={24} alt="" src="/icons/ArrowArcLeft.svg" />: ""}
+                {displayNav?<Image 
+					className={styles.arrowarcleftIcon} 
+					width={24} 
+					height={24} 
+					alt="Go back" 
+					src="/icons/ArrowArcLeft.svg" 
+					onClick={handleBackClick}
+					style={{ cursor: 'pointer' }}
+				/>: ""}
       			<Image className={styles.nhPParent} alt="Nha Dep Qua!" width={72} height={18} src="/icons/nhadepqua_logo.svg"/>
 				<div className={styles.menuButtonContainer}>
 					<div 
