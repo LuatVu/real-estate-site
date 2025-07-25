@@ -31,13 +31,12 @@ function MobileSignIn() {
     }
 
     const signInHandle = async (formData: FormData) => {
-        const userAccount = formData.get('account');
-        const password = formData.get('password');
-        console.log(userAccount + " - " + password);
+        const phoneNumber = formData.get('phoneNumber');
+        const password = formData.get('password');        
 
         const result = await signIn("credentials", {
             redirect: true,
-            email: userAccount,
+            phoneNumber: phoneNumber,
             password: password,
             callbackUrl: '/'
         });
@@ -121,7 +120,7 @@ function MobileSignIn() {
                         <div className={styles.inputFieldsContainerInner}>
                             <div className={styles.userParent}>
                                 <Image className={styles.userIcon} width={24} height={24} alt="" src="/icons/useIcon.svg" />
-                                <input className={styles.inputText} name="account" placeholder="Số điện thoại" />
+                                <input className={styles.inputText} name="phoneNumber" placeholder="Số điện thoại" />
                             </div>
                         </div>
                         <div className={styles.inputFieldsContainerInner}>
