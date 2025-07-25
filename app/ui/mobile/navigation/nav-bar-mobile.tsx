@@ -34,32 +34,21 @@ export default function NavBarMobile({displayNav, session}: any){
     		<div className={styles.navtypenavVisitor}>
                 {displayNav?<Image className={styles.arrowarcleftIcon} width={24} height={24} alt="" src="/icons/ArrowArcLeft.svg" />: ""}
       			<Image className={styles.nhPParent} alt="Nha Dep Qua!" width={72} height={18} src="/icons/nhadepqua_logo.svg"/>
-				<div className={styles.profileBlk}>
-					{session?(
-						<div 
-							onClick={handleProfileClick}
-							style={{ cursor: 'pointer' }}
-						>
-							<Image 
-								alt="User profile" 
-								className={styles.profilePicture} 
-								width={36} 
-								height={36} 
-								src="/temp/avatar.jpg"
-							/>
-						</div>
-					): (
-						<Button 
-							cssClass={[btnStyle.buttonprimary]} 
-							text="Đăng nhập" 
-							onClick={handleLoginClick} 
-						/>
-					)}					
+				<div className={styles.menuButtonContainer}>
+					<div 
+						className={styles.menuButton}
+						onClick={handleProfileClick}
+						 // Temporary debug border
+					>
+						<div className={styles.menuLine}></div>
+						<div className={styles.menuLine}></div>
+						<div className={styles.menuLine}></div>
+					</div>
 				</div>      			
     		</div>
 
 		{/* Profile Menu Popup */}
-		{isProfileMenuOpen && session && (
+		{isProfileMenuOpen && (
 			<>
 				{/* Overlay */}
 				<div 
@@ -70,51 +59,77 @@ export default function NavBarMobile({displayNav, session}: any){
 				
 				{/* Menu */}
 				<div className={styles.profileMenu} style={{ border: '2px solid var(--color-primary-p100)' }}>
-					<div className={styles.profileMenuHeader}>
-						<Image 
-							className={styles.profileMenuAvatar} 
-							width={48} 
-							height={48} 
-							alt="User Avatar" 
-							src="/temp/avatar.jpg" 
-						/>
-						<div className={styles.profileMenuInfo}>
-							<h3 className={styles.profileMenuName}>{session.user?.username || session.user?.name}</h3>
-							<p className={styles.profileMenuEmail}>{session.user?.email}</p>
+					{session ? (
+						<>
+							<div className={styles.profileMenuHeader}>
+								<Image 
+									className={styles.profileMenuAvatar} 
+									width={48} 
+									height={48} 
+									alt="User Avatar" 
+									src="/temp/avatar.jpg" 
+								/>
+								<div className={styles.profileMenuInfo}>
+									<h3 className={styles.profileMenuName}>{session.user?.username || session.user?.name}</h3>
+									<p className={styles.profileMenuEmail}>{session.user?.email}</p>
+								</div>
+							</div>
+							
+							<div className={styles.profileMenuDivider}></div>
+							
+							<div className={styles.profileMenuItems}>
+								<Link href="/profile" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+									<Image width={20} height={20} alt="Profile" src="/icons/useIcon.svg" />
+									<span>Thông tin cá nhân</span>
+								</Link>
+								
+								<Link href="/my-posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+									<Image width={20} height={20} alt="Posts" src="/icons/Building.svg" />
+									<span>Tin đăng của tôi</span>
+								</Link>
+								
+								<Link href="/favorites" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+									<Image width={20} height={20} alt="Favorites" src="/icons/BaseSquare.svg" />
+									<span>Tin đã lưu</span>
+								</Link>
+								
+								<Link href="/settings" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+									<Image width={20} height={20} alt="Settings" src="/icons/Funnel.svg" />
+									<span>Cài đặt</span>
+								</Link>
+							</div>
+							
+							<div className={styles.profileMenuDivider}></div>
+							
+							<button className={styles.profileMenuSignOut} onClick={handleSignOut}>
+								<Image width={20} height={20} alt="Sign Out" src="/icons/ArrowArcLeft.svg" />
+								<span>Đăng xuất</span>
+							</button>
+						</>
+					) : (
+						<div className={styles.profileMenuGuest}>
+							<div className={styles.profileMenuGuestHeader}>
+								<h3>Chào mừng!</h3>
+								<p>Đăng nhập để trải nghiệm đầy đủ</p>
+							</div>
+							
+							<div className={styles.profileMenuDivider}></div>
+							
+							<div className={styles.profileMenuGuestActions}>
+								<Button 
+									cssClass={[btnStyle.buttonprimary, styles.guestLoginButton]} 
+									text="Đăng nhập" 
+									onClick={handleLoginClick} 
+								/>
+								<Link href="/sign-up" className={styles.guestSignUpLink} onClick={handleCloseMenu}>
+									Đăng ký tài khoản
+								</Link>
+							</div>
 						</div>
-					</div>						<div className={styles.profileMenuDivider}></div>
-						
-						<div className={styles.profileMenuItems}>
-							<Link href="/profile" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-								<Image width={20} height={20} alt="Profile" src="/icons/useIcon.svg" />
-								<span>Thông tin cá nhân</span>
-							</Link>
-							
-							<Link href="/my-posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-								<Image width={20} height={20} alt="Posts" src="/icons/Building.svg" />
-								<span>Tin đăng của tôi</span>
-							</Link>
-							
-							<Link href="/favorites" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-								<Image width={20} height={20} alt="Favorites" src="/icons/BaseSquare.svg" />
-								<span>Tin đã lưu</span>
-							</Link>
-							
-							<Link href="/settings" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-								<Image width={20} height={20} alt="Settings" src="/icons/Funnel.svg" />
-								<span>Cài đặt</span>
-							</Link>
-						</div>
-						
-						<div className={styles.profileMenuDivider}></div>
-						
-						<button className={styles.profileMenuSignOut} onClick={handleSignOut}>
-							<Image width={20} height={20} alt="Sign Out" src="/icons/ArrowArcLeft.svg" />
-							<span>Đăng xuất</span>
-						</button>
-					</div>
-				</>
-			)}
+					)}
+				</div>
+			</>
+		)}
 		</>
     );
 };
