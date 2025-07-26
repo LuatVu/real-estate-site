@@ -31,7 +31,8 @@ function MobileSignIn() {
     }
 
     const signInHandle = async (formData: FormData) => {
-        const phoneNumber = formData.get('phoneNumber');
+        const pn = formData.get('phoneNumber') as string;
+        const phoneNumber = pn.replace(/\D/g, '');
         const password = formData.get('password');        
 
         const result = await signIn("credentials", {
