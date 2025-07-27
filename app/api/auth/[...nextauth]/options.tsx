@@ -129,7 +129,7 @@ export const options: NextAuthOptions = {
                     // Handle Google OAuth sign-in
                     token.accessToken = account.access_token || "";
                     token.idToken = account.id_token || "";                    
-                    token.tokenType = account.token_type || "Bearer google-";
+                    token.tokenType = "Bearer google-";
                     token.id = user.id;
                     token.username = user.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
@@ -143,7 +143,7 @@ export const options: NextAuthOptions = {
                 } else if (account.provider === "facebook") {
                     // Handle Facebook OAuth sign-in
                     token.accessToken = account.access_token || "";
-                    token.tokenType = account.token_type || "Bearer facebook-";
+                    token.tokenType = "Bearer facebook-";
                     token.id = user.id;
                     token.username = user.name || profile?.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
