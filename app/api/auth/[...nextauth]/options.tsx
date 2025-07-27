@@ -11,6 +11,7 @@ declare module "next-auth" {
             username: string;
             email: string;
             accessToken: string;
+            idToken?: string; // Optional, if using ID tokens
             tokenType: string;
             permissions: string[];
         }
@@ -33,6 +34,8 @@ declare module "next-auth/jwt" {
         username: string;
         email: string;
         accessToken: string;
+        idToken: string; // Optional, if using ID tokens
+        accessTokenExpires?: number; // Optional, if you want to track token expiration
         tokenType: string;
         permissions: string[];
         provider?: string; // Optional, to track the provider used for sign-in
@@ -125,16 +128,22 @@ export const options: NextAuthOptions = {
                 if (account.provider === "google") {
                     // Handle Google OAuth sign-in
                     token.accessToken = account.access_token || "";
-                    token.tokenType = account.token_type || "Bearer";
+                    token.idToken = account.id_token || "";                    
+                    token.tokenType = account.token_type || "Bearer google-";
                     token.id = user.id;
                     token.username = user.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Google users
                     token.provider = account.provider; // Store provider information
+                    console.log("Google sign-in successful:", token);
+                    console.log("User profile:", profile);
+                    console.log("Account details:", account);
+                    console.log("User details:", user);
+
                 } else if (account.provider === "facebook") {
                     // Handle Facebook OAuth sign-in
                     token.accessToken = account.access_token || "";
-                    token.tokenType = account.token_type || "Bearer";
+                    token.tokenType = account.token_type || "Bearer facebook-";
                     token.id = user.id;
                     token.username = user.name || profile?.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
@@ -160,6 +169,7 @@ export const options: NextAuthOptions = {
                     username: token.username,
                     email: token.email,
                     accessToken: token.accessToken,
+                    idToken: token.idToken || "", // Optional, if using ID tokens
                     tokenType: token.tokenType,
                     permissions: token.permissions
                 };
@@ -179,12 +189,13 @@ export const options: NextAuthOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer google-${account.id_token}`
                     },
                     body: JSON.stringify({                        
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
-                        googleId: "Google"
+                        googleId: user.id
                     }),
                 });
             }else if(account?.provider == "facebook"){
@@ -193,12 +204,13 @@ export const options: NextAuthOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer facebook-${account.id_token}`
                     },
                     body: JSON.stringify({
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
-                        facebookId: "Facebook"
+                        facebookId: user.id
                     }),
                 });
             }
