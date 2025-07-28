@@ -134,12 +134,7 @@ export const options: NextAuthOptions = {
                     token.username = user.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Google users
-                    token.provider = account.provider; // Store provider information
-                    console.log("Google sign-in successful:", token);
-                    console.log("User profile:", profile);
-                    console.log("Account details:", account);
-                    console.log("User details:", user);
-
+                    token.provider = account.provider; // Store provider information                    
                 } else if (account.provider === "facebook") {
                     // Handle Facebook OAuth sign-in
                     token.accessToken = account.access_token || "";
@@ -148,7 +143,7 @@ export const options: NextAuthOptions = {
                     token.username = user.name || profile?.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Facebook users
-                    token.provider = account.provider; // Store provider information
+                    token.provider = account.provider; // Store provider information                    
                 } else if (account.provider === "credentials") {
                     // Handle credentials sign-in
                     token.accessToken = user.accessToken;
@@ -204,7 +199,7 @@ export const options: NextAuthOptions = {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer facebook-${account.id_token}`
+                        'Authorization': `Bearer facebook-${account.access_token}`
                     },
                     body: JSON.stringify({
                         username: user.name,
