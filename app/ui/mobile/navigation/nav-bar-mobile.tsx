@@ -5,10 +5,12 @@ import btnStyle from '../../common/button/btn.module.css';
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 
 export default function NavBarMobile({displayNav, session}: any){
 	const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+	const router = useRouter();
 
 	const handleProfileClick = () => {
 		console.log('Profile clicked, opening menu...');
@@ -26,7 +28,11 @@ export default function NavBarMobile({displayNav, session}: any){
 	};
 
 	const handleLoginClick = () => {
-		window.location.href = '/sign-in';
+		router.push('/sign-in');
+	};
+
+	const handleUploadPost = () => {
+		router.push('/upload-post');
 	};
 
 	const handleBackClick = () => {
@@ -86,10 +92,13 @@ export default function NavBarMobile({displayNav, session}: any){
 									<p className={styles.profileMenuEmail}>{session.user?.email}</p>
 								</div>
 							</div>
-							
+							<div className={styles.uploadPostBtn}>
+								<Button cssClass={[btnStyle.buttonprimary, styles.guestLoginButton]} text="Đăng Tin" onClick={handleUploadPost} />
+							</div>
 							<div className={styles.profileMenuDivider}></div>
 							
 							<div className={styles.profileMenuItems}>
+								
 								<Link href="/profile" className={styles.profileMenuItem} onClick={handleCloseMenu}>
 									<Image width={20} height={20} alt="Profile" src="/icons/useIcon.svg" />
 									<span>Thông tin cá nhân</span>

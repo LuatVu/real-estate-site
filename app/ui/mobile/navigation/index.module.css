@@ -256,3 +256,7 @@
     background-color: #f0f8ff;
     text-decoration: underline;
 }
+
+.uploadPostBtn{
+    padding: 5px 20px;
+}
