@@ -6,6 +6,7 @@ import NavBarMobile from "../ui/mobile/navigation/nav-bar-mobile";
 import { useSession } from 'next-auth/react';
 import styles from './index.module.css';
 import { useState, useCallback } from 'react';
+import Form from 'next/form';
 
 export default function Profile() {
     const screenSize = useScreenSize();
@@ -51,7 +52,26 @@ function MobileProfile({session}: {session?: any}) {
                     </div>
                 </div>
                 <div className={styles.profileBody}>
-
+                    <div className={styles.imageBlk}></div>
+                    <Form action="/api">
+                        <div className={styles.formGroup}>
+                            <label htmlFor="name">Họ tên</label>
+                            <input type="text" id="name" name="name" defaultValue={session?.user?.username} />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="email">Địa chỉ</label>
+                            <input type="email" id="email" name="email" />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="idCard">Căn cước công dân</label>
+                            <input type="text" id="idCard" name="idCard" />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="taxId">Mã số thuế cá nhân</label>
+                            <input type="text" id="taxId" name="taxId" />
+                        </div>
+                        <button type="submit" className={styles.submitBtn}>Lưu thay đổi</button>
+                    </Form>
                 </div>
             </div>
             <DownloadApp />
