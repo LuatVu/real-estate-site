@@ -14,6 +14,7 @@ declare module "next-auth" {
             idToken?: string; // Optional, if using ID tokens
             tokenType: string;
             permissions: string[];
+            picture?: string;
         }
         provider?: string; // Optional, to track the provider used for sign-in
     }
@@ -25,6 +26,11 @@ declare module "next-auth" {
         accessToken: string;
         tokenType: string;
         permissions: string[];
+        image?: string;
+    }
+
+    interface Profile {
+        picture: string;
     }
 }
 
@@ -39,6 +45,7 @@ declare module "next-auth/jwt" {
         tokenType: string;
         permissions: string[];
         provider?: string; // Optional, to track the provider used for sign-in
+        picture?: string;
     }
 }
 
@@ -109,7 +116,8 @@ export const options: NextAuthOptions = {
                         email: user.email,
                         accessToken: user.token,
                         tokenType: user.type,
-                        permissions: user.permissions
+                        permissions: user.permissions,
+                        image: user.image
                     }
                 }
                 return null;
@@ -134,7 +142,8 @@ export const options: NextAuthOptions = {
                     token.username = user.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Google users
-                    token.provider = account.provider; // Store provider information                    
+                    token.provider = account.provider; // Store provider information 
+                    token.picture = profile?.picture                    
                 } else if (account.provider === "facebook") {
                     // Handle Facebook OAuth sign-in
                     token.accessToken = account.access_token || "";
@@ -143,7 +152,8 @@ export const options: NextAuthOptions = {
                     token.username = user.name || profile?.name || user.email?.split('@')[0] || "";
                     token.email = user.email || "";
                     token.permissions = []; // Default permissions for Facebook users
-                    token.provider = account.provider; // Store provider information                    
+                    token.provider = account.provider; // Store provider information   
+                    token.picture = user.image
                 } else if (account.provider === "credentials") {
                     // Handle credentials sign-in
                     token.accessToken = user.accessToken;
@@ -153,6 +163,7 @@ export const options: NextAuthOptions = {
                     token.email = user.email;
                     token.permissions = user.permissions;
                     token.provider = account.provider; // Store provider information
+                    token.picture = user.image
                 }
             }
             return token;
@@ -166,7 +177,8 @@ export const options: NextAuthOptions = {
                     accessToken: token.accessToken,
                     idToken: token.idToken || "", // Optional, if using ID tokens
                     tokenType: token.tokenType,
-                    permissions: token.permissions
+                    permissions: token.permissions,
+                    picture: token.picture
                 };
                 session.provider = token.provider; // Add provider information to session
              }
@@ -190,7 +202,8 @@ export const options: NextAuthOptions = {
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
-                        googleId: user.id
+                        googleId: user.id,
+                        profilePicture: profile?.picture
                     }),
                 });
             }else if(account?.provider == "facebook"){
@@ -205,7 +218,8 @@ export const options: NextAuthOptions = {
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
-                        facebookId: user.id
+                        facebookId: user.id,
+                        profilePicture: user.image
                     }),
                 });
             }

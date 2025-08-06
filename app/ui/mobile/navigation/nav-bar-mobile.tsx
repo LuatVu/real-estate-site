@@ -80,13 +80,21 @@ export default function NavBarMobile({displayNav, session}: any){
 					{session ? (
 						<>
 							<div className={styles.profileMenuHeader}>
-								<Image 
+								{session.user?.picture?
+								(<img 
 									className={styles.profileMenuAvatar} 
-									width={48} 
-									height={48} 
+									width="48" 
+									height="48" 
+									alt="User Avatar" 
+									src={session.user?.picture}
+								/>)
+								:(<img 
+									className={styles.profileMenuAvatar} 
+									width="48" 
+									height="48"
 									alt="User Avatar" 
 									src="/temp/avatar.jpg" 
-								/>
+								/>)}								
 								<div className={styles.profileMenuInfo}>
 									<h3 className={styles.profileMenuName}>{session.user?.username || session.user?.name}</h3>
 									<p className={styles.profileMenuEmail}>{session.user?.email}</p>
