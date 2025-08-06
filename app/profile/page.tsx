@@ -25,6 +25,13 @@ function MobileProfile({session}: {session?: any}) {
     });
     
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const [formData, setFormData] = useState({
+        name: session?.user?.username || '',
+        address: '',
+        idCard: '',
+        taxId: ''
+    });
+    const [nameError, setNameError] = useState<string>('');
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -41,6 +48,33 @@ function MobileProfile({session}: {session?: any}) {
         const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
         fileInput?.click();
     };
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        // Validate name field
+        if (field === 'name') {
+            if (value.trim() === '') {
+                setNameError('Họ tên không được để trống');
+            } else {
+                setNameError('');
+            }
+        }
+    };
+
+    const handleSubmit = () => {
+        
+        // TODO: Add actual API call here
+        console.log(formData.name);
+        console.log(formData.address);
+        console.log(formData.idCard);
+        console.log(formData.taxId);
+    };
+
+    const isFormValid = formData.name.trim() !== '';
 
     function selectTab(tab: string) {
         if (tab === 'Profile') {
@@ -100,24 +134,59 @@ function MobileProfile({session}: {session?: any}) {
                             />
                         </div>
                     </div>
-                    <Form action="/api" className={styles.formContainer}>
+                    <Form action={handleSubmit} className={styles.formContainer}>
                         <div className={styles.formGroup}>
                             <label htmlFor="name">Họ tên</label>
-                            <input className={styles.inputText} type="text" id="name" name="name" defaultValue={session?.user?.username} />
+                            <input 
+                                className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                value={formData.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                            />
+                            {nameError && <span className={styles.errorMessage}>{nameError}</span>}
                         </div>
                         <div className={styles.formGroup}>
-                            <label htmlFor="email">Địa chỉ</label>
-                            <input className={styles.inputText} type="email" id="email" name="email" />
+                            <label htmlFor="address">Địa chỉ</label>
+                            <input 
+                                className={styles.inputText} 
+                                type="text" 
+                                id="address" 
+                                name="address" 
+                                value={formData.address}
+                                onChange={(e) => handleInputChange('address', e.target.value)}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="idCard">Căn cước công dân</label>
-                            <input className={styles.inputText} type="text" id="idCard" name="idCard" />
+                            <input 
+                                className={styles.inputText} 
+                                type="text" 
+                                id="idCard" 
+                                name="idCard" 
+                                value={formData.idCard}
+                                onChange={(e) => handleInputChange('idCard', e.target.value)}
+                            />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="taxId">Mã số thuế cá nhân</label>
-                            <input className={styles.inputText} type="text" id="taxId" name="taxId" />
+                            <input 
+                                className={styles.inputText} 
+                                type="text" 
+                                id="taxId" 
+                                name="taxId" 
+                                value={formData.taxId}
+                                onChange={(e) => handleInputChange('taxId', e.target.value)}
+                            />
                         </div>
-                        <button type="submit" className={styles.submitBtn}>Lưu thay đổi</button>
+                        <button 
+                            type="submit" 
+                            className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
+                            disabled={!isFormValid}
+                        >
+                            Lưu thay đổi
+                        </button>
                     </Form>
                 </div>
             </div>
