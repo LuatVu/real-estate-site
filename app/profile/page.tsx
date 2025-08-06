@@ -23,6 +23,24 @@ function MobileProfile({session}: {session?: any}) {
         btnUpdateProfile: styles.tabButton + " "+ styles.primaryBtn,
         btnChangePassword: styles.tabButton + " "+ styles.secondaryBtn
     });
+    
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setUploadedImage(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleUploadClick = () => {
+        const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
+        fileInput?.click();
+    };
 
     function selectTab(tab: string) {
         if (tab === 'Profile') {
@@ -52,23 +70,52 @@ function MobileProfile({session}: {session?: any}) {
                     </div>
                 </div>
                 <div className={styles.profileBody}>
-                    <div className={styles.imageBlk}></div>
-                    <Form action="/api">
+                    <div className={styles.imageBlk}>
+                        <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
+                            {uploadedImage ? (
+                                <img 
+                                    src={uploadedImage} 
+                                    alt="Profile" 
+                                    className={styles.uploadedImage}
+                                />
+                            ) : (
+                                <div 
+                                    className={styles.uploadImagePlaceholder}
+                                    style={{
+                                        backgroundImage: 'url(/icons/CameraIcon.svg)',
+                                        backgroundSize: '20px 20px',
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundPosition: 'center'
+                                    }}
+                                >
+                                    <span className={styles.uploadText}>Tải ảnh lên</span>
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                id="imageUpload"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                style={{ display: 'none' }}
+                            />
+                        </div>
+                    </div>
+                    <Form action="/api" className={styles.formContainer}>
                         <div className={styles.formGroup}>
                             <label htmlFor="name">Họ tên</label>
-                            <input type="text" id="name" name="name" defaultValue={session?.user?.username} />
+                            <input className={styles.inputText} type="text" id="name" name="name" defaultValue={session?.user?.username} />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="email">Địa chỉ</label>
-                            <input type="email" id="email" name="email" />
+                            <input className={styles.inputText} type="email" id="email" name="email" />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="idCard">Căn cước công dân</label>
-                            <input type="text" id="idCard" name="idCard" />
+                            <input className={styles.inputText} type="text" id="idCard" name="idCard" />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="taxId">Mã số thuế cá nhân</label>
-                            <input type="text" id="taxId" name="taxId" />
+                            <input className={styles.inputText} type="text" id="taxId" name="taxId" />
                         </div>
                         <button type="submit" className={styles.submitBtn}>Lưu thay đổi</button>
                     </Form>
