@@ -142,7 +142,7 @@ function MobileProfile({session}: {session?: any}) {
                                 type="text" 
                                 id="name" 
                                 name="name" 
-                                value={formData.name}
+                                defaultValue={formData.name}
                                 onChange={(e) => handleInputChange('name', e.target.value)}
                             />
                             {nameError && <span className={styles.errorMessage}>{nameError}</span>}
@@ -154,7 +154,7 @@ function MobileProfile({session}: {session?: any}) {
                                 type="text" 
                                 id="address" 
                                 name="address" 
-                                value={formData.address}
+                                defaultValue={formData.address}
                                 onChange={(e) => handleInputChange('address', e.target.value)}
                             />
                         </div>
@@ -165,7 +165,7 @@ function MobileProfile({session}: {session?: any}) {
                                 type="text" 
                                 id="idCard" 
                                 name="idCard" 
-                                value={formData.idCard}
+                                defaultValue={formData.idCard}
                                 onChange={(e) => handleInputChange('idCard', e.target.value)}
                             />
                         </div>
@@ -176,7 +176,7 @@ function MobileProfile({session}: {session?: any}) {
                                 type="text" 
                                 id="taxId" 
                                 name="taxId" 
-                                value={formData.taxId}
+                                defaultValue={formData.taxId}
                                 onChange={(e) => handleInputChange('taxId', e.target.value)}
                             />
                         </div>
