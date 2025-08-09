@@ -102,9 +102,9 @@ function MobileProfile({session}: {session?: any}) {
             const data = await response.json();
             if (response.ok) {
                 setFormData({
-                    name: data.response.name || '',
+                    name: data.response.username || '',
                     address: data.response.address || '',
-                    idCard: data.response.idCard || '',
+                    idCard: data.response.identificationCode || '',
                     taxId: data.response.taxId || ''
                 });
                 setUploadedImage(data.response.image || null);
