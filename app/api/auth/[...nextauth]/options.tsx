@@ -227,6 +227,7 @@ export const options: NextAuthOptions = {
         },
     },
     pages: {
-        // signIn: '/sign-in'
+        signIn: '/sign-in',
+        error: '/sign-in', // Redirect to sign-in page on error
     }
 } 
