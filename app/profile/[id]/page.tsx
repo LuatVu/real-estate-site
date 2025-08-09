@@ -1,12 +1,13 @@
 "use client";
-import useScreenSize from "../lib/useScreenSize";
-import DownloadApp from "../ui/mobile/download-app/mb.download";
-import MbFooter from "../ui/mobile/footer/mb.footer";
-import NavBarMobile from "../ui/mobile/navigation/nav-bar-mobile";
+import useScreenSize from "../../lib/useScreenSize";
+import DownloadApp from "../../ui/mobile/download-app/mb.download";
+import MbFooter from "../../ui/mobile/footer/mb.footer";
+import NavBarMobile from "../../ui/mobile/navigation/nav-bar-mobile";
 import { useSession } from 'next-auth/react';
 import styles from './index.module.css';
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Form from 'next/form';
+import { useParams } from "next/navigation";
 
 export default function Profile() {
     const screenSize = useScreenSize();
@@ -32,6 +33,7 @@ function MobileProfile({session}: {session?: any}) {
         taxId: ''
     });
     const [nameError, setNameError] = useState<string>('');
+    const params = useParams();
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -89,6 +91,34 @@ function MobileProfile({session}: {session?: any}) {
             });
         }
     }
+
+    const fetchUserData = async () => {
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setFormData({
+                    name: data.response.name || '',
+                    address: data.response.address || '',
+                    idCard: data.response.idCard || '',
+                    taxId: data.response.taxId || ''
+                });
+                setUploadedImage(data.response.image || null);
+            } else {
+                console.error("Error fetching user data:", data);
+            }
+        }catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchUserData();
+    }, [session]);
 
     return (
         <div className="h-full">

@@ -107,7 +107,7 @@ export default function NavBarMobile({displayNav, session}: any){
 							
 							<div className={styles.profileMenuItems}>
 								
-								<Link href="/profile" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+								<Link href={`/profile/${session.user?.id}`} className={styles.profileMenuItem} onClick={handleCloseMenu}>
 									<Image width={20} height={20} alt="Profile" src="/icons/useIcon.svg" />
 									<span>Thông tin cá nhân</span>
 								</Link>
