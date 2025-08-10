@@ -9,23 +9,25 @@ import { useState, useEffect } from 'react';
 import Form from 'next/form';
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { Message } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
 
 export default function Profile() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
     return (
         <div className="h-full">
-            {screenSize === 'sm' ? (<MobileProfile session={session}/>) : (<DesktopProfile session={session}/>)}
+            {screenSize === 'sm' ? (<MobileProfile session={session} />) : (<DesktopProfile session={session} />)}
         </div>
     );
 }
 
-function MobileProfile({session}: {session?: any}) {
+function MobileProfile({ session }: { session?: any }) {
     const [tabBtnState, setTabBtnState] = useState({
-        btnUpdateProfile: styles.tabButton + " "+ styles.primaryBtn,
-        btnChangePassword: styles.tabButton + " "+ styles.secondaryBtn
+        btnUpdateProfile: styles.tabButton + " " + styles.primaryBtn,
+        btnChangePassword: styles.tabButton + " " + styles.secondaryBtn
     });
-    
+
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: session?.user?.username || '',
@@ -36,6 +38,11 @@ function MobileProfile({session}: {session?: any}) {
     const [nameError, setNameError] = useState<string>('');
     const params = useParams();
     const router = useRouter();
+    const [message, setMessage] = useState<{ show: boolean; type: 'success' | 'error' | 'info' | 'warning'; content: string } | null>({
+        show: false,
+        type: 'success',
+        content: ''
+    });
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -69,7 +76,7 @@ function MobileProfile({session}: {session?: any}) {
         }
     };
 
-    const handleSubmit = async () => {                
+    const handleSubmit = async () => {
         const response = await fetch('/api/users', {
             method: 'POST',
             headers: {
@@ -85,12 +92,26 @@ function MobileProfile({session}: {session?: any}) {
             }),
         });
         if (!response.ok) {
-            console.error("Error updating user data:");
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Cập nhật thông tin cá nhân thất bại'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
             return;
         }
         const data = await response.json();
-        if(data.status === "200 OK"){
-            router.push('/');
+        if (data.status === "200 OK") {
+            setMessage({
+                show: true,
+                type: 'success',
+                content: 'Cập nhật thông tin cá nhân thành công'
+            });
+            setTimeout(() => {
+                router.push('/');
+            }, 3000);
         }
     };
 
@@ -99,23 +120,23 @@ function MobileProfile({session}: {session?: any}) {
     function selectTab(tab: string) {
         if (tab === 'Profile') {
             setTabBtnState({
-                btnUpdateProfile: styles.tabButton + " "+ styles.primaryBtn,
-                btnChangePassword: styles.tabButton + " "+ styles.secondaryBtn
+                btnUpdateProfile: styles.tabButton + " " + styles.primaryBtn,
+                btnChangePassword: styles.tabButton + " " + styles.secondaryBtn
             });
         } else {
             setTabBtnState({
-                btnUpdateProfile: styles.tabButton + " "+ styles.secondaryBtn,
-                btnChangePassword: styles.tabButton + " "+ styles.primaryBtn
+                btnUpdateProfile: styles.tabButton + " " + styles.secondaryBtn,
+                btnChangePassword: styles.tabButton + " " + styles.primaryBtn
             });
         }
     }
 
     const fetchUserData = async () => {
-        try{
+        try {
             const userId = params.id || session?.user?.id;
             const response = await fetch(`/api/users/${userId}`, {
                 method: 'GET',
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
             const data = await response.json();
             if (response.ok) {
@@ -129,7 +150,7 @@ function MobileProfile({session}: {session?: any}) {
             } else {
                 console.error("Error fetching user data:", data);
             }
-        }catch (error) {
+        } catch (error) {
             console.error("Error fetching user data:", error);
         }
     }
@@ -141,10 +162,21 @@ function MobileProfile({session}: {session?: any}) {
     return (
         <div className="h-full">
             <NavBarMobile displayNav={true} session={session} />
+            {message && message.show && (
+                <div className={styles.messageContainer}>
+                    <Message
+                        type={message.type}
+                        showIcon={true}
+                        closable
+                    >
+                        {message.content}
+                    </Message>
+                </div>
+            )}
             <div className={styles.profileContainer}>
                 <div className={styles.profileHeader}>
                     <div className={styles.profileTitle}>
-                        <h1 className="heading-h8">Thông tin cá nhân</h1>
+                        <p className="heading-h8">Thông tin cá nhân</p>
                     </div>
                     <div className={styles.tab}>
                         <button name="btnUpdateProfile" className={tabBtnState.btnUpdateProfile} onClick={() => selectTab('Profile')}>Chỉnh sửa thông tin</button>
@@ -155,13 +187,13 @@ function MobileProfile({session}: {session?: any}) {
                     <div className={styles.imageBlk}>
                         <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
                             {uploadedImage ? (
-                                <img 
-                                    src={uploadedImage} 
-                                    alt="Profile" 
+                                <img
+                                    src={uploadedImage}
+                                    alt="Profile"
                                     className={styles.uploadedImage}
                                 />
                             ) : (
-                                <div 
+                                <div
                                     className={styles.uploadImagePlaceholder}
                                     style={{
                                         backgroundImage: 'url(/icons/CameraIcon.svg)',
@@ -185,11 +217,11 @@ function MobileProfile({session}: {session?: any}) {
                     <Form action={handleSubmit} className={styles.formContainer}>
                         <div className={styles.formGroup}>
                             <label htmlFor="name">Họ tên</label>
-                            <input 
+                            <input
                                 className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
-                                type="text" 
-                                id="name" 
-                                name="name" 
+                                type="text"
+                                id="name"
+                                name="name"
                                 defaultValue={formData.name}
                                 onChange={(e) => handleInputChange('name', e.target.value)}
                             />
@@ -197,39 +229,39 @@ function MobileProfile({session}: {session?: any}) {
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="address">Địa chỉ</label>
-                            <input 
-                                className={styles.inputText} 
-                                type="text" 
-                                id="address" 
-                                name="address" 
+                            <input
+                                className={styles.inputText}
+                                type="text"
+                                id="address"
+                                name="address"
                                 defaultValue={formData.address}
                                 onChange={(e) => handleInputChange('address', e.target.value)}
                             />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="idCard">Căn cước công dân</label>
-                            <input 
-                                className={styles.inputText} 
-                                type="text" 
-                                id="idCard" 
-                                name="idCard" 
+                            <input
+                                className={styles.inputText}
+                                type="text"
+                                id="idCard"
+                                name="idCard"
                                 defaultValue={formData.idCard}
                                 onChange={(e) => handleInputChange('idCard', e.target.value)}
                             />
                         </div>
                         <div className={styles.formGroup}>
                             <label htmlFor="taxId">Mã số thuế cá nhân</label>
-                            <input 
-                                className={styles.inputText} 
-                                type="text" 
-                                id="taxId" 
-                                name="taxId" 
+                            <input
+                                className={styles.inputText}
+                                type="text"
+                                id="taxId"
+                                name="taxId"
                                 defaultValue={formData.taxId}
                                 onChange={(e) => handleInputChange('taxId', e.target.value)}
                             />
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
                             disabled={!isFormValid}
                         >
@@ -244,7 +276,7 @@ function MobileProfile({session}: {session?: any}) {
     );
 }
 
-function DesktopProfile({session}: {session?: any}) {
+function DesktopProfile({ session }: { session?: any }) {
     return (
         <div className="flex flex-col items-center justify-center h-full">
             <h1 className="text-2xl font-bold">Desktop Profile</h1>

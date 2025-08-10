@@ -22,7 +22,7 @@
 
 .profileTitle{
     width: 100%;
-    height: auto;
+    height: 22px;    
 }
 
 .tab{
@@ -176,4 +176,14 @@
 .submitBtnDisabled:hover {
     background-color: #d1d5db !important;
     transform: none;
+}
+
+.messageContainer{
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    max-width: 90%;
+    width: auto;
 }
