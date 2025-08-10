@@ -6,7 +6,7 @@
 	box-sizing: border-box;
 	padding: 14px;
 	display: flex;
-	row-gap: 14px;
+	/* row-gap: 14px; */
 	flex-direction: column;
 	color: #0f1114;
 }
@@ -186,4 +186,9 @@
     z-index: 9999;
     max-width: 90%;
     width: auto;
+}
+
+.passwordTitle{
+    width: 100%;
+    height: 19px;
 }

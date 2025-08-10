@@ -25,7 +25,8 @@ export default function Profile() {
 function MobileProfile({ session }: { session?: any }) {
     const [tabBtnState, setTabBtnState] = useState({
         btnUpdateProfile: styles.tabButton + " " + styles.primaryBtn,
-        btnChangePassword: styles.tabButton + " " + styles.secondaryBtn
+        btnChangePassword: styles.tabButton + " " + styles.secondaryBtn,
+        isProfileTab: true
     });
 
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -121,12 +122,14 @@ function MobileProfile({ session }: { session?: any }) {
         if (tab === 'Profile') {
             setTabBtnState({
                 btnUpdateProfile: styles.tabButton + " " + styles.primaryBtn,
-                btnChangePassword: styles.tabButton + " " + styles.secondaryBtn
+                btnChangePassword: styles.tabButton + " " + styles.secondaryBtn,
+                isProfileTab: true
             });
         } else {
             setTabBtnState({
                 btnUpdateProfile: styles.tabButton + " " + styles.secondaryBtn,
-                btnChangePassword: styles.tabButton + " " + styles.primaryBtn
+                btnChangePassword: styles.tabButton + " " + styles.primaryBtn,
+                isProfileTab: false
             });
         }
     }
@@ -183,92 +186,101 @@ function MobileProfile({ session }: { session?: any }) {
                         <button name="btnChangePassword" className={tabBtnState.btnChangePassword} onClick={() => selectTab('Account')}>Cài đặt tài khoản</button>
                     </div>
                 </div>
-                <div className={styles.profileBody}>
-                    <div className={styles.imageBlk}>
-                        <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
-                            {uploadedImage ? (
-                                <img
-                                    src={uploadedImage}
-                                    alt="Profile"
-                                    className={styles.uploadedImage}
+                {tabBtnState.isProfileTab ? (
+                    <div className={styles.profileBody}>
+                        <div className={styles.imageBlk}>
+                            <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
+                                {uploadedImage ? (
+                                    <img
+                                        src={uploadedImage}
+                                        alt="Profile"
+                                        className={styles.uploadedImage}
+                                    />
+                                ) : (
+                                    <div
+                                        className={styles.uploadImagePlaceholder}
+                                        style={{
+                                            backgroundImage: 'url(/icons/CameraIcon.svg)',
+                                            backgroundSize: '20px 20px',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }}
+                                    >
+                                        <span className={styles.uploadText}>Tải ảnh lên</span>
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    id="imageUpload"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    style={{ display: 'none' }}
                                 />
-                            ) : (
-                                <div
-                                    className={styles.uploadImagePlaceholder}
-                                    style={{
-                                        backgroundImage: 'url(/icons/CameraIcon.svg)',
-                                        backgroundSize: '20px 20px',
-                                        backgroundRepeat: 'no-repeat',
-                                        backgroundPosition: 'center'
-                                    }}
-                                >
-                                    <span className={styles.uploadText}>Tải ảnh lên</span>
-                                </div>
-                            )}
-                            <input
-                                type="file"
-                                id="imageUpload"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                style={{ display: 'none' }}
-                            />
+                            </div>
+                        </div>
+                        <Form action={handleSubmit} className={styles.formContainer}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="name">Họ tên</label>
+                                <input
+                                    className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    defaultValue={formData.name}
+                                    onChange={(e) => handleInputChange('name', e.target.value)}
+                                />
+                                {nameError && <span className={styles.errorMessage}>{nameError}</span>}
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="address">Địa chỉ</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="text"
+                                    id="address"
+                                    name="address"
+                                    defaultValue={formData.address}
+                                    onChange={(e) => handleInputChange('address', e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="idCard">Căn cước công dân</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="text"
+                                    id="idCard"
+                                    name="idCard"
+                                    defaultValue={formData.idCard}
+                                    onChange={(e) => handleInputChange('idCard', e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="taxId">Mã số thuế cá nhân</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="text"
+                                    id="taxId"
+                                    name="taxId"
+                                    defaultValue={formData.taxId}
+                                    onChange={(e) => handleInputChange('taxId', e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
+                                disabled={!isFormValid}
+                            >
+                                Lưu thay đổi
+                            </button>
+                        </Form>
+                    </div>
+                ) : (
+                    <div className={styles.profileBody}>
+                        <div className={styles.passwordTitle}>
+                            <p className="heading-h9">Đổi mật khẩu</p>
                         </div>
                     </div>
-                    <Form action={handleSubmit} className={styles.formContainer}>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="name">Họ tên</label>
-                            <input
-                                className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
-                                type="text"
-                                id="name"
-                                name="name"
-                                defaultValue={formData.name}
-                                onChange={(e) => handleInputChange('name', e.target.value)}
-                            />
-                            {nameError && <span className={styles.errorMessage}>{nameError}</span>}
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="address">Địa chỉ</label>
-                            <input
-                                className={styles.inputText}
-                                type="text"
-                                id="address"
-                                name="address"
-                                defaultValue={formData.address}
-                                onChange={(e) => handleInputChange('address', e.target.value)}
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="idCard">Căn cước công dân</label>
-                            <input
-                                className={styles.inputText}
-                                type="text"
-                                id="idCard"
-                                name="idCard"
-                                defaultValue={formData.idCard}
-                                onChange={(e) => handleInputChange('idCard', e.target.value)}
-                            />
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="taxId">Mã số thuế cá nhân</label>
-                            <input
-                                className={styles.inputText}
-                                type="text"
-                                id="taxId"
-                                name="taxId"
-                                defaultValue={formData.taxId}
-                                onChange={(e) => handleInputChange('taxId', e.target.value)}
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
-                            disabled={!isFormValid}
-                        >
-                            Lưu thay đổi
-                        </button>
-                    </Form>
-                </div>
+                )}
+
             </div>
             <DownloadApp />
             <MbFooter />
