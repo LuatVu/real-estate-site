@@ -8,6 +8,7 @@ import styles from './index.module.css';
 import { useState, useEffect } from 'react';
 import Form from 'next/form';
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
     const screenSize = useScreenSize();
@@ -34,6 +35,7 @@ function MobileProfile({session}: {session?: any}) {
     });
     const [nameError, setNameError] = useState<string>('');
     const params = useParams();
+    const router = useRouter();
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -67,13 +69,29 @@ function MobileProfile({session}: {session?: any}) {
         }
     };
 
-    const handleSubmit = () => {
-        
-        // TODO: Add actual API call here
-        console.log(formData.name);
-        console.log(formData.address);
-        console.log(formData.idCard);
-        console.log(formData.taxId);
+    const handleSubmit = async () => {                
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: params.id || session?.user?.id,
+                username: formData.name,
+                address: formData.address,
+                identificationCode: formData.idCard,
+                taxId: formData.taxId,
+                profilePicture: uploadedImage
+            }),
+        });
+        if (!response.ok) {
+            console.error("Error updating user data:");
+            return;
+        }
+        const data = await response.json();
+        if(data.status === "200 OK"){
+            router.push('/');
+        }
     };
 
     const isFormValid = formData.name.trim() !== '';
@@ -107,7 +125,7 @@ function MobileProfile({session}: {session?: any}) {
                     idCard: data.response.identificationCode || '',
                     taxId: data.response.taxId || ''
                 });
-                setUploadedImage(data.response.image || null);
+                setUploadedImage(data.response.profilePicture || null);
             } else {
                 console.error("Error fetching user data:", data);
             }
