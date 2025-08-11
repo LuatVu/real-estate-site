@@ -117,6 +117,10 @@ function MobileProfile({ session }: { session?: any }) {
         }
     };
 
+    const handlePasswordChange = async () => {
+
+    }
+
     const isFormValid = formData.name.trim() !== '';
 
     function selectTab(tab: string) {
@@ -277,8 +281,49 @@ function MobileProfile({ session }: { session?: any }) {
                 ) : (
                     <div className={styles.profileBody}>
                         <div className={styles.passwordTitle}>
-                            <p className="heading-h9">Đổi mật khẩu</p>
+                            <p className="heading-h8">Đổi mật khẩu</p>
                         </div>
+                        <Form action={handlePasswordChange} className={styles.formContainer}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="currentPassword">Mật khẩu hiện tại</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="password"
+                                    id="currentPassword"
+                                    name="currentPassword"
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="newPassword">Mật khẩu mới</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="password"
+                                    id="newPassword"
+                                    name="newPassword"
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
+                                <input
+                                    className={styles.inputText}
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    required
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <p className={styles.passwordHint}>Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
+                            </div>
+                            <button
+                                type="submit"
+                                className={`${styles.submitBtn} ${styles.primaryBtn}`}
+                            >
+                                Đổi mật khẩu
+                            </button>
+                        </Form>
                     </div>
                 )}
 
