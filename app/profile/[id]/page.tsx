@@ -85,6 +85,7 @@ function MobileProfile({ session }: { session?: any }) {
             },
             body: JSON.stringify({
                 userId: params.id || session?.user?.id,
+                authProvider: session?.provider,
                 username: formData.name,
                 address: formData.address,
                 identificationCode: formData.idCard,
