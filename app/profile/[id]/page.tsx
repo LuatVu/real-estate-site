@@ -16,7 +16,7 @@ export default function Profile() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
     return (
-        <div className="h-full">
+        <div className="flex flex-col min-h-screen">
             {screenSize === 'sm' ? (<MobileProfile session={session} />) : (<DesktopProfile session={session} />)}
         </div>
     );
@@ -168,7 +168,7 @@ function MobileProfile({ session }: { session?: any }) {
     }, [session]);
 
     return (
-        <div className="h-full">
+        <div className="flex flex-col min-h-screen">
             <NavBarMobile displayNav={true} session={session} />
             {message && message.show && (
                 <div className={styles.messageContainer}>
@@ -181,7 +181,7 @@ function MobileProfile({ session }: { session?: any }) {
                     </Message>
                 </div>
             )}
-            <div className={styles.profileContainer}>
+            <div className={`${styles.profileContainer} flex-1`}>
                 <div className={styles.profileHeader}>
                     <div className={styles.profileTitle}>
                         <p className="heading-h8">Thông tin cá nhân</p>
