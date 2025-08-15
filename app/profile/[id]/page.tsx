@@ -37,6 +37,16 @@ function MobileProfile({ session }: { session?: any }) {
         taxId: ''
     });
     const [nameError, setNameError] = useState<string>('');
+    const [passwordFields, setPasswordFields] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [passwordErrors, setPasswordErrors] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
     const params = useParams();
     const router = useRouter();
     const [message, setMessage] = useState<{ show: boolean; type: 'success' | 'error' | 'info' | 'warning'; content: string } | null>({
@@ -59,6 +69,54 @@ function MobileProfile({ session }: { session?: any }) {
     const handleUploadClick = () => {
         const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
         fileInput?.click();
+    };
+
+    // Password validation helpers
+    const hasWhitespace = (str: string) => /\s/.test(str);
+    const isStrongPassword = (str: string) =>
+        /[a-z]/.test(str) &&
+        /[A-Z]/.test(str) &&
+        /[0-9]/.test(str) &&
+        /[^A-Za-z0-9]/.test(str) &&
+        str.length >= 8;
+
+    const handlePasswordFieldChange = (field: string, value: string) => {
+        setPasswordFields(prev => ({ ...prev, [field]: value }));
+        let error = '';
+        if (hasWhitespace(value)) {
+            error = 'Không được chứa khoảng trắng';
+        } else if ((field === 'newPassword' || field === 'confirmPassword') && value) {
+            if (!isStrongPassword(value)) {
+                error = 'Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số, ký tự đặc biệt';
+            }
+        }
+        
+        // Special handling for confirmPassword to check if it matches newPassword
+        if (field === 'confirmPassword') {
+            const currentNewPassword = passwordFields.newPassword;
+            if (value && currentNewPassword && value !== currentNewPassword) {
+                error = 'Mật khẩu xác nhận không khớp';
+            }
+        }
+        
+        // If changing newPassword, also validate confirmPassword if it exists
+        if (field === 'newPassword') {
+            const currentConfirmPassword = passwordFields.confirmPassword;
+            if (currentConfirmPassword && value !== currentConfirmPassword) {
+                setPasswordErrors(prev => ({ ...prev, confirmPassword: 'Mật khẩu xác nhận không khớp' }));
+            } else if (currentConfirmPassword && value === currentConfirmPassword) {
+                // Clear confirm password error if they now match
+                let confirmError = '';
+                if (hasWhitespace(currentConfirmPassword)) {
+                    confirmError = 'Không được chứa khoảng trắng';
+                } else if (!isStrongPassword(currentConfirmPassword)) {
+                    confirmError = 'Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số, ký tự đặc biệt';
+                }
+                setPasswordErrors(prev => ({ ...prev, confirmPassword: confirmError }));
+            }
+        }
+        
+        setPasswordErrors(prev => ({ ...prev, [field]: error }));
     };
 
     const handleInputChange = (field: string, value: string) => {
@@ -117,8 +175,95 @@ function MobileProfile({ session }: { session?: any }) {
         }
     };
 
-    const handlePasswordChange = async () => {
+    const handlePasswordChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        const currentPassword = passwordFields.currentPassword;
+        const newPassword = passwordFields.newPassword;
+        const confirmPassword = passwordFields.confirmPassword;
 
+        if (newPassword.trim() === '') {
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Mật khẩu mới không được để trống'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
+            return;
+        }
+        if (currentPassword.trim() === '') {
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Mật khẩu hiện tại không được để trống'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
+            return;
+        }
+
+        if (confirmPassword.trim() === '') {
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Mật khẩu xác nhận không được để trống'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Mật khẩu xác nhận không khớp'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
+            return;
+        }
+
+        const response = await fetch('/api/users/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: params.id || session?.user?.id,
+                oldPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            }),
+        });
+
+        if (!response.ok) {
+            setMessage({
+                show: true,
+                type: 'error',
+                content: 'Đổi mật khẩu thất bại'
+            });
+            setTimeout(() => {
+                setMessage(prev => prev ? ({ ...prev, show: false }) : null);
+            }, 3000);
+            return;
+        }
+        const data = await response.json();
+        if (data.status === "200 OK") {
+            setMessage({
+                show: true,
+                type: 'success',
+                content: 'Đổi mật khẩu thành công'
+            });
+            setTimeout(() => {
+                router.push('/');
+            }, 3000);
+        }
     }
 
     const isFormValid = formData.name.trim() !== '';
@@ -283,47 +428,54 @@ function MobileProfile({ session }: { session?: any }) {
                         <div className={styles.passwordTitle}>
                             <p className="heading-h8">Đổi mật khẩu</p>
                         </div>
-                        <Form action={handlePasswordChange} className={styles.formContainer}>
+                        <form onSubmit={handlePasswordChange} className={styles.formContainer}>
                             <div className={styles.formGroup}>
                                 <label htmlFor="currentPassword">Mật khẩu hiện tại</label>
                                 <input
-                                    className={styles.inputText}
+                                    className={`${styles.inputText} ${passwordErrors.currentPassword ? styles.inputError : ''}`}
                                     type="password"
                                     id="currentPassword"
-                                    name="currentPassword"
+                                    value={passwordFields.currentPassword}
+                                    onChange={e => handlePasswordFieldChange('currentPassword', e.target.value)}
                                     required
                                 />
+                                {passwordErrors.currentPassword && <span className={styles.errorMessage}>{passwordErrors.currentPassword}</span>}
                             </div>
                             <div className={styles.formGroup}>
                                 <label htmlFor="newPassword">Mật khẩu mới</label>
                                 <input
-                                    className={styles.inputText}
+                                    className={`${styles.inputText} ${passwordErrors.newPassword ? styles.inputError : ''}`}
                                     type="password"
                                     id="newPassword"
-                                    name="newPassword"
+                                    value={passwordFields.newPassword}
+                                    onChange={e => handlePasswordFieldChange('newPassword', e.target.value)}
                                     required
                                 />
+                                {passwordErrors.newPassword && <span className={styles.errorMessage}>{passwordErrors.newPassword}</span>}
                             </div>
                             <div className={styles.formGroup}>
                                 <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
                                 <input
-                                    className={styles.inputText}
+                                    className={`${styles.inputText} ${passwordErrors.confirmPassword ? styles.inputError : ''}`}
                                     type="password"
                                     id="confirmPassword"
-                                    name="confirmPassword"
+                                    value={passwordFields.confirmPassword}
+                                    onChange={e => handlePasswordFieldChange('confirmPassword', e.target.value)}
                                     required
                                 />
+                                {passwordErrors.confirmPassword && <span className={styles.errorMessage}>{passwordErrors.confirmPassword}</span>}
                             </div>
                             <div className={styles.formGroup}>
                                 <p className={styles.passwordHint}>Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
                             </div>
                             <button
                                 type="submit"
-                                className={`${styles.submitBtn} ${styles.primaryBtn}`}
+                                className={`${styles.submitBtn} ${styles.primaryBtn} ${(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword) ? styles.submitBtnDisabled : ''}`}
+                                disabled={Boolean(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword)}
                             >
                                 Đổi mật khẩu
                             </button>
-                        </Form>
+                        </form>
                     </div>
                 )}
 
