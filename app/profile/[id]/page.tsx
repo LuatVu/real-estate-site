@@ -333,7 +333,7 @@ function MobileProfile({ session }: { session?: any }) {
                     </div>
                     <div className={styles.tab}>
                         <button name="btnUpdateProfile" className={tabBtnState.btnUpdateProfile} onClick={() => selectTab('Profile')}>Chỉnh sửa thông tin</button>
-                        <button name="btnChangePassword" className={tabBtnState.btnChangePassword} onClick={() => selectTab('Account')}>Cài đặt tài khoản</button>
+                        {session?.provider === "credentials" && <button name="btnChangePassword" className={tabBtnState.btnChangePassword} onClick={() => selectTab('Account')}>Cài đặt tài khoản</button>}
                     </div>
                 </div>
                 {tabBtnState.isProfileTab ? (
@@ -470,7 +470,7 @@ function MobileProfile({ session }: { session?: any }) {
                             </div>
                             <button
                                 type="submit"
-                                className={`${styles.submitBtn} ${styles.primaryBtn} ${(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword) ? styles.submitBtnDisabled : ''}`}
+                                className={`${styles.submitBtn} ${(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword) ? styles.submitBtnDisabled : ''}`}
                                 disabled={Boolean(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword)}
                             >
                                 Đổi mật khẩu
