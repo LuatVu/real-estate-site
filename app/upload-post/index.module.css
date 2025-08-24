@@ -1,0 +1,18 @@
+.headerUploadPost {
+    padding: 8px 0px;
+    height: 54px;
+}
+
+
+.formContainer{
+    position: relative;
+	width: 100%;
+	border-top: 0.5px solid #f7f9fc;
+	border-bottom: 0.5px solid #f7f9fc;
+	box-sizing: border-box;
+	padding: 14px;
+	display: flex;
+	/* row-gap: 14px; */
+	flex-direction: column;
+	color: #0f1114;
+}
