@@ -18,19 +18,83 @@ export default function UploadPost() {
     );
 }
 
-function MobileUploadPost({ session }: { session?: any }) {
+function MobileUploadPost({ session }: { session?: any }) {    
     const [transactionType, setTransactionType] = useState('sell');
     const [isTransactionTypeOpen, setIsTransactionTypeOpen] = useState(false);
+    const [propertyType, setPropertyType] = useState('house');
+    const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(false);
+    const [legalType, setLegalType] = useState('red_book');
+    const [isLegalTypeOpen, setIsLegalTypeOpen] = useState(false);
+    const [furnitureType, setFurnitureType] = useState('');
+    const [isFurnitureTypeOpen, setIsFurnitureTypeOpen] = useState(false);
+    const [directionType, setDirectionType] = useState('');
+    const [isDirectionTypeOpen, setIsDirectionTypeOpen] = useState(false);
 
     const handleTransactionTypeChange = (type: string) => {
         setTransactionType(type);
         setIsTransactionTypeOpen(false);
+    };
+
+    const handlePropertyTypeChange = (type: string) => {
+        setPropertyType(type);
+        setIsPropertyTypeOpen(false);
+    };
+
+    const handleLegalTypeChange = (type: string) => {
+        setLegalType(type);
+        setIsLegalTypeOpen(false);
+    };
+
+    const handleFurnitureTypeChange = (type: string) => {
+        setFurnitureType(type);
+        setIsFurnitureTypeOpen(false);
+    };
+
+    const handleDirectionTypeChange = (type: string) => {
+        setDirectionType(type);
+        setIsDirectionTypeOpen(false);
     };
     const [tabItemState, setTabBtnState] = useState({
         firstTab: styles.activeTabItem,
         secondTab: styles.inactiveTabItem,
         thirdTab: styles.inactiveTabItem,
     });
+
+    // Property type options constant
+    const PROPERTY_TYPES = [
+        { value: 'house', label: 'Nhà riêng', icon: 'HouseLine.svg' },
+        { value: 'apartment', label: 'Chung cư', icon: 'BuildingApartment.svg' },
+        { value: 'office', label: 'Văn phòng', icon: 'BuildingOffice.svg' },
+        { value: 'warehouse', label: 'Kho xưởng', icon: 'Warehouse.svg' },
+        { value: 'condotel', label: 'Condotel', icon: 'Condotel.svg' },
+        { value: 'other', label: 'Khác', icon: 'OtherProperty.svg' }
+    ];
+
+    // Legal options constant
+    const LEGAL_TYPES = [
+        { value: 'red_book', label: 'Sổ đỏ' },
+        { value: 'contract', label: 'Hợp đồng mua bán' },
+        { value: 'no_book', label: 'Không sổ' }
+    ];
+
+    // Furniture options constant
+    const FURNITURE_TYPES = [
+        { value: 'full', label: 'Đầy đủ' },
+        { value: 'basic', label: 'Cơ bản' },
+        { value: 'none', label: 'Không nội thất' }
+    ];
+
+    // Direction options constant
+    const DIRECTION_TYPES = [
+        { value: 'east', label: 'Đông' },
+        { value: 'west', label: 'Tây' },
+        { value: 'south', label: 'Nam' },
+        { value: 'north', label: 'Bắc' },
+        { value: 'northeast', label: 'Đông Bắc' },
+        { value: 'southeast', label: 'Đông Nam' },
+        { value: 'northwest', label: 'Tây Bắc' },
+        { value: 'southwest', label: 'Tây Nam' }
+    ];
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -132,8 +196,47 @@ function MobileUploadPost({ session }: { session?: any }) {
                         </div>
                         <div className={styles.inputGroup}>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="propertyType">Loại bất động sản <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="text" id="propertyType" name="propertyType" placeholder="Loại bất động sản" required />      
+                                <div className={styles.transactionTypeHeader} onClick={() => setIsPropertyTypeOpen(!isPropertyTypeOpen)}>
+                                    <label className="body-2-medium">
+                                        Loại bất động sản: <span className={styles.selectedType}>{PROPERTY_TYPES.find(type => type.value === propertyType)?.label}</span> <span style={{ color: 'red' }}>*</span>
+                                    </label>
+                                    <Image 
+                                        src="/icons/CaretDown.svg" 
+                                        alt="Expand" 
+                                        width={16} 
+                                        height={16} 
+                                        className={`${styles.caretIcon} ${isPropertyTypeOpen ? styles.caretOpen : ''}`} 
+                                    />
+                                </div>
+                                {isPropertyTypeOpen && (
+                                    <div className={styles.transactionOptions}>
+                                        {PROPERTY_TYPES.map((type) => (
+                                            <div 
+                                                key={type.value}
+                                                className={`${styles.transactionOption} ${propertyType === type.value ? styles.selectedOption : ''}`} 
+                                                onClick={() => handlePropertyTypeChange(type.value)}
+                                            >
+                                                <div className={styles.optionIconContainer}>
+                                                    <Image src={`/icons/${type.icon}`} alt={type.label} width={24} height={24} />
+                                                </div>
+                                                <div className={styles.optionContent}>
+                                                    <div className={styles.optionRadio}>
+                                                        <input 
+                                                            type="radio" 
+                                                            id={type.value} 
+                                                            name="propertyType" 
+                                                            value={type.value} 
+                                                            checked={propertyType === type.value} 
+                                                            onChange={() => {}} 
+                                                        />
+                                                        <div className={styles.radioIndicator}></div>
+                                                    </div>
+                                                    <label htmlFor={type.value}>{type.label}</label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>   
                             <div className={styles.inputItem}>
                                 <label className="body-2-medium" htmlFor="area">Diện tích (m²) <span style={{ color: 'red' }}>*</span></label>
@@ -146,32 +249,140 @@ function MobileUploadPost({ session }: { session?: any }) {
                         </div>
                         <div className={styles.inputGroup}>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="legal">Pháp lý <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="text" id="legal" name="legal" placeholder="Pháp lý" required />      
+                                <div className={styles.transactionTypeHeader} onClick={() => setIsLegalTypeOpen(!isLegalTypeOpen)}>
+                                    <label className="body-2-medium">
+                                        Pháp lý: <span className={styles.selectedType}>{LEGAL_TYPES.find(type => type.value === legalType)?.label}</span> <span style={{ color: 'red' }}>*</span>
+                                    </label>
+                                    <Image 
+                                        src="/icons/CaretDown.svg" 
+                                        alt="Expand" 
+                                        width={16} 
+                                        height={16} 
+                                        className={`${styles.caretIcon} ${isLegalTypeOpen ? styles.caretOpen : ''}`} 
+                                    />
+                                </div>
+                                {isLegalTypeOpen && (
+                                    <div className={styles.transactionOptions}>
+                                        {LEGAL_TYPES.map((type) => (
+                                            <div 
+                                                key={type.value}
+                                                className={`${styles.transactionOption} ${legalType === type.value ? styles.selectedOption : ''}`} 
+                                                onClick={() => handleLegalTypeChange(type.value)}
+                                            >
+                                                <div className={styles.optionContent}>
+                                                    <div className={styles.optionRadio}>
+                                                        <input 
+                                                            type="radio" 
+                                                            id={type.value} 
+                                                            name="legal" 
+                                                            value={type.value} 
+                                                            checked={legalType === type.value} 
+                                                            onChange={() => {}} 
+                                                        />
+                                                        <div className={styles.radioIndicator}></div>
+                                                    </div>
+                                                    <label htmlFor={type.value}>{type.label}</label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>   
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="furniture">Nội thất <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="text" id="furniture" name="furniture" placeholder="Nội thất" required />
+                                <div className={styles.transactionTypeHeader} onClick={() => setIsFurnitureTypeOpen(!isFurnitureTypeOpen)}>
+                                    <label className="body-2-medium">
+                                        Nội thất: <span className={styles.selectedType} style={!furnitureType ? { color: '#9ca3af', opacity: 0.7 } : {}}>{furnitureType ? FURNITURE_TYPES.find(type => type.value === furnitureType)?.label : 'Chọn nội thất'}</span>
+                                    </label>
+                                    <Image 
+                                        src="/icons/CaretDown.svg" 
+                                        alt="Expand" 
+                                        width={16} 
+                                        height={16} 
+                                        className={`${styles.caretIcon} ${isFurnitureTypeOpen ? styles.caretOpen : ''}`} 
+                                    />
+                                </div>
+                                {isFurnitureTypeOpen && (
+                                    <div className={styles.transactionOptions}>
+                                        {FURNITURE_TYPES.map((type) => (
+                                            <div 
+                                                key={type.value}
+                                                className={`${styles.transactionOption} ${furnitureType === type.value ? styles.selectedOption : ''}`} 
+                                                onClick={() => handleFurnitureTypeChange(type.value)}
+                                            >
+                                                <div className={styles.optionContent}>
+                                                    <div className={styles.optionRadio}>
+                                                        <input 
+                                                            type="radio" 
+                                                            id={type.value} 
+                                                            name="furniture" 
+                                                            value={type.value} 
+                                                            checked={furnitureType === type.value} 
+                                                            onChange={() => {}} 
+                                                        />
+                                                        <div className={styles.radioIndicator}></div>
+                                                    </div>
+                                                    <label htmlFor={type.value}>{type.label}</label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="bedrooms">Số phòng ngủ <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="number" id="bedrooms" name="bedrooms" placeholder="Nhập số phòng ngủ" required />      
+                                <label className="body-2-medium" htmlFor="bedrooms">Số phòng ngủ</label>
+                                <input className={styles.inputField} type="number" id="bedrooms" name="bedrooms" placeholder="Nhập số phòng ngủ"/>      
                             </div>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="bathrooms">Số phòng tắm <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="number" id="bathrooms" name="bathrooms" placeholder="Nhập số phòng tắm" required />      
+                                <label className="body-2-medium" htmlFor="bathrooms">Số phòng tắm</label>
+                                <input className={styles.inputField} type="number" id="bathrooms" name="bathrooms" placeholder="Nhập số phòng tắm" />      
                             </div>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="floors">Số tầng <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="number" id="floors" name="floors" placeholder="Nhập số tầng" required />      
+                                <label className="body-2-medium" htmlFor="floors">Số tầng</label>
+                                <input className={styles.inputField} type="number" id="floors" name="floors" placeholder="Nhập số tầng" />      
                             </div>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="direction">Hướng Nhà <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="text" id="direction" name="direction" placeholder="Hướng Nhà" required />
+                                <div className={styles.transactionTypeHeader} onClick={() => setIsDirectionTypeOpen(!isDirectionTypeOpen)}>
+                                    <label className="body-2-medium">
+                                        Hướng Nhà: <span className={styles.selectedType} style={!directionType ? { color: '#9ca3af', opacity: 0.7 } : {}}>{directionType ? DIRECTION_TYPES.find(type => type.value === directionType)?.label : 'Chọn hướng nhà'}</span>
+                                    </label>
+                                    <Image 
+                                        src="/icons/CaretDown.svg" 
+                                        alt="Expand" 
+                                        width={16} 
+                                        height={16} 
+                                        className={`${styles.caretIcon} ${isDirectionTypeOpen ? styles.caretOpen : ''}`} 
+                                    />
+                                </div>
+                                {isDirectionTypeOpen && (
+                                    <div className={styles.transactionOptions}>
+                                        {DIRECTION_TYPES.map((type) => (
+                                            <div 
+                                                key={type.value}
+                                                className={`${styles.transactionOption} ${directionType === type.value ? styles.selectedOption : ''}`} 
+                                                onClick={() => handleDirectionTypeChange(type.value)}
+                                            >
+                                                <div className={styles.optionContent}>
+                                                    <div className={styles.optionRadio}>
+                                                        <input 
+                                                            type="radio" 
+                                                            id={type.value} 
+                                                            name="direction" 
+                                                            value={type.value} 
+                                                            checked={directionType === type.value} 
+                                                            onChange={() => {}} 
+                                                        />
+                                                        <div className={styles.radioIndicator}></div>
+                                                    </div>
+                                                    <label htmlFor={type.value}>{type.label}</label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.inputItem}>
-                                <label className="body-2-medium" htmlFor="frontage">Mặt tiền (m) <span style={{ color: 'red' }}>*</span></label>
-                                <input className={styles.inputField} type="number" id="frontage" name="frontage" placeholder="Nhập mặt tiền" required />      
+                                <label className="body-2-medium" htmlFor="frontage">Mặt tiền (m)</label>
+                                <input className={styles.inputField} type="number" id="frontage" name="frontage" placeholder="Nhập mặt tiền"/>      
                             </div>
                         </div>
 
