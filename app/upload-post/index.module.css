@@ -1,18 +1,254 @@
 .headerUploadPost {
-    padding: 8px 0px;
-    height: 54px;
+    padding: 16px;   
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
 }
+
+/* .headerUploadPost > div:first-child {
+    margin-bottom: 4px;
+}
+
+.headerUploadPost > div:nth-child(2) {
+    color: var(--color-secondary-s600, #777E90);
+    font-size: 14px;
+    margin-bottom: 8px;
+} */
 
 
 .formContainer{
     position: relative;
 	width: 100%;
-	border-top: 0.5px solid #f7f9fc;
-	border-bottom: 0.5px solid #f7f9fc;
 	box-sizing: border-box;
-	padding: 14px;
+	padding: 16px 20px;
 	display: flex;
-	/* row-gap: 14px; */
 	flex-direction: column;
 	color: #0f1114;
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: #F5F7FA;
+}
+
+.tab{
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	margin-top: 4px;
+}
+
+.inactiveTabItem{
+	width: 33.33%;
+	height: 4px;
+	border-radius: 2px;
+	background-color: var(--color-secondary-s300);
+	transition: all 0.3s ease;
+}
+
+.activeTabItem{
+	width: 33.33%;
+	height: 4px;
+	border-radius: 2px;
+	background-color: var(--color-primary-p200);
+	box-shadow: 0 1px 3px rgba(43, 106, 208, 0.3);
+	transition: all 0.3s ease;
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px 0 80px; /* Added bottom padding to prevent content from being hidden behind fixed footer */
+}
+
+.inputGroup {
+    margin-bottom: 24px;
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.inputGroup:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.inputItem {
+    flex: 1 1 300px; /* Flex grow, shrink, and basis for responsive layout */
+    min-width: 0; /* Allows items to shrink below flex-basis if needed */
+    margin-bottom: 8px;
+}
+
+.fullWidthItem {
+    flex: 1 1 100%; /* Always takes full width */
+}
+
+.inputField {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    background-color: #FAFBFC;
+    transition: all 0.3s ease;
+}
+
+.inputField:focus {
+    outline: none;
+    border-color: var(--color-primary-p200, #2B6AD0);
+    box-shadow: 0 0 0 2px rgba(43, 106, 208, 0.1);
+}
+
+.textAreaField {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    margin-top: 8px;
+    min-height: 120px;
+    resize: vertical;
+    font-size: 14px;
+    background-color: #FAFBFC;
+    transition: all 0.3s ease;
+}
+
+.textAreaField:focus {
+    outline: none;
+    border-color: var(--color-primary-p200, #2B6AD0);
+    box-shadow: 0 0 0 2px rgba(43, 106, 208, 0.1);
+}
+
+.submitButton {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--color-primary-p200, #2B6AD0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(43, 106, 208, 0.2);
+    transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: var(--color-primary-p300, #1A56B9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(43, 106, 208, 0.25);
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 16px 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.transactionTypeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.selectedType {
+    color: var(--color-primary-p200, #2B6AD0);
+    font-weight: 500;
+}
+
+.caretIcon {
+    transition: transform 0.3s ease;
+}
+
+.caretOpen {
+    transform: rotate(180deg);
+}
+
+.transactionOptions {
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    margin-top: 12px;
+    overflow: hidden;
+    background-color: #FAFBFC;
+    width: 100%;
+}
+
+.transactionOption {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid var(--color-secondary-s300, #E6E8EC);
+    width: 100%;
+}
+
+.transactionOption:last-child {
+    border-bottom: none;
+}
+
+.transactionOption:hover {
+    background-color: var(--color-secondary-s100, #F7F9FC);
+}
+
+.selectedOption {
+    background-color: var(--color-secondary-s200, #EFF1F5);
+}
+
+.optionIconContainer {
+    margin-right: 16px;
+}
+
+.optionContent {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.optionRadio {
+    position: relative;
+    margin-right: 10px;
+}
+
+.optionRadio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radioIndicator {
+    position: relative;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-secondary-s400, #B1B5C3);
+    border-radius: 50%;
+}
+
+.optionRadio input[type="radio"]:checked + .radioIndicator {
+    border-color: var(--color-primary-p200, #2B6AD0);
+}
+
+.optionRadio input[type="radio"]:checked + .radioIndicator:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-primary-p200, #2B6AD0);
 }
