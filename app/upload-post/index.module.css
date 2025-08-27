@@ -154,6 +154,8 @@
     padding: 16px 20px;
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
     z-index: 100;
+    display: flex;
+    gap: 16px;
 }
 
 .transactionTypeHeader {
@@ -250,5 +252,49 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    background-color: var(--color-primary-p200);
+}
+
+.backButton{
+    flex: 1;
+    padding: 16px 24px;
+    margin: 0;
+    background-color: var(--color-secondary-s200);
+    color: var(--color-text-t500);
+    border: solid 1px var(--color-primary-p200);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(43, 106, 208, 0.2);
+    transition: all 0.3s ease;
+    min-height: 56px;
+}
+
+.backButton:hover {
+    background-color: var(--color-primary-p300, #1A56B9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(43, 106, 208, 0.25);
+}
+
+.nextButton{
+    flex: 1;
+    padding: 16px 24px;
+    margin: 0;
     background-color: var(--color-primary-p200, #2B6AD0);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(43, 106, 208, 0.2);
+    transition: all 0.3s ease;
+    min-height: 56px;
+}
+
+.nextButton:hover {
+    background-color: var(--color-primary-p300, #1A56B9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(43, 106, 208, 0.25);
 }

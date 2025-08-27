@@ -10,6 +10,7 @@ declare module "next-auth" {
             id: string;
             username: string;
             email: string;
+            phoneNumber?: string;
             accessToken: string;
             idToken?: string; // Optional, if using ID tokens
             tokenType: string;
@@ -23,6 +24,7 @@ declare module "next-auth" {
         id: string;
         username: string;
         email: string;
+        phoneNumber?: string;
         accessToken: string;
         tokenType: string;
         permissions: string[];
@@ -39,6 +41,7 @@ declare module "next-auth/jwt" {
         id: string;
         username: string;
         email: string;
+        phoneNumber?: string;
         accessToken: string;
         idToken: string; // Optional, if using ID tokens
         accessTokenExpires?: number; // Optional, if you want to track token expiration
@@ -114,6 +117,7 @@ export const options: NextAuthOptions = {
                         id: user.id,
                         username: user.username,
                         email: user.email,
+                        phoneNumber: user.phoneNumber,
                         accessToken: user.token,
                         tokenType: user.type,
                         permissions: user.permissions,
@@ -163,7 +167,8 @@ export const options: NextAuthOptions = {
                     token.email = user.email;
                     token.permissions = user.permissions;
                     token.provider = account.provider; // Store provider information
-                    token.picture = user.image
+                    token.picture = user.image;
+                    token.phoneNumber = user.phoneNumber;
                 }
             }
             return token;
@@ -174,6 +179,7 @@ export const options: NextAuthOptions = {
                     id: token.id,
                     username: token.username,
                     email: token.email,
+                    phoneNumber: token.phoneNumber,
                     accessToken: token.accessToken,
                     idToken: token.idToken || "", // Optional, if using ID tokens
                     tokenType: token.tokenType,
