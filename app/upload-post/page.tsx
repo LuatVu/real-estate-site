@@ -37,6 +37,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [isWardOpen, setIsWardOpen] = useState(false);
     const [originalScrollPosition, setOriginalScrollPosition] = useState(0);
     const [step, setStep] = useState<number>(1);
+    const [selectedPriority, setSelectedPriority] = useState('NORMAL');
 
     // Form validation states
     const [formData, setFormData] = useState({
@@ -251,6 +252,13 @@ function MobileUploadPost({ session }: { session?: any }) {
         { value: 'southeast', label: 'Đông Nam' },
         { value: 'northwest', label: 'Tây Bắc' },
         { value: 'southwest', label: 'Tây Nam' }
+    ];
+
+    const PRIORITY_LEVEL = [
+        { value: 'DIAMOND', label: 'Vip Kim Cương', cost: 100000, icon: 'VipDiamond.svg' },
+        { value: 'GOLD', label: 'Vip Vàng', cost: 50000, icon: 'VipGold.svg' },
+        { value: 'SILVER', label: 'Vip Bạc', cost: 25000, icon: 'VipSilver.svg' },
+        { value: 'NORMAL', label: 'Tin Thường', cost: 10000, icon: 'NormalPriority.svg' }
     ];
 
     const fetchProvince = async () => {
@@ -864,8 +872,78 @@ function MobileUploadPost({ session }: { session?: any }) {
                         </div>
                     )}
                     {step === 3 && (
-                        <div className="flex-1">
-                            <p>Step 3 content goes here...</p>
+                        <div className="flex-1 flex flex-col">
+                            <div className='p-3 flex-1'>
+                                <h2 className="text-base font-semibold mb-3 text-gray-800">Chọn loại tin đăng</h2>
+                                <div className="mb-4">
+                                    <div className="space-y-2">
+                                        {PRIORITY_LEVEL.map((priority) => (
+                                            <button
+                                                key={priority.value}
+                                                type="button"
+                                                onClick={() => setSelectedPriority(priority.value)}
+                                                className={`w-full flex items-center justify-between p-3 border-2 rounded-lg transition-all ${
+                                                    selectedPriority === priority.value 
+                                                        ? 'border-blue-500 bg-blue-50' 
+                                                        : 'border-gray-200 bg-white hover:border-gray-300'
+                                                }`}
+                                            >
+                                                <div className="flex items-center">
+                                                    <div className="mr-2">
+                                                        <Image 
+                                                            src={`/icons/${priority.icon}`} 
+                                                            alt={priority.label} 
+                                                            width={20} 
+                                                            height={20} 
+                                                        />
+                                                    </div>
+                                                    <span className="text-base font-medium">{priority.label}</span>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-base font-bold text-blue-600">
+                                                        {priority.cost.toLocaleString('vi-VN')} đ
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">/ 30 ngày</div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="mb-0">
+                                    <h4 className="text-base font-semibold mb-3 text-gray-800">Thông tin thanh toán</h4>
+                                    <div className="p-3 border-2 border-gray-200 rounded-lg bg-white">
+                                        {/* Thông tin đăng tin */}
+                                        <div className="space-y-2 mb-3">
+                                            <div className="flex justify-between">
+                                                <span className="text-xs text-gray-500">Loại tin đăng</span>
+                                                <span className="text-xs font-medium text-gray-700">
+                                                    {PRIORITY_LEVEL.find(p => p.value === selectedPriority)?.label}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-xs text-gray-500">Số ngày đăng</span>
+                                                <span className="text-xs font-medium text-gray-700">30 ngày</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-xs text-gray-500">Thời gian hết hạn</span>
+                                                <span className="text-xs font-medium text-gray-700">
+                                                    {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <hr className="mb-3 border-gray-200" />
+                                        
+                                        <div className="flex justify-between">
+                                            <span className="text-sm text-gray-500">Phí đăng tin</span>
+                                            <span className="text-base font-bold text-blue-600">
+                                                {PRIORITY_LEVEL.find(p => p.value === selectedPriority)?.cost.toLocaleString('vi-VN')} đ
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     )}
                 </Form>
