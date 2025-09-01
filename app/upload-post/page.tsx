@@ -62,7 +62,8 @@ function MobileUploadPost({ session }: { session?: any }) {
         },
         frontage: '',
         contactName: '',
-        phone: ''
+        phone: '',
+        images: [] 
     });
 
     // Image upload states
@@ -382,6 +383,11 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const uploadPost = async () => {
         console.log(uploadedImages);
+        const images = uploadedImages.map(img => ({
+            fileName: img.file.name,
+            fileUrl: img.file.name,
+            isPrimary: img.isPrimary,
+        }));
         const data = {
             ...formData,
             acreage: Number(formData.acreage),
@@ -389,23 +395,18 @@ function MobileUploadPost({ session }: { session?: any }) {
             bathrooms: Number(formData.bathrooms),
             floors: Number(formData.floors),
             price: Number(formData.price),
-            frontage: Number(formData.frontage)
+            frontage: Number(formData.frontage),
+            images: images
         };
-        console.log(data);
-
-        const form = new FormData();
-        form.append('transactionType', transactionType);
-        form.append('data', JSON.stringify(data));
-
+        console.log(data);        
         // Add uploaded images to FormData
-        uploadedImages.forEach((image, index) => {
-            form.append('files', image.file, image.file.name);
-        });
-
         try {
             const response = await fetch('/api/posts/upload', {
                 method: 'POST',
-                body: form,
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
 
             const result = await response.json();
