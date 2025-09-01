@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 export default function UploadPost() {
     const screenSize = useScreenSize();
@@ -21,9 +22,9 @@ export default function UploadPost() {
 function MobileUploadPost({ session }: { session?: any }) {
     const [transactionType, setTransactionType] = useState('sell');
     const [isTransactionTypeOpen, setIsTransactionTypeOpen] = useState(false);
-    const [propertyType, setPropertyType] = useState('house');
+    const [propertyType, setPropertyType] = useState('NHA_RIENG');
     const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(false);
-    const [legalType, setLegalType] = useState('red_book');
+    const [legalType, setLegalType] = useState('SO_DO');
     const [isLegalTypeOpen, setIsLegalTypeOpen] = useState(false);
     const [furnitureType, setFurnitureType] = useState('');
     const [isFurnitureTypeOpen, setIsFurnitureTypeOpen] = useState(false);
@@ -33,6 +34,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [wards, setWards] = useState([]);
     const [selectedProvince, setSelectedProvince] = useState('');
     const [selectedWard, setSelectedWard] = useState('');
+    const [detailAddress, setDetailAddress] = useState('');
     const [isProvinceOpen, setIsProvinceOpen] = useState(false);
     const [isWardOpen, setIsWardOpen] = useState(false);
     const [originalScrollPosition, setOriginalScrollPosition] = useState(0);
@@ -43,10 +45,24 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        area: '',
+        acreage: '',
+        bedrooms: '',
+        bathrooms: '',
+        furniture: '',
+        floors: '',
+        legal: 'SO_DO',
         price: '',
-        contactName: session?.user?.username || '',
-        phone: session?.user?.phoneNumber || ''
+        provinceCode: '',
+        wardCode: '',
+        address: '',
+        direction: '',
+        type: 'NHA_RIENG',
+        rankingDto: {
+            priorityLevel: 'NORMAL'
+        },
+        frontage: '',
+        contactName: '',
+        phone: ''
     });
 
     // Image upload states
@@ -57,7 +73,7 @@ function MobileUploadPost({ session }: { session?: any }) {
         isPrimary: boolean;
         rotation: number;
     }
-    
+
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
 
     const handleTransactionTypeChange = (type: string) => {
@@ -70,6 +86,10 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handlePropertyTypeChange = (type: string) => {
         setPropertyType(type);
+        setFormData(prev => ({
+            ...prev,
+            type: type
+        }));
         setIsPropertyTypeOpen(false);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
@@ -78,6 +98,10 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handleLegalTypeChange = (type: string) => {
         setLegalType(type);
+        setFormData(prev => ({
+            ...prev,
+            legal: type
+        }));
         setIsLegalTypeOpen(false);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
@@ -86,6 +110,12 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handleFurnitureTypeChange = (type: string) => {
         setFurnitureType(type);
+        if (type && type !== '') {
+            setFormData(prev => ({
+                ...prev,
+                furniture: type
+            }));
+        }
         setIsFurnitureTypeOpen(false);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
@@ -94,6 +124,12 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handleDirectionTypeChange = (type: string) => {
         setDirectionType(type);
+        if (type && type !== '') {
+            setFormData(prev => ({
+                ...prev,
+                direction: type
+            }));
+        }
         setIsDirectionTypeOpen(false);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
@@ -102,9 +138,16 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handleProvinceChange = (provinceCode: string, provinceName: string) => {
         setSelectedProvince(provinceName);
+        if (provinceCode && provinceCode !== '') {
+            setFormData(prev => ({
+                ...prev,
+                provinceCode: provinceCode
+            }));
+        }
         setSelectedWard(''); // Reset ward when province changes
         setWards([]); // Clear wards
         setIsProvinceOpen(false);
+        updateFullAddress(detailAddress, '', provinceName); // Update address with new province
         fetchWards(provinceCode); // Fetch wards for selected province
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
@@ -114,9 +157,31 @@ function MobileUploadPost({ session }: { session?: any }) {
     const handleWardChange = (wardName: string) => {
         setSelectedWard(wardName);
         setIsWardOpen(false);
+        updateFullAddress(detailAddress, wardName, selectedProvince);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
         });
+    };
+
+    const handleDetailAddressChange = (value: string) => {
+        setDetailAddress(value);
+        updateFullAddress(value, selectedWard, selectedProvince);
+    };
+
+    const updateFullAddress = (detail: string, ward: string, province: string) => {
+        let fullAddress = '';
+        if (detail) fullAddress += detail;
+        if (ward) {
+            fullAddress += (fullAddress ? ', ' : '') + ward;
+        }
+        if (province) {
+            fullAddress += (fullAddress ? ', ' : '') + province;
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            address: fullAddress
+        }));
     };
 
     // Image management functions
@@ -148,7 +213,7 @@ function MobileUploadPost({ session }: { session?: any }) {
             };
             reader.readAsDataURL(file);
         });
-        
+
         // Reset the input
         event.target.value = '';
     };
@@ -183,6 +248,29 @@ function MobileUploadPost({ session }: { session?: any }) {
         );
     };
 
+    // Price formatting function
+    const formatPrice = (value: string) => {
+        // Remove all non-numeric characters
+        const numericValue = value.replace(/\D/g, '');
+
+        // Return empty if no numeric value
+        if (!numericValue) return '';
+
+        // Format with dots as thousand separators
+        return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    const handlePriceChange = (value: string) => {
+        // Remove all non-numeric characters for storage
+        const numericValue = value.replace(/\D/g, '');
+
+        // Update form data with the numeric value (without dots)
+        setFormData(prev => ({
+            ...prev,
+            price: numericValue
+        }));
+    };
+
     // Check if step 2 is valid (at least 3 images)
     const isStep2Valid = () => {
         return uploadedImages.length >= 3;
@@ -197,7 +285,7 @@ function MobileUploadPost({ session }: { session?: any }) {
             selectedProvince &&
             selectedWard &&
             propertyType &&
-            formData.area.trim() &&
+            formData.acreage.trim() &&
             formData.price.trim() &&
             legalType &&
             formData.contactName.trim() &&
@@ -220,38 +308,41 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     // Property type options constant
     const PROPERTY_TYPES = [
-        { value: 'house', label: 'Nhà riêng', icon: 'HouseLine.svg' },
-        { value: 'apartment', label: 'Chung cư', icon: 'BuildingApartment.svg' },
-        { value: 'office', label: 'Văn phòng', icon: 'BuildingOffice.svg' },
-        { value: 'warehouse', label: 'Kho xưởng', icon: 'Warehouse.svg' },
-        { value: 'condotel', label: 'Condotel', icon: 'Condotel.svg' },
-        { value: 'other', label: 'Khác', icon: 'OtherProperty.svg' }
+        { value: 'NHA_RIENG', label: 'Nhà riêng', icon: 'HouseLine.svg' },
+        { value: 'CHCC', label: 'Chung cư', icon: 'BuildingApartment.svg' },
+        { value: 'NHA_PHO', label: 'Nhà phố', icon: 'BuildingOffice.svg' },
+        { value: 'KHO_NHA_XUONG', label: 'Kho xưởng', icon: 'Warehouse.svg' },
+        { value: 'CONDOTEL', label: 'Condotel', icon: 'Condotel.svg' },
+        { value: 'BIET_THU', label: 'Biệt thự', icon: 'OtherProperty.svg' },
+        { value: 'DAT_NEN', label: 'Đất nền', icon: 'OtherProperty.svg' },
+        { value: 'BDS_KHAC', label: 'Khác', icon: 'OtherProperty.svg' }
+
     ];
 
     // Legal options constant
     const LEGAL_TYPES = [
-        { value: 'red_book', label: 'Sổ đỏ' },
-        { value: 'contract', label: 'Hợp đồng mua bán' },
-        { value: 'no_book', label: 'Không sổ' }
+        { value: 'SO_DO', label: 'Sổ đỏ' },
+        { value: 'HOP_DONG_MUA_BAN', label: 'Hợp đồng mua bán' },
+        { value: 'KHONG_SO', label: 'Không sổ' }
     ];
 
     // Furniture options constant
     const FURNITURE_TYPES = [
-        { value: 'full', label: 'Đầy đủ' },
-        { value: 'basic', label: 'Cơ bản' },
-        { value: 'none', label: 'Không nội thất' }
+        { value: 'DAY_DU', label: 'Đầy đủ' },
+        { value: 'CO_BAN', label: 'Cơ bản' },
+        { value: 'KHONG_NOI_THAT', label: 'Không nội thất' }
     ];
 
     // Direction options constant
     const DIRECTION_TYPES = [
-        { value: 'east', label: 'Đông' },
-        { value: 'west', label: 'Tây' },
-        { value: 'south', label: 'Nam' },
-        { value: 'north', label: 'Bắc' },
-        { value: 'northeast', label: 'Đông Bắc' },
-        { value: 'southeast', label: 'Đông Nam' },
-        { value: 'northwest', label: 'Tây Bắc' },
-        { value: 'southwest', label: 'Tây Nam' }
+        { value: 'DONG', label: 'Đông' },
+        { value: 'TAY', label: 'Tây' },
+        { value: 'NAM', label: 'Nam' },
+        { value: 'BAC', label: 'Bắc' },
+        { value: 'DONG_BAC', label: 'Đông Bắc' },
+        { value: 'DONG_NAM', label: 'Đông Nam' },
+        { value: 'TAY_BAC', label: 'Tây Bắc' },
+        { value: 'TAY_NAM', label: 'Tây Nam' }
     ];
 
     const PRIORITY_LEVEL = [
@@ -289,9 +380,64 @@ function MobileUploadPost({ session }: { session?: any }) {
         return setWards(data);
     };
 
+    const uploadPost = async () => {
+        console.log(uploadedImages);
+        const data = {
+            ...formData,
+            acreage: Number(formData.acreage),
+            bedrooms: Number(formData.bedrooms),
+            bathrooms: Number(formData.bathrooms),
+            floors: Number(formData.floors),
+            price: Number(formData.price),
+            frontage: Number(formData.frontage)
+        };
+        console.log(data);
+
+        const form = new FormData();
+        form.append('transactionType', transactionType);
+        form.append('data', JSON.stringify(data));
+
+        // Add uploaded images to FormData
+        uploadedImages.forEach((image, index) => {
+            form.append('files', image.file, image.file.name);
+        });
+
+        try {
+            const response = await fetch('/api/posts/upload', {
+                method: 'POST',
+                body: form,
+            });
+
+            const result = await response.json();
+            console.log('Upload result:', result);
+            
+            if (response.ok) {
+                alert('Đăng tin thành công!');
+                // You can redirect or reset form here
+            } else {
+                alert(`Lỗi khi đăng tin: ${result.error}`);
+            }
+            
+        } catch (error) {
+            console.error('Error uploading post:', error);
+            alert('Có lỗi xảy ra khi đăng tin');
+        }
+    };
+
     useEffect(() => {
         fetchProvince();
     }, []);
+
+    // Update form data when session becomes available
+    useEffect(() => {
+        if (session?.user?.username || session?.user?.phoneNumber) {
+            setFormData(prev => ({
+                ...prev,
+                contactName: session.user.username || prev.contactName,
+                phone: session.user.phoneNumber || prev.phone
+            }));
+        }
+    }, [session]);
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -308,7 +454,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                 </div>
             </div>
             <div className={`${styles.formContainer} flex-1`}>
-                <Form id="uploadPostForm" action={"/oke-nhe"} className={`${styles.mainContent} flex flex-col flex-1`}>
+                <Form id="uploadPostForm" action={uploadPost} className={`${styles.mainContent} flex flex-col flex-1`}>
                     {step === 1 && (
                         <div className="flex-1">
                             <div className={styles.inputGroup}>
@@ -475,7 +621,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                 <div
                                                     key={ward.code}
                                                     className={`${styles.transactionOption} ${selectedWard === ward.name ? styles.selectedOption : ''}`}
-                                                    onClick={() => handleWardChange(ward.name)}
+                                                    onClick={() => { handleWardChange(ward.name); handleInputChange('wardCode', ward.code) }}
                                                 >
                                                     <div className={styles.optionContent}>
                                                         <div className={styles.optionRadio}>
@@ -493,6 +639,45 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                     </div>
                                                 </div>
                                             ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Detailed Address Input */}
+                                <div className={`${styles.inputItem} ${styles.detailAddressContainer}`}>
+                                    <label className="body-2-medium">
+                                        Địa chỉ chi tiết (số nhà, tên đường...):
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={detailAddress}
+                                        onChange={(e) => handleDetailAddressChange(e.target.value)}
+                                        placeholder="VD: 123 Lê Duẩn, Khu phố 1..."
+                                        className={styles.inputField}
+                                    />
+
+                                    {/* Address Preview */}
+                                    {(detailAddress || selectedWard || selectedProvince) && (
+                                        <div className={styles.addressPreview}>
+                                            <div className="flex items-start">
+                                                <Image
+                                                    src="/icons/location.svg"
+                                                    alt="Location"
+                                                    width={16}
+                                                    height={16}
+                                                    className="mr-2 mt-1 flex-shrink-0"
+                                                />
+                                                <div className="flex-1">
+                                                    <p className="body-3-regular text-gray-600 mb-1">
+                                                        Địa chỉ đầy đủ:
+                                                    </p>
+                                                    <p className="body-3-medium">
+                                                        <span className={styles.addressText}>
+                                                            {formData.address || 'Vui lòng nhập địa chỉ chi tiết'}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -552,8 +737,8 @@ function MobileUploadPost({ session }: { session?: any }) {
                                         id="area"
                                         name="area"
                                         placeholder="Nhập diện tích sử dụng (m²)"
-                                        value={formData.area}
-                                        onChange={(e) => handleInputChange('area', e.target.value)}
+                                        value={formData.acreage}
+                                        onChange={(e) => handleInputChange('acreage', e.target.value)}
                                         required
                                     />
                                 </div>
@@ -561,12 +746,12 @@ function MobileUploadPost({ session }: { session?: any }) {
                                     <label className="body-2-medium" htmlFor="price">Giá <span style={{ color: 'red' }}>*</span></label>
                                     <input
                                         className={styles.inputField}
-                                        type="number"
+                                        type="text"
                                         id="price"
                                         name="price"
                                         placeholder="Nhập giá bán hoặc giá thuê"
-                                        value={formData.price}
-                                        onChange={(e) => handleInputChange('price', e.target.value)}
+                                        value={formatPrice(formData.price)}
+                                        onChange={(e) => handlePriceChange(e.target.value)}
                                         required
                                     />
                                 </div>
@@ -660,15 +845,15 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 </div>
                                 <div className={styles.inputItem}>
                                     <label className="body-2-medium" htmlFor="bedrooms">Số phòng ngủ</label>
-                                    <input className={styles.inputField} type="number" id="bedrooms" name="bedrooms" placeholder="Nhập số phòng ngủ" />
+                                    <input className={styles.inputField} type="number" value={formData.bedrooms} id="bedrooms" name="bedrooms" placeholder="Nhập số phòng ngủ" onChange={(e) => handleInputChange('bedrooms', e.target.value)} />
                                 </div>
                                 <div className={styles.inputItem}>
                                     <label className="body-2-medium" htmlFor="bathrooms">Số phòng tắm</label>
-                                    <input className={styles.inputField} type="number" id="bathrooms" name="bathrooms" placeholder="Nhập số phòng tắm" />
+                                    <input className={styles.inputField} type="number" value={formData.bathrooms} id="bathrooms" name="bathrooms" placeholder="Nhập số phòng tắm" onChange={(e) => handleInputChange('bathrooms', e.target.value)} />
                                 </div>
                                 <div className={styles.inputItem}>
                                     <label className="body-2-medium" htmlFor="floors">Số tầng</label>
-                                    <input className={styles.inputField} type="number" id="floors" name="floors" placeholder="Nhập số tầng" />
+                                    <input className={styles.inputField} type="number" value={formData.floors} id="floors" name="floors" placeholder="Nhập số tầng" onChange={(e) => handleInputChange('floors', e.target.value)} />
                                 </div>
                                 <div className={styles.inputItem}>
                                     <div className={styles.transactionTypeHeader} onClick={() => {
@@ -715,7 +900,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 </div>
                                 <div className={styles.inputItem}>
                                     <label className="body-2-medium" htmlFor="frontage">Mặt tiền (m)</label>
-                                    <input className={styles.inputField} type="number" id="frontage" name="frontage" placeholder="Nhập mặt tiền" />
+                                    <input className={styles.inputField} type="number" id="frontage" name="frontage" placeholder="Nhập mặt tiền" onChange={(e) => handleInputChange('frontage', e.target.value)} value={formData.frontage} />
                                 </div>
                             </div>
 
@@ -753,7 +938,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                         <div className="flex-1">
                             <div className="p-4">
                                 <h2 className="text-lg font-semibold mb-4 text-gray-800">Hình ảnh</h2>
-                                
+
                                 {/* Upload Button */}
                                 <div className="mb-6">
                                     <input
@@ -768,12 +953,12 @@ function MobileUploadPost({ session }: { session?: any }) {
                                         htmlFor="image-upload"
                                         className="flex items-center justify-center w-full px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
                                     >
-                                        <Image 
-                                            src="/icons/Plus.svg" 
-                                            alt="Add" 
-                                            width={16} 
-                                            height={16} 
-                                            className="mr-2" 
+                                        <Image
+                                            src="/icons/Plus.svg"
+                                            alt="Add"
+                                            width={16}
+                                            height={16}
+                                            className="mr-2"
                                         />
                                         Thêm hình ảnh
                                     </label>
@@ -830,7 +1015,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                             ⭐
                                                         </button>
                                                     )}
-                                                    
+
                                                     {/* Rotate Button */}
                                                     <button
                                                         onClick={() => rotateImage(image.id)}
@@ -839,7 +1024,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                     >
                                                         ↻
                                                     </button>
-                                                    
+
                                                     {/* Delete Button */}
                                                     <button
                                                         onClick={() => removeImage(image.id)}
@@ -857,12 +1042,12 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 {/* Empty State */}
                                 {uploadedImages.length === 0 && (
                                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                                        <Image 
-                                            src="/icons/CameraIcon.svg" 
-                                            alt="Camera" 
-                                            width={48} 
-                                            height={48} 
-                                            className="mx-auto mb-4 opacity-50" 
+                                        <Image
+                                            src="/icons/CameraIcon.svg"
+                                            alt="Camera"
+                                            width={48}
+                                            height={48}
+                                            className="mx-auto mb-4 opacity-50"
                                         />
                                         <p className="text-gray-500 mb-2">Chưa có hình ảnh nào</p>
                                         <p className="text-sm text-gray-400">Nhấn "Thêm hình ảnh" để tải lên</p>
@@ -881,20 +1066,19 @@ function MobileUploadPost({ session }: { session?: any }) {
                                             <button
                                                 key={priority.value}
                                                 type="button"
-                                                onClick={() => setSelectedPriority(priority.value)}
-                                                className={`w-full flex items-center justify-between p-3 border-2 rounded-lg transition-all ${
-                                                    selectedPriority === priority.value 
-                                                        ? 'border-blue-500 bg-blue-50' 
-                                                        : 'border-gray-200 bg-white hover:border-gray-300'
-                                                }`}
+                                                onClick={() => { setSelectedPriority(priority.value); setFormData(prev => ({ ...prev, rankingDto: { ...prev.rankingDto, priorityLevel: priority.value } })); }}
+                                                className={`w-full flex items-center justify-between p-3 border-2 rounded-lg transition-all ${selectedPriority === priority.value
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 bg-white hover:border-gray-300'
+                                                    }`}
                                             >
                                                 <div className="flex items-center">
                                                     <div className="mr-2">
-                                                        <Image 
-                                                            src={`/icons/${priority.icon}`} 
-                                                            alt={priority.label} 
-                                                            width={20} 
-                                                            height={20} 
+                                                        <Image
+                                                            src={`/icons/${priority.icon}`}
+                                                            alt={priority.label}
+                                                            width={20}
+                                                            height={20}
                                                         />
                                                     </div>
                                                     <span className="text-base font-medium">{priority.label}</span>
@@ -931,9 +1115,9 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         <hr className="mb-3 border-gray-200" />
-                                        
+
                                         <div className="flex justify-between">
                                             <span className="text-sm text-gray-500">Phí đăng tin</span>
                                             <span className="text-base font-bold text-blue-600">
@@ -953,10 +1137,10 @@ function MobileUploadPost({ session }: { session?: any }) {
                 <div className={styles.footer}>
                     {step === 1 && (
                         <button
-                            type="button"                            
+                            type="button"
                             className={`${styles.submitButton} ${!isFormValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!isFormValid()}
-                            onClick={() => {setStep(2); setTabBtnState({...tabItemState,secondTab: styles.activeTabItem});}}
+                            onClick={() => { setStep(2); setTabBtnState({ ...tabItemState, secondTab: styles.activeTabItem }); }}
                         >
                             Tiếp tục
                         </button>
@@ -966,7 +1150,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             <button
                                 type="button"
                                 className={styles.backButton}
-                                onClick={() => {setStep(1); setTabBtnState({...tabItemState,secondTab: styles.inactiveTabItem});}}
+                                onClick={() => { setStep(1); setTabBtnState({ ...tabItemState, secondTab: styles.inactiveTabItem }); }}
                             >
                                 Quay lại
                             </button>
@@ -974,7 +1158,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 type="button"
                                 className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={!isStep2Valid()}
-                                onClick={() => {setStep(3); setTabBtnState({...tabItemState,thirdTab: styles.activeTabItem});}}
+                                onClick={() => { setStep(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); }}
                             >
                                 Tiếp tục
                             </button>
@@ -985,7 +1169,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             <button
                                 type="button"
                                 className={styles.backButton}
-                                onClick={() => {setStep(2); setTabBtnState({...tabItemState,thirdTab: styles.inactiveTabItem});}}
+                                onClick={() => { setStep(2); setTabBtnState({ ...tabItemState, thirdTab: styles.inactiveTabItem }); }}
                             >
                                 Quay lại
                             </button>

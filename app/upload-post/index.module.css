@@ -298,3 +298,58 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 14px rgba(43, 106, 208, 0.25);
 }
+
+.addressPreview {
+    background: linear-gradient(135deg, #F8F9FA 0%, #F3F6FD 100%);
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.addressPreview:hover {
+    border-color: var(--color-primary-p200, #2B6AD0);
+    background: linear-gradient(135deg, #F3F6FD 0%, #EEF4FF 100%);
+    box-shadow: 0 4px 8px rgba(43, 106, 208, 0.1);
+    transform: translateY(-1px);
+}
+
+.addressText {
+    color: var(--color-primary-p200);
+    font-weight: 600;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.detailAddressContainer {
+    position: relative;
+}
+
+.detailAddressContainer .inputField {
+    border: 2px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #FAFBFC 0%, #F8F9FA 100%);
+}
+
+.detailAddressContainer .inputField:focus {
+    border-color: var(--color-primary-p200, #2B6AD0);
+    box-shadow: 0 0 0 3px rgba(43, 106, 208, 0.1);
+    background: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.detailAddressContainer .inputField::placeholder {
+    color: #9CA3AF;
+    font-style: italic;
+}
+
+.detailAddressContainer .inputField:focus + .addressPreview,
+.detailAddressContainer .inputField:focus-within + .addressPreview {
+    border-color: var(--color-primary-p200, #2B6AD0);
+    box-shadow: 0 4px 12px rgba(43, 106, 208, 0.15);
+}

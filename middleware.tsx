@@ -46,6 +46,7 @@ export const config = {
     "/api/users/:path*", // Protect all API routes    
     "/api/((?!auth|public).)*", // Protect all API routes except auth and public
     "/api/province/:path*",
+    "/api/posts/upload/:path*"
     // Add more protected routes here if needed
     // "/dashboard/:path*",
     // "/admin/:path*"
