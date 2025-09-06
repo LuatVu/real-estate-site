@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
 
 export default function UploadPost() {
     const screenSize = useScreenSize();
@@ -40,6 +39,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [originalScrollPosition, setOriginalScrollPosition] = useState(0);
     const [step, setStep] = useState<number>(1);
     const [selectedPriority, setSelectedPriority] = useState('NORMAL');
+    const [imageMapping] = useState<{ [key: string]: string }>({}); // Map image IDs to URLs
 
     // Form validation states
     const [formData, setFormData] = useState({
@@ -63,7 +63,7 @@ function MobileUploadPost({ session }: { session?: any }) {
         frontage: '',
         contactName: '',
         phone: '',
-        images: [] 
+        images: []
     });
 
     // Image upload states
@@ -381,11 +381,35 @@ function MobileUploadPost({ session }: { session?: any }) {
         return setWards(data);
     };
 
-    const uploadPost = async () => {
-        console.log(uploadedImages);
+    const draftUploadImages = async () => {
+        if(Object.keys(imageMapping).length > 0) return; // Already uploaded
+        
+        for (const img of uploadedImages) {
+            try {
+                const formData = new FormData();
+                formData.append('file', img.file);
+                const response = await fetch('/api/media/draft', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload images');
+                }
+
+                const result = await response.json();                
+                imageMapping[img.id] = result.imageUrl;
+
+            } catch (error) {
+                console.error('Error uploading draft images:', error);
+            }
+        }        
+    };
+
+    const uploadPost = async () => {        
         const images = uploadedImages.map(img => ({
             fileName: img.file.name,
-            fileUrl: img.file.name,
+            fileUrl: imageMapping[img.id] || img.file.name, // Use the uploaded URL from mapping
             isPrimary: img.isPrimary,
         }));
         const data = {
@@ -397,8 +421,7 @@ function MobileUploadPost({ session }: { session?: any }) {
             price: Number(formData.price),
             frontage: Number(formData.frontage),
             images: images
-        };
-        console.log(data);        
+        };        
         // Add uploaded images to FormData
         try {
             const response = await fetch('/api/posts/upload', {
@@ -409,16 +432,28 @@ function MobileUploadPost({ session }: { session?: any }) {
                 },
             });
 
-            const result = await response.json();
-            console.log('Upload result:', result);
-            
+            const result = await response.json();            
+
             if (response.ok) {
+                for(const img of uploadedImages) {
+                    try{
+                        const formData = new FormData();
+                        formData.append('file', img.file);
+                        const key = imageMapping[img.id] || img.file.name;
+                        await fetch(`/api/media/upload/${key}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }catch(error){
+                        console.error('Error uploading images:', error);
+                    }
+                }
                 alert('Đăng tin thành công!');
-                // You can redirect or reset form here
+                
             } else {
                 alert(`Lỗi khi đăng tin: ${result.error}`);
             }
-            
+
         } catch (error) {
             console.error('Error uploading post:', error);
             alert('Có lỗi xảy ra khi đăng tin');
@@ -1159,7 +1194,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 type="button"
                                 className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={!isStep2Valid()}
-                                onClick={() => { setStep(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); }}
+                                onClick={() => { setStep(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages();}}
                             >
                                 Tiếp tục
                             </button>
