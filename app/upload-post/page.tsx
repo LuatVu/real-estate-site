@@ -6,6 +6,8 @@ import { useSession } from 'next-auth/react';
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import PortalPopup from '../ui/common/portal-popup/portal-popup';
 
 export default function UploadPost() {
     const screenSize = useScreenSize();
@@ -40,6 +42,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [step, setStep] = useState<number>(1);
     const [selectedPriority, setSelectedPriority] = useState('NORMAL');
     const [imageMapping] = useState<{ [key: string]: string }>({}); // Map image IDs to URLs
+    const [headline, setHeadline] = useState('Bước 1. Thông tin BĐS');
 
     // Form validation states
     const [formData, setFormData] = useState({
@@ -76,6 +79,11 @@ function MobileUploadPost({ session }: { session?: any }) {
     }
 
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+
+    // Popup states
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [showFailurePopup, setShowFailurePopup] = useState(false);
+    const router = useRouter();
 
     const handleTransactionTypeChange = (type: string) => {
         setTransactionType(type);
@@ -307,6 +315,17 @@ function MobileUploadPost({ session }: { session?: any }) {
         thirdTab: styles.inactiveTabItem,
     });
 
+    const handleStepChange = (newStep: number) => {
+        setStep(newStep);
+        if (newStep === 1) {
+            setHeadline('Bước 1. Thông tin BĐS');
+        } else if (newStep === 2) {
+            setHeadline('Bước 2. Hình ảnh');
+        } else if (newStep === 3) {
+            setHeadline('Bước 3. Thanh toán & Đăng tin');
+        }
+    }
+
     // Property type options constant
     const PROPERTY_TYPES = [
         { value: 'NHA_RIENG', label: 'Nhà riêng', icon: 'HouseLine.svg' },
@@ -448,15 +467,13 @@ function MobileUploadPost({ session }: { session?: any }) {
                         console.error('Error uploading images:', error);
                     }
                 }
-                alert('Đăng tin thành công!');
-                
-            } else {
-                alert(`Lỗi khi đăng tin: ${result.error}`);
+                setShowSuccessPopup(true); // Show success popup
+            } else {                
+                setShowFailurePopup(true); // Show failure popup
             }
 
-        } catch (error) {
-            console.error('Error uploading post:', error);
-            alert('Có lỗi xảy ra khi đăng tin');
+        } catch (error) {            
+            setShowFailurePopup(true);  // Show failure popup
         }
     };
 
@@ -482,7 +499,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                 <div>
                     <p className="heading-h8">Tạo tin đăng</p>
                 </div>
-                <div><p>Bước 1. Thông tin BĐS</p></div>
+                <div><p>{headline}</p></div>
                 <div className={styles.tab}>
                     <div className={tabItemState.firstTab}></div>
                     <div className={tabItemState.secondTab}></div>
@@ -1176,7 +1193,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             type="button"
                             className={`${styles.submitButton} ${!isFormValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!isFormValid()}
-                            onClick={() => { setStep(2); setTabBtnState({ ...tabItemState, secondTab: styles.activeTabItem }); }}
+                            onClick={() => { handleStepChange(2); setTabBtnState({ ...tabItemState, secondTab: styles.activeTabItem }); }}
                         >
                             Tiếp tục
                         </button>
@@ -1186,7 +1203,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             <button
                                 type="button"
                                 className={styles.backButton}
-                                onClick={() => { setStep(1); setTabBtnState({ ...tabItemState, secondTab: styles.inactiveTabItem }); }}
+                                onClick={() => { handleStepChange(1); setTabBtnState({ ...tabItemState, secondTab: styles.inactiveTabItem }); }}
                             >
                                 Quay lại
                             </button>
@@ -1194,7 +1211,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 type="button"
                                 className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={!isStep2Valid()}
-                                onClick={() => { setStep(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages();}}
+                                onClick={() => { handleStepChange(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages();}}
                             >
                                 Tiếp tục
                             </button>
@@ -1205,7 +1222,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             <button
                                 type="button"
                                 className={styles.backButton}
-                                onClick={() => { setStep(2); setTabBtnState({ ...tabItemState, thirdTab: styles.inactiveTabItem }); }}
+                                onClick={() => { handleStepChange(2); setTabBtnState({ ...tabItemState, thirdTab: styles.inactiveTabItem }); }}
                             >
                                 Quay lại
                             </button>
@@ -1221,6 +1238,112 @@ function MobileUploadPost({ session }: { session?: any }) {
 
                 </div>
             </div>
+
+            {/* Success Popup */}
+            {showSuccessPopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#22c55e', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Đăng tin thành công!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Tin đăng của bạn đã được tạo thành công.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    window.location.reload();
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Đăng tin mới
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    router.push('/manage-posts');
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Quản lý tin đăng
+                            </button>
+                        </div>
+                    </div>
+                </PortalPopup>
+            )}
+
+            {/* Failure Popup */}
+            {showFailurePopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#ef4444', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Đăng tin thất bại!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Có lỗi xảy ra khi đăng tin. Vui lòng thử lại.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowFailurePopup(false)}
+                            style={{
+                                padding: '12px 24px',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                width: '100%'
+                            }}
+                        >
+                            Đóng
+                        </button>
+                    </div>
+                </PortalPopup>
+            )}
         </div>
     );
 }
