@@ -415,11 +415,11 @@ function MobileUploadPost({ session }: { session?: any }) {
         const data = {
             ...formData,
             acreage: Number(formData.acreage),
-            bedrooms: Number(formData.bedrooms),
-            bathrooms: Number(formData.bathrooms),
-            floors: Number(formData.floors),
+            bedrooms: Number(formData.bedrooms) > 0 ? Number(formData.bedrooms) : null, // non-mandatory field
+            bathrooms: Number(formData.bathrooms) > 0 ? Number(formData.bathrooms) : null, // non-mandatory field
+            floors: Number(formData.floors) > 0 ? Number(formData.floors) : null, // non-mandatory field
             price: Number(formData.price),
-            frontage: Number(formData.frontage),
+            frontage: Number(formData.frontage) > 0 ? Number(formData.frontage) : null, // non-mandatory field
             images: images
         };        
         // Add uploaded images to FormData
