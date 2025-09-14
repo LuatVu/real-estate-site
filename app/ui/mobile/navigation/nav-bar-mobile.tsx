@@ -112,7 +112,7 @@ export default function NavBarMobile({displayNav, session}: any){
 									<span>Thông tin cá nhân</span>
 								</Link>
 								
-								<Link href="/my-posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
+								<Link href="/manage/posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
 									<Image width={20} height={20} alt="Posts" src="/icons/Building.svg" />
 									<span>Tin đăng của tôi</span>
 								</Link>

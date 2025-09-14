@@ -1283,7 +1283,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             <button
                                 onClick={() => {
                                     setShowSuccessPopup(false);
-                                    router.push('/manage-posts');
+                                    router.push('/manage/posts');
                                 }}
                                 style={{
                                     padding: '12px 16px',

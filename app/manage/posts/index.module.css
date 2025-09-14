@@ -1,0 +1,351 @@
+.headerUploadPost {
+    padding: 16px;   
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+}
+
+.searchFilterContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.searchInputContainer {
+    flex: 1;
+    position: relative;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #F8F9FA;
+    color: #0f1114;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.searchInput:focus {
+    border-color: var(--color-primary, #1976D2);
+    background-color: white;
+}
+
+.searchInput::placeholder {
+    color: #6B7280;
+}
+
+.filterButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #F8F9FA;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.filterButton:hover {
+    background-color: #E9ECEF;
+    border-color: var(--color-primary, #1976D2);
+}
+
+.filterButton:active {
+    background-color: var(--color-primary, #1976D2);
+}
+
+.filterButton:active img {
+    filter: brightness(0) invert(1);
+}
+
+.tabsContainer {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    overflow-x: auto;
+    padding: 0 2px 2px 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabsContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.tabButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: fit-content;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.tabButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.tabButton:hover::before {
+    left: 100%;
+}
+
+.tabButtonActive {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+    border-color: #2563EB;
+    color: #FFFFFF;
+    /* box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); */
+    transform: translateY(-1px);
+}
+
+.tabLabel {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+.tabCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #EFF6FF;
+    color: #1E40AF;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    line-height: 1;
+    border: 1px solid #DBEAFE;
+}
+
+.tabButtonActive .tabCount {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.formContainer{
+    position: relative;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 16px 20px;
+	display: flex;
+	flex-direction: column;
+	color: #0f1114;
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: #F5F7FA;
+}
+
+/* Posts Grid Styles */
+.postsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+}
+
+.postCard {
+    display: flex;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #E5E7EB;
+    transition: all 0.2s ease;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.postCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.postImageContainer {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.postImage {
+    border-radius: 8px;
+    object-fit: cover;
+    width: 120px;
+    height: 80px;
+}
+
+.statusBadge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusPUBLISHED {
+    background-color: #10B981;
+    color: white;
+}
+
+.statusDRAFT {
+    background-color: #6B7280;
+    color: white;
+}
+
+.statusEXPIRED {
+    background-color: #EF4444;
+    color: white;
+}
+
+.postContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.postTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+}
+
+.postInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.postType {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.transactionType {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sellType {
+    background-color: #3B82F6;
+    color: white;
+}
+
+.rentType {
+    background-color: #F59E0B;
+    color: white;
+}
+
+.propertyType {
+    background-color: #F3F4F6;
+    color: #6B7280;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.postAddress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6B7280;
+    font-size: 13px;
+}
+
+.postAddress img {
+    opacity: 0.6;
+}
+
+.postDates {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dateItem {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+}
+
+.dateLabel {
+    color: #6B7280;
+    font-weight: 500;
+    min-width: 70px;
+}
+
+.dateValue {
+    color: #374151;
+    font-weight: 400;
+}
+
+.postActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+    background-color: #F3F4F6;
+    border-color: #D1D5DB;
+    transform: scale(1.05);
+}
+
+.actionButton:active {
+    transform: scale(0.95);
+}
