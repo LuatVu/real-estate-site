@@ -10,19 +10,20 @@ export default function Page() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
 
-    return(
+    return (
         <div className="flex flex-col min-h-screen">
-            {screenSize === 'sm'?(<MobileView session={session} />):(<DesktopView session={session} />)}
+            {screenSize === 'sm' ? (<MobileView session={session} />) : (<DesktopView session={session} />)}
         </div>
     );
 }
 
-function MobileView({ session }: { session?: any }){
+function MobileView({ session }: { session?: any }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all');
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const [dropdownPosition, setDropdownPosition] = useState<'below' | 'above'>('below');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [posts, setPosts] = useState<any[]>([]);
 
     // Toggle dropdown for specific post
     const toggleDropdown = (postId: string, buttonElement: HTMLButtonElement) => {
@@ -51,7 +52,7 @@ function MobileView({ session }: { session?: any }){
     // Handle dropdown actions
     const handleDropdownAction = (action: string, post: any) => {
         setOpenDropdownId(null);
-        
+
         switch (action) {
             case 'repost':
                 console.log('Repost/Reup post:', post.postId);
@@ -82,13 +83,22 @@ function MobileView({ session }: { session?: any }){
             case 'DRAFT':
                 return 'Đăng tin';
             default:
-                return 'Đăng lại';                
+                return 'Đăng lại';
         };
     };
 
     // Get the correct repost/reup icon based on post status
     const getRepostIcon = (status: string) => {
-        return status === 'PUBLISHED' ? '/icons/ArrowRight.svg' : '/icons/ArrowArcLeft.svg';
+        switch (status) {
+            case 'DRAFT':
+                return '/icons/Plus.svg';
+            case 'EXPIRED':
+                return '/icons/rotateIcon.svg';
+            case 'PUBLISHED':
+                return '/icons/upIcon.svg';
+            default:
+                return '/icons/rotateIcon.svg';
+        };
     };
 
     // Close dropdown when clicking outside
@@ -208,10 +218,33 @@ function MobileView({ session }: { session?: any }){
                 }
             ]
         },
-        // Add more sample posts as needed
+        // Add more sample posts as needed    
     ];
 
-    return(
+    const fetchPosts = async () => {
+        try{
+            const response = await fetch('/api/manage/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',                   
+                },
+                body: JSON.stringify({
+                    title: "tu lien",
+                    lastDate: 9
+                })
+            });
+            const data = await response.json();
+            setPosts(data.response);
+        }catch(error){
+            console.error("Error fetching posts:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
+
+    return (
         <div className="flex flex-col min-h-screen">
             <NavBarMobile displayNav={true} session={session} />
             <div className={styles.headerUploadPost}>
@@ -229,11 +262,11 @@ function MobileView({ session }: { session?: any }){
                         />
                     </div>
                     <button className={styles.filterButton}>
-                        <Image 
-                            src="/icons/Funnel.svg" 
-                            alt="Filter" 
-                            width={20} 
-                            height={20} 
+                        <Image
+                            src="/icons/Funnel.svg"
+                            alt="Filter"
+                            width={20}
+                            height={20}
                         />
                     </button>
                 </div>
@@ -252,7 +285,7 @@ function MobileView({ session }: { session?: any }){
             </div>
             <div className={`${styles.formContainer} flex-1`}>
                 <div className={styles.postsGrid}>
-                    {samplePosts.map((post) => (
+                    {posts?.map((post) => (
                         <div key={post.postId} className={styles.postCard}>
                             <div className={styles.postImageContainer}>
                                 <Image
@@ -268,32 +301,32 @@ function MobileView({ session }: { session?: any }){
                                     {post.status === 'EXPIRED' && 'Hết hạn'}
                                 </div>
                             </div>
-                            
+
                             <div className={styles.postContent}>
                                 <h3 className={styles.postTitle}>{post.title}</h3>
-                                
+
                                 <div className={styles.postInfo}>
                                     <div className={styles.postType}>
                                         <span className={`${styles.transactionType} ${post.transactionType === 'SELL' ? styles.sellType : styles.rentType}`}>
                                             {post.transactionType === 'SELL' ? 'Bán' : 'Cho thuê'}
                                         </span>
                                         <span className={styles.propertyType}>
-                                            {post.type === 'NHA_RIENG' ? 'Nhà riêng' : 
-                                             post.type === 'CHUNG_CU' ? 'Chung cư' :
-                                             post.type === 'VILLA' ? 'Villa' : post.type}
+                                            {post.type === 'NHA_RIENG' ? 'Nhà riêng' :
+                                                post.type === 'CHUNG_CU' ? 'Chung cư' :
+                                                    post.type === 'VILLA' ? 'Villa' : post.type}
                                         </span>
                                     </div>
-                                    
+
                                     <div className={styles.postAddress}>
-                                        <Image 
-                                            src="/icons/location.svg" 
-                                            alt="Location" 
-                                            width={14} 
-                                            height={14} 
+                                        <Image
+                                            src="/icons/location.svg"
+                                            alt="Location"
+                                            width={14}
+                                            height={14}
                                         />
                                         <span>{post.address}</span>
                                     </div>
-                                    
+
                                     <div className={styles.postDates}>
                                         <div className={styles.dateItem}>
                                             <span className={styles.dateLabel}>Ngày đăng:</span>
@@ -310,13 +343,13 @@ function MobileView({ session }: { session?: any }){
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className={styles.postActions}>
                                 <button className={styles.actionButton}>
                                     <Image src="/icons/EyeOpen.svg" alt="View" width={16} height={16} />
                                 </button>
                                 <div style={{ position: 'relative' }}>
-                                    <button 
+                                    <button
                                         className={styles.actionButton}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -325,10 +358,10 @@ function MobileView({ session }: { session?: any }){
                                     >
                                         <Image src="/icons/threeDots.svg" alt="More actions" width={16} height={16} />
                                     </button>
-                                    
+
                                     {/* Dropdown menu */}
                                     {openDropdownId === post.postId && (
-                                        <div 
+                                        <div
                                             ref={dropdownRef}
                                             onClick={(e) => e.stopPropagation()}
                                             style={{
@@ -386,7 +419,7 @@ function MobileView({ session }: { session?: any }){
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
-                                                <Image src="/icons/useIcon.svg" alt="Edit" width={16} height={16} />
+                                                <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} />
                                                 Sửa tin
                                             </button>
                                             <button
@@ -445,8 +478,8 @@ function MobileView({ session }: { session?: any }){
     );
 }
 
-function DesktopView({ session }: { session?: any }){
-    return(
+function DesktopView({ session }: { session?: any }) {
+    return (
         <div className={styles.desktopContainer}>
             <h1 className="text-3xl font-bold mb-6">Desktop View</h1>
             {/* Desktop-specific content goes here */}
