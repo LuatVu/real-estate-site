@@ -24,6 +24,12 @@ function MobileView({ session }: { session?: any }) {
     const [dropdownPosition, setDropdownPosition] = useState<'below' | 'above'>('below');
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [posts, setPosts] = useState<any[]>([]);
+    const [tabData, setTabData] = useState({
+        all: 0,
+        active: 0,
+        expired: 0,
+        pending: 0
+    });
 
     // Toggle dropdown for specific post
     const toggleDropdown = (postId: string, buttonElement: HTMLButtonElement) => {
@@ -116,14 +122,7 @@ function MobileView({ session }: { session?: any }) {
         };
     }, [openDropdownId]);
 
-    // Sample data - replace with actual data from your API
-    const tabData = {
-        all: 24,
-        active: 18,
-        expired: 4,
-        pending: 2
-    };
-
+    
     const tabs = [
         { id: 'all', label: 'Tất cả', count: tabData.all },
         { id: 'active', label: 'Đang hiển thị', count: tabData.active },
@@ -131,96 +130,7 @@ function MobileView({ session }: { session?: any }) {
         { id: 'pending', label: 'Chờ xuất bản', count: tabData.pending }
     ];
 
-    const samplePosts = [
-        {
-            "postId": "1cc98576-3e88-4b4d-9eb9-7b9a1c077043",
-            "userId": "4d756a86-e8fb-4ecb-9ac3-90fed4c6458b",
-            "title": "Bán nhà Tứ Liên, Tây Hồ - 50m2 - 7 tầng - thang máy - sổ đỏ giao dịch ",
-            "description": "Chính chủ cần bán nhà tại phố Tứ Liên, Tây Hồ, Hà Nội\nNhà xây mới 7 tầng thang máy.\nSổ đỏ chính chủ, cất két giao dịch ngay.\nVị trí đẹp, đắc địa, phân lô oto chánh.\nLiên hệ ngay e.Luật nhận tư vấn hỗ trợ.",
-            "acreage": 50.00,
-            "legal": "SO_DO",
-            "price": 2150000000.00,
-            "provinceCode": "01",
-            "wardCode": "00004",
-            "address": "24 Van Cao, Ba Đình, Hà Nội",
-            "createdDate": "2025-09-07T11:36:37",
-            "updatedDate": "2025-09-07T11:36:37",
-            "expiredAt": "2025-09-07T11:36:37",
-            "status": "PUBLISHED",
-            "type": "NHA_RIENG",
-            "transactionType": "SELL",
-            "images": [
-                {
-                    "imageId": "f30e83a9-0c8a-4ea2-96bb-d903973502d1",
-                    "postId": "1cc98576-3e88-4b4d-9eb9-7b9a1c077043",
-                    "fileUrl": "1757219673933-206a34cd-512b-4f63-9858-d42df7c37907.jpg",
-                    "fileName": "116191181-3145-ban-nha-mat-tien-da-nang-gia-re.jpg",
-                    "isPrimary": true
-                }
-            ]
-        },
-        {
-            "postId": "a8b1964b-0ed0-462e-8a7a-97504a165e57",
-            "userId": "4d756a86-e8fb-4ecb-9ac3-90fed4c6458b",
-            "title": "Bán nhà Tứ Liên, Tây Hồ - 50m2 - 7 tầng - thang máy - sổ đỏ giao dịch ",
-            "description": "Chính chủ cần bán nhà tại phố Tứ Liên, Tây Hồ, Hà Nội\nNhà xây mới 7 tầng thang máy.\nSổ đỏ chính chủ, cất két giao dịch ngay.\nVị trí đẹp, đắc địa, phân lô oto chánh.\nLiên hệ ngay e.Luật nhận tư vấn hỗ trợ.",
-            "acreage": 50.00,
-            "legal": "SO_DO",
-            "price": 2150000000.00,
-            "provinceCode": "01",
-            "wardCode": "00004",
-            "address": "24 Van Cao, Ba Đình, Hà Nội",
-            "createdDate": "2025-09-07T11:34:36",
-            "updatedDate": "2025-09-07T11:34:36",
-            "expiredAt": "2025-09-07T11:34:36",
-            "status": "EXPIRED",
-            "type": "NHA_RIENG",
-            "transactionType": "SELL",
-            "images": [
-                {
-                    "imageId": "3cf64241-5599-403a-a73a-60b7a3e0606c",
-                    "postId": "a8b1964b-0ed0-462e-8a7a-97504a165e57",
-                    "fileUrl": "1757219673933-206a34cd-512b-4f63-9858-d42df7c37907.jpg",
-                    "fileName": "116191181-3145-ban-nha-mat-tien-da-nang-gia-re.jpg",
-                    "isPrimary": true
-                }
-            ]
-        },
-        {
-            "postId": "0c6f29b8-4e2a-466a-a7f0-77c098f33dc3",
-            "userId": "4d756a86-e8fb-4ecb-9ac3-90fed4c6458b",
-            "title": "Bán nhà Tứ Liên, Tây Hồ - 50m2 - 7 tầng - thang máy - sổ đỏ giao dịch ",
-            "description": "Chính chủ cần bán nhà tại phố Tứ Liên, Tây Hồ, Hà Nội\nNhà xây mới 7 tầng thang máy.\nSổ đỏ chính chủ, cất két giao dịch ngay.\nVị trí đẹp, đắc địa, phân lô oto chánh.\nLiên hệ ngay e.Luật nhận tư vấn hỗ trợ.",
-            "acreage": 50.00,
-            "bedrooms": 3,
-            "bathrooms": 2,
-            "furniture": "CO_BAN",
-            "legal": "SO_DO",
-            "price": 2350000000.00,
-            "provinceCode": "01",
-            "wardCode": "00004",
-            "address": "89 Van Cao, Ba Đình, Hà Nội",
-            "createdDate": "2025-09-07T10:42:47",
-            "updatedDate": "2025-09-07T10:42:47",
-            "expiredAt": "2025-09-07T10:42:47",
-            "status": "DRAFT",
-            "floors": 4,
-            "direction": "TAY_BAC",
-            "type": "NHA_RIENG",
-            "transactionType": "RENT",
-            "images": [
-                {
-                    "imageId": "3774b702-ab87-4053-9e18-e319a91f8c20",
-                    "postId": "0c6f29b8-4e2a-466a-a7f0-77c098f33dc3",
-                    "fileUrl": "1757216562959-80ca0f95-917c-4d2c-8549-655195c271bd.jpg",
-                    "fileName": "1217250571-1919-ban-nha-mat-tien-da-nang-chinh-chu.jpg",
-                    "isPrimary": true
-                }
-            ]
-        },
-        // Add more sample posts as needed    
-    ];
-
+    // Fetch posts from API
     const fetchPosts = async () => {
         try{
             const response = await fetch('/api/manage/posts', {
@@ -230,11 +140,17 @@ function MobileView({ session }: { session?: any }) {
                 },
                 body: JSON.stringify({
                     title: "tu lien",
-                    lastDate: 9
+                    lastDate: 180
                 })
             });
             const data = await response.json();
             setPosts(data.response);
+            setTabData({
+                all: data.response.length,
+                active: data.response.filter((post: any) => post.status === 'PUBLISHED').length,
+                expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
+                pending: data.response.filter((post: any) => post.status === 'DRAFT').length
+            });
         }catch(error){
             console.error("Error fetching posts:", error);
         }
@@ -285,7 +201,13 @@ function MobileView({ session }: { session?: any }) {
             </div>
             <div className={`${styles.formContainer} flex-1`}>
                 <div className={styles.postsGrid}>
-                    {posts?.map((post) => (
+                    {posts?.filter((post) => {
+                        if (activeTab === 'all') return true;
+                        if (activeTab === 'active') return post.status === 'PUBLISHED';
+                        if (activeTab === 'expired') return post.status === 'EXPIRED';
+                        if (activeTab === 'pending') return post.status === 'DRAFT';
+                        return true;
+                    }).map((post) => (
                         <div key={post.postId} className={styles.postCard}>
                             <div className={styles.postImageContainer}>
                                 <Image
