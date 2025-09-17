@@ -30,6 +30,16 @@ function MobileView({ session }: { session?: any }) {
         expired: 0,
         pending: 0
     });
+    const [searchParams, setSearchParams] = useState({
+        title: '',
+        transactionType: '',
+        lastDate: 180
+    });
+    const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
+    const [tempFilterParams, setTempFilterParams] = useState({
+        transactionType: '',
+        lastDate: 180
+    });
 
     // Toggle dropdown for specific post
     const toggleDropdown = (postId: string, buttonElement: HTMLButtonElement) => {
@@ -107,6 +117,37 @@ function MobileView({ session }: { session?: any }) {
         };
     };
 
+    // Handle filter popup actions
+    const handleFilterReset = () => {
+        setTempFilterParams({
+            transactionType: '',
+            lastDate: 180
+        });
+    };
+
+    const handleFilterApply = async () => {
+        const newParams = {
+            ...searchParams,
+            transactionType: tempFilterParams.transactionType,
+            lastDate: tempFilterParams.lastDate
+        };
+        
+        setSearchParams(newParams);
+        setIsFilterPopupOpen(false);
+        
+        // Re-fetch posts with new filters
+        await fetchPosts(newParams);
+    };
+
+    const handleFilterClose = () => {
+        // Reset temp params to current search params when closing without applying
+        setTempFilterParams({
+            transactionType: searchParams.transactionType,
+            lastDate: searchParams.lastDate
+        });
+        setIsFilterPopupOpen(false);
+    };
+
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = () => {
@@ -131,17 +172,14 @@ function MobileView({ session }: { session?: any }) {
     ];
 
     // Fetch posts from API
-    const fetchPosts = async () => {
+    const fetchPosts = async (params = searchParams) => {
         try{
             const response = await fetch('/api/manage/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',                   
                 },
-                body: JSON.stringify({
-                    title: "tu lien",
-                    lastDate: 180
-                })
+                body: JSON.stringify(params)
             });
             const data = await response.json();
             setPosts(data.response);
@@ -160,6 +198,16 @@ function MobileView({ session }: { session?: any }) {
         fetchPosts();
     }, []);
 
+    // Initialize temp filter params when popup opens
+    useEffect(() => {
+        if (isFilterPopupOpen) {
+            setTempFilterParams({
+                transactionType: searchParams.transactionType,
+                lastDate: searchParams.lastDate
+            });
+        }
+    }, [isFilterPopupOpen, searchParams]);
+
     return (
         <div className="flex flex-col min-h-screen">
             <NavBarMobile displayNav={true} session={session} />
@@ -177,7 +225,10 @@ function MobileView({ session }: { session?: any }) {
                             className={styles.searchInput}
                         />
                     </div>
-                    <button className={styles.filterButton}>
+                    <button 
+                        className={styles.filterButton}
+                        onClick={() => setIsFilterPopupOpen(true)}
+                    >
                         <Image
                             src="/icons/Funnel.svg"
                             alt="Filter"
@@ -396,6 +447,163 @@ function MobileView({ session }: { session?: any }) {
                     ))}
                 </div>
             </div>
+
+            {/* Filter Popup */}
+            {isFilterPopupOpen && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        minWidth: '300px',
+                        maxWidth: '90vw',
+                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+                    }}>
+                        <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            marginBottom: '20px' 
+                        }}>
+                            <h3 style={{ 
+                                margin: 0, 
+                                fontSize: '18px', 
+                                fontWeight: 'bold', 
+                                color: '#374151' 
+                            }}>
+                                Bộ lọc
+                            </h3>
+                            <button
+                                onClick={handleFilterClose}
+                                style={{
+                                    border: 'none',
+                                    background: 'none',
+                                    fontSize: '20px',
+                                    cursor: 'pointer',
+                                    color: '#6b7280'
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {/* Transaction Type Filter */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ 
+                                display: 'block', 
+                                marginBottom: '8px', 
+                                fontSize: '14px', 
+                                fontWeight: '500',
+                                color: '#374151'
+                            }}>
+                                Loại giao dịch
+                            </label>
+                            <select
+                                value={tempFilterParams.transactionType}
+                                onChange={(e) => setTempFilterParams(prev => ({
+                                    ...prev,
+                                    transactionType: e.target.value
+                                }))}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    backgroundColor: 'white'
+                                }}
+                            >
+                                <option value="">Tất cả</option>
+                                <option value="SELL">Bán</option>
+                                <option value="RENT">Thuê</option>
+                            </select>
+                        </div>
+
+                        {/* Last Date Filter */}
+                        <div style={{ marginBottom: '24px' }}>
+                            <label style={{ 
+                                display: 'block', 
+                                marginBottom: '8px', 
+                                fontSize: '14px', 
+                                fontWeight: '500',
+                                color: '#374151'
+                            }}>
+                                Ngày đăng tin
+                            </label>
+                            <select
+                                value={tempFilterParams.lastDate}
+                                onChange={(e) => setTempFilterParams(prev => ({
+                                    ...prev,
+                                    lastDate: parseInt(e.target.value)
+                                }))}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    backgroundColor: 'white'
+                                }}
+                            >
+                                <option value={7}>7 ngày qua</option>
+                                <option value={30}>30 ngày qua</option>
+                                <option value={60}>60 ngày qua</option>
+                                <option value={90}>90 ngày qua</option>
+                                <option value={180}>180 ngày qua</option>
+                            </select>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div style={{ 
+                            display: 'flex', 
+                            gap: '12px', 
+                            justifyContent: 'flex-end' 
+                        }}>
+                            <button
+                                onClick={handleFilterReset}
+                                style={{
+                                    padding: '10px 20px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    backgroundColor: 'white',
+                                    color: '#374151',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontWeight: '500'
+                                }}
+                            >
+                                Đặt lại
+                            </button>
+                            <button
+                                onClick={handleFilterApply}
+                                style={{
+                                    padding: '10px 20px',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    fontSize: '14px',
+                                    cursor: 'pointer',
+                                    fontWeight: '500'
+                                }}
+                            >
+                                Áp dụng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
