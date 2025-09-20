@@ -35,11 +35,18 @@ function MobileView({ session }: { session?: any }) {
         transactionType: '',
         lastDate: 180
     });
-    const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
     const [tempFilterParams, setTempFilterParams] = useState({
         transactionType: '',
         lastDate: 180
     });
+
+    // Calculate active filter count
+    const getActiveFilterCount = () => {
+        let count = 0;
+        if (searchParams.transactionType) count++;
+        if (searchParams.lastDate !== 180) count++; // 180 is the default value
+        return count;
+    };
 
     // Toggle dropdown for specific post
     const toggleDropdown = (postId: string, buttonElement: HTMLButtonElement) => {
@@ -133,7 +140,7 @@ function MobileView({ session }: { session?: any }) {
         };
         
         setSearchParams(newParams);
-        setIsFilterPopupOpen(false);
+        setOpenDropdownId(null);
         
         // Re-fetch posts with new filters
         await fetchPosts(newParams);
@@ -145,12 +152,17 @@ function MobileView({ session }: { session?: any }) {
             transactionType: searchParams.transactionType,
             lastDate: searchParams.lastDate
         });
-        setIsFilterPopupOpen(false);
+        setOpenDropdownId(null);
     };
 
     // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = () => {
+        const handleClickOutside = (event: MouseEvent) => {
+            // Don't close if clicking inside a dropdown
+            const target = event.target as HTMLElement;
+            if (target.closest('[data-dropdown-content]')) {
+                return;
+            }
             setOpenDropdownId(null);
         };
 
@@ -198,15 +210,15 @@ function MobileView({ session }: { session?: any }) {
         fetchPosts();
     }, []);
 
-    // Initialize temp filter params when popup opens
+    // Initialize temp filter params when filter dropdown opens
     useEffect(() => {
-        if (isFilterPopupOpen) {
+        if (openDropdownId === 'filter') {
             setTempFilterParams({
                 transactionType: searchParams.transactionType,
                 lastDate: searchParams.lastDate
             });
         }
-    }, [isFilterPopupOpen, searchParams]);
+    }, [openDropdownId, searchParams]);
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -225,17 +237,200 @@ function MobileView({ session }: { session?: any }) {
                             className={styles.searchInput}
                         />
                     </div>
-                    <button 
-                        className={styles.filterButton}
-                        onClick={() => setIsFilterPopupOpen(true)}
-                    >
-                        <Image
-                            src="/icons/Funnel.svg"
-                            alt="Filter"
-                            width={20}
-                            height={20}
-                        />
-                    </button>
+                    <div style={{ position: 'relative' }}>
+                        <button 
+                            className={styles.filterButton}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleDropdown('filter', e.currentTarget);
+                            }}
+                        >
+                            <Image
+                                src="/icons/Funnel.svg"
+                                alt="Filter"
+                                width={20}
+                                height={20}
+                            />
+                            {getActiveFilterCount() > 0 && (
+                                <span
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-6px',
+                                        right: '-6px',
+                                        backgroundColor: '#ef4444',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                        borderRadius: '50%',
+                                        width: '18px',
+                                        height: '18px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid white',
+                                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
+                                    }}
+                                >
+                                    {getActiveFilterCount()}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Filter Dropdown */}
+                        {openDropdownId === 'filter' && (
+                            <div
+                                ref={dropdownRef}
+                                data-dropdown-content="true"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                    position: 'absolute',
+                                    [dropdownPosition === 'above' ? 'bottom' : 'top']: '100%',
+                                    right: 0,
+                                    backgroundColor: 'white',
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                                    zIndex: 50,
+                                    minWidth: '280px',
+                                    padding: '16px',
+                                    marginTop: dropdownPosition === 'below' ? '4px' : '0',
+                                    marginBottom: dropdownPosition === 'above' ? '4px' : '0'
+                                }}
+                            >
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center', 
+                                    marginBottom: '16px' 
+                                }}>
+                                    <h3 style={{ 
+                                        margin: 0, 
+                                        fontSize: '16px', 
+                                        fontWeight: 'bold', 
+                                        color: '#374151' 
+                                    }}>
+                                        Bộ lọc
+                                    </h3>
+                                    <button
+                                        onClick={handleFilterClose}
+                                        style={{
+                                            border: 'none',
+                                            background: 'none',
+                                            fontSize: '18px',
+                                            cursor: 'pointer',
+                                            color: '#6b7280'
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+
+                                {/* Transaction Type Filter */}
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ 
+                                        display: 'block', 
+                                        marginBottom: '6px', 
+                                        fontSize: '14px', 
+                                        fontWeight: '500',
+                                        color: '#374151'
+                                    }}>
+                                        Loại giao dịch
+                                    </label>
+                                    <select
+                                        value={tempFilterParams.transactionType}
+                                        onChange={(e) => setTempFilterParams(prev => ({
+                                            ...prev,
+                                            transactionType: e.target.value
+                                        }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '8px 12px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '6px',
+                                            fontSize: '14px',
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <option value="">Tất cả</option>
+                                        <option value="SELL">Bán</option>
+                                        <option value="RENT">Thuê</option>
+                                    </select>
+                                </div>
+
+                                {/* Last Date Filter */}
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ 
+                                        display: 'block', 
+                                        marginBottom: '6px', 
+                                        fontSize: '14px', 
+                                        fontWeight: '500',
+                                        color: '#374151'
+                                    }}>
+                                        Ngày đăng tin
+                                    </label>
+                                    <select
+                                        value={tempFilterParams.lastDate}
+                                        onChange={(e) => setTempFilterParams(prev => ({
+                                            ...prev,
+                                            lastDate: parseInt(e.target.value)
+                                        }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '8px 12px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '6px',
+                                            fontSize: '14px',
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <option value={7}>7 ngày qua</option>
+                                        <option value={30}>30 ngày qua</option>
+                                        <option value={60}>60 ngày qua</option>
+                                        <option value={90}>90 ngày qua</option>
+                                        <option value={180}>180 ngày qua</option>
+                                    </select>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div style={{ 
+                                    display: 'flex', 
+                                    gap: '8px', 
+                                    justifyContent: 'flex-end' 
+                                }}>
+                                    <button
+                                        onClick={handleFilterReset}
+                                        style={{
+                                            padding: '8px 16px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '6px',
+                                            backgroundColor: 'white',
+                                            color: '#374151',
+                                            fontSize: '14px',
+                                            cursor: 'pointer',
+                                            fontWeight: '500'
+                                        }}
+                                    >
+                                        Đặt lại
+                                    </button>
+                                    <button
+                                        onClick={handleFilterApply}
+                                        style={{
+                                            padding: '8px 16px',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            backgroundColor: '#3b82f6',
+                                            color: 'white',
+                                            fontSize: '14px',
+                                            cursor: 'pointer',
+                                            fontWeight: '500'
+                                        }}
+                                    >
+                                        Áp dụng
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className={styles.tabsContainer}>
                     {tabs.map((tab) => (
@@ -336,6 +531,7 @@ function MobileView({ session }: { session?: any }) {
                                     {openDropdownId === post.postId && (
                                         <div
                                             ref={dropdownRef}
+                                            data-dropdown-content="true"
                                             onClick={(e) => e.stopPropagation()}
                                             style={{
                                                 position: 'absolute',
@@ -447,163 +643,6 @@ function MobileView({ session }: { session?: any }) {
                     ))}
                 </div>
             </div>
-
-            {/* Filter Popup */}
-            {isFilterPopupOpen && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div style={{
-                        backgroundColor: 'white',
-                        borderRadius: '12px',
-                        padding: '24px',
-                        minWidth: '300px',
-                        maxWidth: '90vw',
-                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
-                    }}>
-                        <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center', 
-                            marginBottom: '20px' 
-                        }}>
-                            <h3 style={{ 
-                                margin: 0, 
-                                fontSize: '18px', 
-                                fontWeight: 'bold', 
-                                color: '#374151' 
-                            }}>
-                                Bộ lọc
-                            </h3>
-                            <button
-                                onClick={handleFilterClose}
-                                style={{
-                                    border: 'none',
-                                    background: 'none',
-                                    fontSize: '20px',
-                                    cursor: 'pointer',
-                                    color: '#6b7280'
-                                }}
-                            >
-                                ×
-                            </button>
-                        </div>
-
-                        {/* Transaction Type Filter */}
-                        <div style={{ marginBottom: '20px' }}>
-                            <label style={{ 
-                                display: 'block', 
-                                marginBottom: '8px', 
-                                fontSize: '14px', 
-                                fontWeight: '500',
-                                color: '#374151'
-                            }}>
-                                Loại giao dịch
-                            </label>
-                            <select
-                                value={tempFilterParams.transactionType}
-                                onChange={(e) => setTempFilterParams(prev => ({
-                                    ...prev,
-                                    transactionType: e.target.value
-                                }))}
-                                style={{
-                                    width: '100%',
-                                    padding: '8px 12px',
-                                    border: '1px solid #d1d5db',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    backgroundColor: 'white'
-                                }}
-                            >
-                                <option value="">Tất cả</option>
-                                <option value="SELL">Bán</option>
-                                <option value="RENT">Thuê</option>
-                            </select>
-                        </div>
-
-                        {/* Last Date Filter */}
-                        <div style={{ marginBottom: '24px' }}>
-                            <label style={{ 
-                                display: 'block', 
-                                marginBottom: '8px', 
-                                fontSize: '14px', 
-                                fontWeight: '500',
-                                color: '#374151'
-                            }}>
-                                Ngày đăng tin
-                            </label>
-                            <select
-                                value={tempFilterParams.lastDate}
-                                onChange={(e) => setTempFilterParams(prev => ({
-                                    ...prev,
-                                    lastDate: parseInt(e.target.value)
-                                }))}
-                                style={{
-                                    width: '100%',
-                                    padding: '8px 12px',
-                                    border: '1px solid #d1d5db',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    backgroundColor: 'white'
-                                }}
-                            >
-                                <option value={7}>7 ngày qua</option>
-                                <option value={30}>30 ngày qua</option>
-                                <option value={60}>60 ngày qua</option>
-                                <option value={90}>90 ngày qua</option>
-                                <option value={180}>180 ngày qua</option>
-                            </select>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div style={{ 
-                            display: 'flex', 
-                            gap: '12px', 
-                            justifyContent: 'flex-end' 
-                        }}>
-                            <button
-                                onClick={handleFilterReset}
-                                style={{
-                                    padding: '10px 20px',
-                                    border: '1px solid #d1d5db',
-                                    borderRadius: '6px',
-                                    backgroundColor: 'white',
-                                    color: '#374151',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontWeight: '500'
-                                }}
-                            >
-                                Đặt lại
-                            </button>
-                            <button
-                                onClick={handleFilterApply}
-                                style={{
-                                    padding: '10px 20px',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    backgroundColor: '#3b82f6',
-                                    color: 'white',
-                                    fontSize: '14px',
-                                    cursor: 'pointer',
-                                    fontWeight: '500'
-                                }}
-                            >
-                                Áp dụng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
