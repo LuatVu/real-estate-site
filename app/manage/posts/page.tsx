@@ -39,6 +39,8 @@ function MobileView({ session }: { session?: any }) {
         transactionType: '',
         lastDate: 180
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(10); // Number of posts per page
 
     // Handle search input events
     const handleSearchSubmit = async () => {
@@ -47,6 +49,7 @@ function MobileView({ session }: { session?: any }) {
             title: searchTerm
         };
         setSearchParams(newParams);
+        setCurrentPage(1); // Reset to first page when searching
         await fetchPosts(newParams);
     };
 
@@ -60,12 +63,52 @@ function MobileView({ session }: { session?: any }) {
         handleSearchSubmit();
     };
 
+    // Pagination handlers
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < getTotalPages()) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     // Calculate active filter count
     const getActiveFilterCount = () => {
         let count = 0;
         if (searchParams.transactionType) count++;
         if (searchParams.lastDate !== 180) count++; // 180 is the default value
         return count;
+    };
+
+    // Pagination calculations
+    const getFilteredPosts = () => {
+        return posts?.filter((post) => {
+            if (activeTab === 'all') return true;
+            if (activeTab === 'active') return post.status === 'PUBLISHED';
+            if (activeTab === 'expired') return post.status === 'EXPIRED';
+            if (activeTab === 'pending') return post.status === 'DRAFT';
+            return true;
+        }) || [];
+    };
+
+    const getPaginatedPosts = () => {
+        const filteredPosts = getFilteredPosts();
+        const startIndex = (currentPage - 1) * postsPerPage;
+        const endIndex = startIndex + postsPerPage;
+        return filteredPosts.slice(startIndex, endIndex);
+    };
+
+    const getTotalPages = () => {
+        const filteredPosts = getFilteredPosts();
+        return Math.ceil(filteredPosts.length / postsPerPage);
     };
 
     // Toggle dropdown for specific post
@@ -161,6 +204,7 @@ function MobileView({ session }: { session?: any }) {
         
         setSearchParams(newParams);
         setOpenDropdownId(null);
+        setCurrentPage(1); // Reset to first page when applying filters
         
         // Re-fetch posts with new filters
         await fetchPosts(newParams);
@@ -458,7 +502,10 @@ function MobileView({ session }: { session?: any }) {
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => {
+                                setActiveTab(tab.id);
+                                setCurrentPage(1); // Reset to first page when changing tabs
+                            }}
                             className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabButtonActive : ''}`}
                         >
                             <span className={styles.tabLabel}>{tab.label}</span>
@@ -469,13 +516,7 @@ function MobileView({ session }: { session?: any }) {
             </div>
             <div className={`${styles.formContainer} flex-1`}>
                 <div className={styles.postsGrid}>
-                    {posts?.filter((post) => {
-                        if (activeTab === 'all') return true;
-                        if (activeTab === 'active') return post.status === 'PUBLISHED';
-                        if (activeTab === 'expired') return post.status === 'EXPIRED';
-                        if (activeTab === 'pending') return post.status === 'DRAFT';
-                        return true;
-                    }).map((post) => (
+                    {getPaginatedPosts().map((post) => (
                         <div key={post.postId} className={styles.postCard}>
                             <div className={styles.postImageContainer}>
                                 <Image
@@ -664,6 +705,100 @@ function MobileView({ session }: { session?: any }) {
                         </div>
                     ))}
                 </div>
+                
+                {/* Pagination Controls */}
+                {getTotalPages() > 1 && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginTop: '20px',
+                        padding: '20px'
+                    }}>
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                            style={{
+                                padding: '8px 12px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                                color: currentPage === 1 ? '#9ca3af' : '#374151',
+                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            ← Trước
+                        </button>
+                        
+                        {Array.from({ length: getTotalPages() }, (_, index) => {
+                            const page = index + 1;
+                            const isCurrentPage = page === currentPage;
+                            const showPage = page === 1 || page === getTotalPages() || 
+                                            Math.abs(page - currentPage) <= 2;
+                            
+                            if (!showPage && page !== currentPage - 3 && page !== currentPage + 3) {
+                                return null;
+                            }
+                            
+                            if ((page === currentPage - 3 || page === currentPage + 3) && 
+                                page !== 1 && page !== getTotalPages()) {
+                                return (
+                                    <span key={`ellipsis-${page}`} style={{ color: '#9ca3af', fontSize: '14px' }}>
+                                        ...
+                                    </span>
+                                );
+                            }
+                            
+                            return (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    style={{
+                                        padding: '8px 12px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '6px',
+                                        backgroundColor: isCurrentPage ? '#3b82f6' : 'white',
+                                        color: isCurrentPage ? 'white' : '#374151',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        minWidth: '40px'
+                                    }}
+                                >
+                                    {page}
+                                </button>
+                            );
+                        })}
+                        
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === getTotalPages()}
+                            style={{
+                                padding: '8px 12px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                backgroundColor: currentPage === getTotalPages() ? '#f3f4f6' : 'white',
+                                color: currentPage === getTotalPages() ? '#9ca3af' : '#374151',
+                                cursor: currentPage === getTotalPages() ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Tiếp →
+                        </button>
+                        
+                        <div style={{
+                            marginLeft: '16px',
+                            fontSize: '14px',
+                            color: '#6b7280'
+                        }}>
+                            Trang {currentPage} / {getTotalPages()} ({getFilteredPosts().length} tin)
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
