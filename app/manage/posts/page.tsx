@@ -40,6 +40,26 @@ function MobileView({ session }: { session?: any }) {
         lastDate: 180
     });
 
+    // Handle search input events
+    const handleSearchSubmit = async () => {
+        const newParams = {
+            ...searchParams,
+            title: searchTerm
+        };
+        setSearchParams(newParams);
+        await fetchPosts(newParams);
+    };
+
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit();
+        }
+    };
+
+    const handleSearchBlur = () => {
+        handleSearchSubmit();
+    };
+
     // Calculate active filter count
     const getActiveFilterCount = () => {
         let count = 0;
@@ -234,6 +254,8 @@ function MobileView({ session }: { session?: any }) {
                             placeholder="Nhập tiêu đề tin"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={handleSearchKeyDown}
+                            onBlur={handleSearchBlur}
                             className={styles.searchInput}
                         />
                     </div>
