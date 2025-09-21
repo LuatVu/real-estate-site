@@ -51,8 +51,6 @@ export const config = {
     "/api/media/upload/:path*",
     "/api/manage/:path*",
     "/api/manage/posts/:path*",
-    // Add more protected routes here if needed
-    // "/dashboard/:path*",
-    // "/admin/:path*"
+    "/api/manage/post-status/:path*",    
   ]
 };

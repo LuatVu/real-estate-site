@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react';
 import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Alert from '../../ui/common/alert';
+import { useAlert } from '../../hook/useAlert';
+import Confirmation from '../../ui/common/confirmation';
+import { useConfirmation } from '../../hook/useConfirmation';
 
 export default function Page() {
     const screenSize = useScreenSize();
@@ -18,6 +22,8 @@ export default function Page() {
 }
 
 function MobileView({ session }: { session?: any }) {
+    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
+    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all');
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
@@ -140,21 +146,54 @@ function MobileView({ session }: { session?: any }) {
         setOpenDropdownId(null);
 
         switch (action) {
-            case 'repost':
+            case 'upload-new': // status = 'DRAFT'
+                console.log('Upload new post');
+                break;
+            case 'reup': // status = 'Published'
+                console.log('Reup post:', post.postId);
+                break;
+            case 'repost': // status = 'Expired'
                 console.log('Repost/Reup post:', post.postId);
                 // Implement repost logic
+                showInfo(`Đang xử lý ${getRepostLabel(post.status).toLowerCase()} cho tin "${post.title}"`);
+                // TODO: Add actual repost API call here
                 break;
             case 'edit':
                 console.log('Edit post:', post.postId);
                 // Implement edit logic
+                showInfo(`Chuyển đến trang chỉnh sửa tin "${post.title}"`);
+                // TODO: Add navigation to edit page here
                 break;
             case 'upgrade':
                 console.log('Upgrade post:', post.postId);
                 // Implement upgrade logic
+                showInfo(`Đang xử lý nâng cấp VIP cho tin "${post.title}"`);
+                // TODO: Add actual upgrade API call here
                 break;
-            case 'delete':
-                console.log('Delete post:', post.postId);
-                // Implement delete logic
+            case 'delete':                
+                // Show confirmation dialog for delete
+                showConfirmation({
+                    title: 'Xác nhận xóa tin',
+                    message: `Bạn có chắc chắn muốn xóa tin "${post.title}"? Hành động này không thể hoàn tác.`,
+                    type: 'danger',
+                    confirmText: 'Xóa tin',
+                    cancelText: 'Hủy',
+                    onConfirm: async () => {
+                        setConfirmButtonLoading(true);
+                        try {
+                            await updatePostStatus(post.postId, 'DELETED');
+                            hideConfirmation();
+                            showSuccess(`Đã xóa tin "${post.title}" thành công`); 
+                            await fetchPosts(searchParams);
+                        } catch (error) {
+                            setConfirmButtonLoading(false);
+                            showError('Không thể xóa tin đăng. Vui lòng thử lại sau.');
+                        }
+                    },
+                    onCancel: () => {
+                        hideConfirmation();                        
+                    }
+                });
                 break;
         }
     };
@@ -187,12 +226,49 @@ function MobileView({ session }: { session?: any }) {
         };
     };
 
+    const getRepostAction = (status: string) => {
+        switch (status) {
+            case 'DRAFT':
+                return 'upload-new';
+            case 'EXPIRED':
+                return 'repost';
+            case 'PUBLISHED':
+                return 'reup';
+            default:
+                return 'repost';
+        }
+    }
+
     // Handle filter popup actions
     const handleFilterReset = () => {
-        setTempFilterParams({
-            transactionType: '',
-            lastDate: 180
-        });
+        const currentFilterCount = getActiveFilterCount();
+        
+        if (currentFilterCount > 0) {
+            showConfirmation({
+                title: 'Xác nhận đặt lại bộ lọc',
+                message: `Bạn có muốn xóa tất cả ${currentFilterCount} bộ lọc đang áp dụng không?`,
+                type: 'warning',
+                confirmText: 'Đặt lại',
+                cancelText: 'Hủy',
+                onConfirm: () => {
+                    setTempFilterParams({
+                        transactionType: '',
+                        lastDate: 180
+                    });
+                    hideConfirmation();
+                    showInfo('Đã đặt lại tất cả bộ lọc');
+                },
+                onCancel: () => {
+                    hideConfirmation();
+                }
+            });
+        } else {
+            setTempFilterParams({
+                transactionType: '',
+                lastDate: 180
+            });
+            showInfo('Bộ lọc đã được đặt lại');
+        }
     };
 
     const handleFilterApply = async () => {
@@ -208,6 +284,14 @@ function MobileView({ session }: { session?: any }) {
         
         // Re-fetch posts with new filters
         await fetchPosts(newParams);
+        
+        // Show filter applied success message
+        const filterCount = getActiveFilterCount();
+        if (filterCount > 0) {
+            showSuccess(`Đã áp dụng ${filterCount} bộ lọc thành công`);
+        } else {
+            showInfo('Đã xóa tất cả bộ lọc');
+        }
     };
 
     const handleFilterClose = () => {
@@ -257,6 +341,11 @@ function MobileView({ session }: { session?: any }) {
                 },
                 body: JSON.stringify(params)
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             setPosts(data.response);
             setTabData({
@@ -265,10 +354,23 @@ function MobileView({ session }: { session?: any }) {
                 expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
                 pending: data.response.filter((post: any) => post.status === 'DRAFT').length
             });
+            
+            // Show success message when posts are loaded (optional, can be removed if too frequent)
+            // showSuccess(`Đã tải ${data.response.length} tin đăng thành công`);
         }catch(error){
             console.error("Error fetching posts:", error);
+            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
         }
     }
+
+    const updatePostStatus = async (postId: string, status: string) => {        
+        await fetch(`/api/manage/post-status?postId=${postId}&status=${status}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });                     
+    };
 
     useEffect(() => {
         fetchPosts();
@@ -283,6 +385,13 @@ function MobileView({ session }: { session?: any }) {
             });
         }
     }, [openDropdownId, searchParams]);
+
+    const POST_STATUSES = {
+        PUBLISHED: 'PUBLISHED',
+        DRAFT: 'DRAFT',
+        EXPIRED: 'EXPIRED',
+        DELETED: 'DELETED'
+    };
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -611,7 +720,7 @@ function MobileView({ session }: { session?: any }) {
                                             }}
                                         >
                                             <button
-                                                onClick={() => handleDropdownAction('repost', post)}
+                                                onClick={() => handleDropdownAction (getRepostAction(post.status), post)}
                                                 style={{
                                                     width: '100%',
                                                     padding: '8px 16px',
@@ -800,6 +909,27 @@ function MobileView({ session }: { session?: any }) {
                     </div>
                 )}
             </div>
+            
+            {/* Alert Component */}
+            <Alert
+                type={alert.type}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+            />
+            
+            {/* Confirmation Component */}
+            <Confirmation
+                isVisible={confirmation.isVisible}
+                title={confirmation.title}
+                message={confirmation.message}
+                type={confirmation.type}
+                confirmText={confirmation.confirmText}
+                cancelText={confirmation.cancelText}
+                onConfirm={confirmation.onConfirm}
+                onCancel={confirmation.onCancel}
+                confirmButtonLoading={confirmation.confirmButtonLoading}
+            />
         </div>
     );
 }
