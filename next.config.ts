@@ -8,8 +8,12 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "8080",
-        pathname: "/api/public/images/**"
+        pathname: "/api/public/image/**"
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",        
+      }
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

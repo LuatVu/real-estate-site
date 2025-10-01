@@ -10,6 +10,7 @@
     font-family: Roboto;
     display: flex;
     flex-direction: column;
+    padding-bottom: 80px; /* Add space for sticky footer */
 }
 
 .slide-container{
@@ -391,4 +392,290 @@
 	flex-shrink: 0;
 }
 
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 16px 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    display: flex;
+    gap: 16px;
+}
 
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 16px 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    display: flex;
+    gap: 16px;
+}
+
+.contactBtn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--color-primary-p200, #2B6AD0) 0%, var(--color-primary-p300, #1A56B9) 100%);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(43, 106, 208, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.contactBtn:hover {
+    background: linear-gradient(135deg, var(--color-primary-p300, #1A56B9) 0%, #0E4A9F 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(43, 106, 208, 0.35);
+}
+
+.contactBtn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(43, 106, 208, 0.4);
+}
+
+.contactBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.6s;
+}
+
+.contactBtn:hover::before {
+    left: 100%;
+}
+
+.clickHint {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-left: 8px;
+    font-style: italic;
+}
+
+.profileMenuAvatar {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+
+/* Enhanced Image Slider Styles - Full Width */
+.slideContainer {
+    height: 400px;
+    width: 100vw;
+    position: relative;
+    margin-left: calc(-50vw + 50%);
+    overflow: hidden;
+}
+
+.imageSwiper {
+    height: 100%;
+    width: 100%;
+}
+
+.imageContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blurredBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(20px);
+    transform: scale(1.1);
+    z-index: 1;
+    opacity: 0.3;
+}
+
+.propertyImage {
+    transition: transform 0.3s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.imageContainer:hover .propertyImage {
+    transform: scale(1.02);
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0;
+    z-index: 3;
+}
+
+.imageContainer:hover .imageOverlay {
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 1;
+}
+
+.zoomHint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Fullscreen Modal Styles */
+.fullscreenModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreenHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: white;
+}
+
+.imageCounter {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.fullscreenContent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.fullscreenImageContainer {
+    position: relative;
+    width: 90%;
+    height: 80%;
+    max-width: 1200px;
+}
+
+.fullscreenImage {
+    width: 100%;
+    height: 100%;
+}
+
+.navButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.navButton:hover {
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.prevButton {
+    left: 20px;
+}
+
+.nextButton {
+    right: 20px;
+}
+
+/* Swiper Custom Styles */
+.imageSwiper .swiper-button-next,
+.imageSwiper .swiper-button-prev {
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-top: -20px;
+}
+
+.imageSwiper .swiper-button-next:after,
+.imageSwiper .swiper-button-prev:after {
+    font-size: 18px;
+}
+
+.imageSwiper .swiper-pagination-bullet {
+    background: white;
+    opacity: 0.7;
+}
+
+.imageSwiper .swiper-pagination-bullet-active {
+    background: var(--color-primary-p200, #2B6AD0);
+    opacity: 1;
+}

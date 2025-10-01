@@ -130,8 +130,8 @@ function PostsOnMobile({session}: {session?: any}) {
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
                             {posts.map((element: any, index: any) => (
-                                <Link href={"/post?postId=" + element.postId} className={styles.post} key={index}>
-                                    <Image className={styles.postChild} width={174} height={178} alt="" src={"http://localhost:8080/api/public/images/" + element.imageName} loading={index < 3? "eager": "lazy"}/>
+                                <Link href={`/post/${element.postId}`} className={styles.post} key={index}>
+                                    <Image className={styles.postChild} width={174} height={178} alt="" src={"http://localhost:8080/api/public/image/" + element.imageUrl} loading={index < 3? "eager": "lazy"}/>
                                     <div className={styles.bnNh2TngWrapper}>
                                         <div className={styles.filter}>{element.title}</div>
                                     </div>
