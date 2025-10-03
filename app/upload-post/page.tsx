@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
+import Loading from '../ui/common/loading';
 
 export default function UploadPost() {
     const screenSize = useScreenSize();
@@ -83,6 +84,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     // Popup states
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [showFailurePopup, setShowFailurePopup] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
 
     const handleTransactionTypeChange = (type: string) => {
@@ -426,6 +428,8 @@ function MobileUploadPost({ session }: { session?: any }) {
     };
 
     const uploadPost = async () => {        
+        setIsUploading(true); // Start loading
+        
         const images = uploadedImages.map(img => ({
             fileName: img.file.name,
             fileUrl: imageMapping[img.id] || img.file.name, // Use the uploaded URL from mapping
@@ -474,6 +478,9 @@ function MobileUploadPost({ session }: { session?: any }) {
 
         } catch (error) {            
             setShowFailurePopup(true);  // Show failure popup
+        } finally {
+            setIsUploading(false); // Stop loading
+            console.log('Upload finished, loading set to false');
         }
     };
 
@@ -507,7 +514,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                 </div>
             </div>
             <div className={`${styles.formContainer} flex-1`}>
-                <Form id="uploadPostForm" action={uploadPost} className={`${styles.mainContent} flex flex-col flex-1`}>
+                <form id="uploadPostForm" onSubmit={(e) => { e.preventDefault(); uploadPost(); }} className={`${styles.mainContent} flex flex-col flex-1`}>
                     {step === 1 && (
                         <div className="flex-1">
                             <div className={styles.inputGroup}>
@@ -1183,9 +1190,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                             </div>
                         </div>
                     )}
-                </Form>
-
-
+                </form>
 
                 <div className={styles.footer}>
                     {step === 1 && (
@@ -1343,6 +1348,15 @@ function MobileUploadPost({ session }: { session?: any }) {
                         </button>
                     </div>
                 </PortalPopup>
+            )}
+            
+            {/* Loading overlay while uploading */}
+            {isUploading && (
+                <Loading 
+                    fullScreen
+                    size="large"
+                    message="Đang đăng tin..." 
+                />
             )}
         </div>
     );

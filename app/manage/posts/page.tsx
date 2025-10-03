@@ -147,16 +147,55 @@ function MobileView({ session }: { session?: any }) {
 
         switch (action) {
             case 'upload-new': // status = 'DRAFT'
-                console.log('Upload new post');
+                showConfirmation({
+                    title: 'Xác nhận đăng tin',
+                    message: `Bạn có chắc chắn muốn đăng tin "${post.title}"?`,
+                    type: 'warning',
+                    confirmText: 'Đăng tin',
+                    cancelText: 'Hủy',
+                    onConfirm: async () => {
+                        setConfirmButtonLoading(true);
+                        try {
+                            await updatePostStatus(post.postId, 'PUBLISHED');
+                            hideConfirmation();
+                            showSuccess(`Đã đăng "${post.title}" thành công`);
+                            await fetchPosts(searchParams);
+                        } catch (error) {
+                            setConfirmButtonLoading(false);
+                            showError('Không thể đăng tin. Vui lòng thử lại sau.');
+                        }
+                    },
+                    onCancel: () => {
+                        hideConfirmation();                        
+                    }
+                });
                 break;
             case 'reup': // status = 'Published'
                 console.log('Reup post:', post.postId);
                 break;
             case 'repost': // status = 'Expired'
-                console.log('Repost/Reup post:', post.postId);
-                // Implement repost logic
-                showInfo(`Đang xử lý ${getRepostLabel(post.status).toLowerCase()} cho tin "${post.title}"`);
-                // TODO: Add actual repost API call here
+                showConfirmation({
+                    title: 'Xác nhận đăng lại tin',
+                    message: `Bạn có chắc chắn muốn đăng lại tin "${post.title}"?`,
+                    type: 'warning',
+                    confirmText: 'Đăng tin',
+                    cancelText: 'Hủy',
+                    onConfirm: async () => {
+                        setConfirmButtonLoading(true);
+                        try {
+                            await updatePostStatus(post.postId, 'PUBLISHED');
+                            hideConfirmation();
+                            showSuccess(`Đã đăng lại "${post.title}" thành công`);
+                            await fetchPosts(searchParams);
+                        } catch (error) {
+                            setConfirmButtonLoading(false);
+                            showError('Không thể đăng lại tin. Vui lòng thử lại sau.');
+                        }
+                    },
+                    onCancel: () => {
+                        hideConfirmation();                        
+                    }
+                });
                 break;
             case 'edit':
                 console.log('Edit post:', post.postId);
