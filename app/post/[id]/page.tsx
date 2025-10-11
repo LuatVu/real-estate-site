@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         description,
         images: [imageUrl],
         type: 'website',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/post/${params.id}`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/post/${id}`,
       },
       twitter: {
         card: 'summary_large_image',
@@ -90,7 +90,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         images: [imageUrl],
       },
       alternates: {
-        canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/post/${params.id}`,
+        canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/post/${id}`,
       },
       robots: {
         index: true,
@@ -249,7 +249,7 @@ export default async function Posts({ params }: { params: { id: string } }) {
     );
   }
   
-  const structuredDataArray = generateStructuredData(post, params.id);
+  const structuredDataArray = generateStructuredData(post, id);
   
   return (
     <>
