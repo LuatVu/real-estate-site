@@ -282,9 +282,9 @@ function MobileUploadPost({ session }: { session?: any }) {
         }));
     };
 
-    // Check if step 2 is valid (at least 3 images)
+    // Check if step 2 is valid (at least 4 images)
     const isStep2Valid = () => {
-        return uploadedImages.length >= 3;
+        return uploadedImages.length >= 4;
     };
 
     // Function to check if all mandatory fields are filled
@@ -1020,21 +1020,19 @@ function MobileUploadPost({ session }: { session?: any }) {
                                             height={16}
                                             className="mr-2"
                                         />
-                                        Thêm hình ảnh
-                                    </label>
-                                    {uploadedImages.length < 3 && (
-                                        <p className="text-sm text-red-600 mt-2">
-                                            Cần tối thiểu 3 hình ảnh để tiếp tục ({uploadedImages.length}/3)
-                                        </p>
-                                    )}
-                                    {uploadedImages.length >= 3 && (
-                                        <p className="text-sm text-green-600 mt-2">
-                                            ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình)
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Image Preview Grid */}
+                        Thêm hình ảnh
+                    </label>
+                    {uploadedImages.length < 4 && (
+                        <p className="text-sm text-red-600 mt-2">
+                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
+                        </p>
+                    )}
+                    {uploadedImages.length >= 4 && (
+                        <p className="text-sm text-green-600 mt-2">
+                            ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình)
+                        </p>
+                    )}
+                </div>                                {/* Image Preview Grid */}
                                 {uploadedImages.length > 0 && (
                                     <div className="grid grid-cols-2 gap-4">
                                         {[...uploadedImages].sort((a, b) => {
