@@ -39,6 +39,10 @@ export default function NavBarMobile({displayNav, session}: any){
 		window.history.back();
 	};
 
+	const handleLogoClick = () => {
+		router.push('/');
+	};
+
   	return (
 		<>
     		<div className={styles.navtypenavVisitor}>
@@ -51,7 +55,16 @@ export default function NavBarMobile({displayNav, session}: any){
 					onClick={handleBackClick}
 					style={{ cursor: 'pointer' }}
 				/>: ""}
-      			<Image className={styles.nhPParent} alt="Nha Dep Qua!" width={72} height={18} src="/icons/nhadepqua_logo.svg"/>
+      			<Image 
+					className={styles.nhPParent} 
+					alt="Nha Dep Qua!" 
+					width={72} 
+					height={18} 
+					src="/icons/nhadepqua_logo.svg"
+					onClick={handleLogoClick}
+					onTouchStart={handleLogoClick}
+					style={{ cursor: 'pointer' }}
+				/>
 				<div className={styles.menuButtonContainer}>
 					<div 
 						className={styles.menuButton}
