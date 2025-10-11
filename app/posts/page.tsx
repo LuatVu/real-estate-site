@@ -17,6 +17,7 @@ import { calculatePagination } from '../utils/pagination';
 import { usePagination } from '../hook/usePagination';
 import { PaginationData } from '../types/pagination';
 import { extractSearchRequest } from '../utils/transform.param';
+import { formatPrice } from '../utils/price-formatter';
 import { useSession } from 'next-auth/react';
 
 export default function Posts() {
@@ -162,7 +163,7 @@ function PostsOnMobile({session}: {session?: any}) {
                                             <div className={styles.filter}>{element.title}</div>
                                         </div>
                                         <div className={styles.t130m2Wrapper}>
-                                            <div className={styles.filter}>{element.price} vnd - {element.acreage} m2</div>
+                                            <div className={styles.filter}>{formatPrice(element.price)} - {element.acreage} m²</div>
                                         </div>
                                         <div className={styles.vectorParent}>
                                             <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />

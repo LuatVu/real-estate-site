@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import Loading from '../ui/common/loading';
+import { formatPrice } from '../utils/price-formatter';
 
 export default function UploadPost() {
     const screenSize = useScreenSize();

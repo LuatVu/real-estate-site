@@ -13,6 +13,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/zoom';
+import { formatPrice } from '../../utils/price-formatter';
 
 interface PostClientProps {
   post: any;
@@ -96,32 +97,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
     );
   };
 
-  // Helper function to format price to readable Vietnamese format
-  const formatPrice = (price: string | number) => {
-    if (!price) return 'Thỏa thuận';
 
-    // Remove any non-numeric characters except decimal points
-    const numericPrice = parseFloat(String(price).replace(/[^\d.]/g, ''));
-
-    if (isNaN(numericPrice)) return price;
-
-    if (numericPrice >= 1000000000) {
-      // Billions (tỷ)
-      const billions = numericPrice / 1000000000;
-      return `${billions % 1 === 0 ? billions.toFixed(0) : billions.toFixed(1)} tỷ`;
-    } else if (numericPrice >= 1000000) {
-      // Millions (triệu)
-      const millions = numericPrice / 1000000;
-      return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)} triệu`;
-    } else if (numericPrice >= 1000) {
-      // Thousands (nghìn)
-      const thousands = numericPrice / 1000;
-      return `${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)} nghìn`;
-    } else {
-      // Less than 1000, show as is with VND
-      return `${numericPrice.toLocaleString('vi-VN')} VND`;
-    }
-  };
 
   // Helper function to format phone number (hide last 3 digits)
   const formatPhoneNumber = (phone: string) => {
