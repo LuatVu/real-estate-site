@@ -15,8 +15,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${baseUrl}/posts`,
       lastModified: new Date(),
-      changeFrequency: 'daily' as const,
+      changeFrequency: 'hourly' as const,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/posts?tab=BUY`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/posts?tab=RENT`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly' as const,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/sign-in`,
@@ -31,6 +43,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     },
   ]
+
+  // Popular cities for better SEO
+  const popularCities = [
+    'HaNoi', 'HoChiMinh', 'DaNang', 'HaiPhong', 'CanTho',
+    'BienHoa', 'VungTau', 'NhaTrang', 'HuongGiang', 'BuonMaThuot'
+  ]
+
+  const cityRoutes = popularCities.flatMap(city => [
+    {
+      url: `${baseUrl}/posts?city=${city}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/posts?city=${city}&tab=BUY`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/posts?city=${city}&tab=RENT`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
+    },
+  ])
 
   // Dynamic post routes
   let postRoutes: MetadataRoute.Sitemap = []
@@ -55,5 +94,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching posts for sitemap:', error)
   }
 
-  return [...staticRoutes, ...postRoutes]
+  return [...staticRoutes, ...cityRoutes, ...postRoutes]
 }

@@ -15,7 +15,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "rsuite": "^5.83.3",
-    "swiper": "^11.2.8"
+    "swiper": "^11.2.8",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
