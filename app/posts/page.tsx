@@ -129,21 +129,48 @@ function PostsOnMobile({session}: {session?: any}) {
                     <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
                     <div className={styles.firstMainContent}>
                         <div className={styles.postParent}>
-                            {posts.map((element: any, index: any) => (
-                                <Link href={`/post/${element.postId}`} className={styles.post} key={index}>
-                                    <Image className={styles.postChild} width={174} height={178} alt="" src={"http://localhost:8080/api/public/image/" + element.imageUrl} loading={index < 3? "eager": "lazy"}/>
-                                    <div className={styles.bnNh2TngWrapper}>
-                                        <div className={styles.filter}>{element.title}</div>
-                                    </div>
-                                    <div className={styles.t130m2Wrapper}>
-                                        <div className={styles.filter}>{element.price} vnd - {element.acreage} m2</div>
-                                    </div>
-                                    <div className={styles.vectorParent}>
-                                        <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />
-                                        <div className={styles.filter}>{element.address}</div>
-                                    </div>
-                                </Link>
-                            ))}
+                            {posts.map((element: any, index: any) => {
+                                const allImages = element?.images || [];
+                                const primaryImage = allImages.find((img: any) => img.isPrimary) || allImages[0];
+                                const otherImages = allImages.filter((img: any) => img !== primaryImage);
+                                const displayImages = [primaryImage, ...otherImages].filter(Boolean).slice(0, 4);
+                                const hasMoreImages = allImages.length > 4;
+                                
+                                return (
+                                    <Link href={`/post/${element.postId}`} className={styles.post} key={index}>
+                                        <div className={`${styles.imageGrid} ${styles[`grid${displayImages.length}Images`]}`}>
+                                            {displayImages.map((image: any, imgIndex: number) => (
+                                                <div key={imgIndex} className={styles.imageContainer}>
+                                                    <Image 
+                                                        className={styles.postImage} 
+                                                        width={174} 
+                                                        height={178} 
+                                                        alt="" 
+                                                        src={`http://localhost:8080/api/public/image/${image?.fileUrl}`} 
+                                                        loading={index < 3 ? "eager" : "lazy"}
+                                                    />
+                                                    {imgIndex === displayImages.length - 1 && hasMoreImages && (
+                                                        <div className={styles.imageCountOverlay}>
+                                                            <Image className={styles.imageIcon} width={16} height={16} alt="" src="/icons/imageIcon.svg" />
+                                                            <span className={styles.imageCount}>{allImages.length}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className={styles.bnNh2TngWrapper}>
+                                            <div className={styles.filter}>{element.title}</div>
+                                        </div>
+                                        <div className={styles.t130m2Wrapper}>
+                                            <div className={styles.filter}>{element.price} vnd - {element.acreage} m2</div>
+                                        </div>
+                                        <div className={styles.vectorParent}>
+                                            <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />
+                                            <div className={styles.filter}>{element.address}</div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                     <Suspense fallback={<div>Loading pagination...</div>}>

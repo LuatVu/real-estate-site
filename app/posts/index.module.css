@@ -270,10 +270,9 @@
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	/* justify-content: space-between; */
 	flex-wrap: wrap;
 	align-content: flex-start;
-	gap: 10px;
+	gap: 16px;
 	text-align: left;
 	font-size: 11px;
 	color: #000;
@@ -282,15 +281,24 @@
 
 .post {
 	width: 100%;
-	border-radius: 2px;
-	background-color: #fafbfd;	
+	border-radius: 8px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e5e7eb;
 	overflow: hidden;
 	flex-shrink: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: flex-start;
-	gap: 3px;
+	gap: 8px;
+	padding-bottom: 12px;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .postChild {
@@ -303,32 +311,169 @@
 	object-fit: cover;
 }
 
+.imageGrid {
+	align-self: stretch;
+	position: relative;
+	width: 100%;
+	height: 220px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	gap: 3px;
+	overflow: hidden;
+	border-radius: 8px;
+	background-color: #f8f9fa;
+}
+
+.imageContainer {
+	position: relative;
+	overflow: hidden;
+	background-color: #f0f0f0;
+	border-radius: 6px;
+}
+
+.postImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Single image layout */
+.grid1Images {
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+}
+
+/* Two images layout: first image larger */
+.grid2Images {
+	grid-template-columns: 2fr 1fr;
+	grid-template-rows: 1fr;
+}
+
+/* Three images layout: first spans top row (larger), other two in bottom */
+.grid3Images {
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 2fr 1fr;
+}
+
+.grid3Images .imageContainer:nth-child(1) {
+	grid-column: 1 / 3;
+	grid-row: 1;
+}
+
+.grid3Images .imageContainer:nth-child(2) {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.grid3Images .imageContainer:nth-child(3) {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+/* Four images layout: first image larger, others in grid */
+.grid4Images {
+	grid-template-columns: 2fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+
+.grid4Images .imageContainer:nth-child(1) {
+	grid-column: 1;
+	grid-row: 1 / 3;
+}
+
+.grid4Images .imageContainer:nth-child(2) {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.grid4Images .imageContainer:nth-child(3) {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+.grid4Images .imageContainer:nth-child(4) {
+	grid-column: 2 / 4;
+	grid-row: 2;
+}
+
+.imageCountOverlay {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 6px 10px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12px;
+	font-weight: 600;
+	backdrop-filter: blur(4px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.imageIcon {
+	width: 16px;
+	height: 16px;
+	filter: brightness(0) invert(1);
+}
+
+.imageCount {
+	font-size: 12px;
+	font-weight: 500;
+}
+
 .bnNh2TngWrapper {
 	display: flex;
 	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 1px 10px;
+	align-items: flex-start;
+	justify-content: flex-start;
+	padding: 8px 12px 4px 12px;
 	font-size: 16px;
+}
+
+.bnNh2TngWrapper .filter {
+	font-weight: 600;
+	color: #1f2937;
+	line-height: 1.4;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .t130m2Wrapper {
 	display: flex;
 	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 1px 10px;
-	color: #ad2e24;
+	align-items: flex-start;
+	justify-content: flex-start;
+	padding: 4px 12px;
+}
+
+.t130m2Wrapper .filter {
+	font-weight: 600;
+	color: #059669;
+	font-size: 15px;
 }
 
 .vectorParent {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: center;
-	padding: 0px 10px;
-	gap: 4px;
-	color: #38393c;
+	justify-content: flex-start;
+	padding: 4px 12px 8px 12px;
+	gap: 6px;
+	color: #6b7280;
+}
+
+.vectorParent .filter {
+	font-size: 13px;
+	color: #6b7280;
+	font-weight: 400;
 }
 
 .vectorIcon {
