@@ -1,7 +1,7 @@
 "use client";
 import styles from './index.module.css';
 import useScreenSize from '../lib/useScreenSize';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Image from 'next/image';
@@ -108,44 +108,61 @@ function PostsOnMobile({
   const { currentPage } = usePagination();
   const [loading, setLoading] = useState(false);
 
+
+  
+  // Track previous URL params to detect changes
+  const prevUrlParamsRef = useRef<string>('');
+  const isInitialMount = useRef(true);
+
   // Initialize pagination on mount
   useEffect(() => {
     const pagi = calculatePagination(initialData.totalElements, 10, initialData.currentPage);
     setPagination(pagi);
   }, [initialData]);
 
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      const body = extractSearchRequest(urlSearchParams);            
-      const page = urlSearchParams.get("page") || 1;
-      const response = await fetch(`/api/posts?page=${page}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const searchResults = await response.json();
-      setPosts(searchResults.content);            
-      const pagi = calculatePagination(searchResults.totalElements, 10, currentPage);
-      setPagination(pagi);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoading(false);
+  // Initialize URL tracking after first render
+  useEffect(() => {
+    // Set initial URL params on mount
+    if (isInitialMount.current) {
+      prevUrlParamsRef.current = urlSearchParams.toString();
+      isInitialMount.current = false;
     }
-  }
+  }, [urlSearchParams]);
 
-  // Only fetch when URL search params change (not on initial load)
+  // Fetch when URL search params change (skip initial mount)
   useEffect(() => {
     const currentParams = urlSearchParams.toString();
-    const initialParams = new URLSearchParams();
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value) initialParams.set(key, String(value));
-    });
-    
-    if (currentParams !== initialParams.toString()) {
-      fetchPosts();
+            
+    // Only fetch if not initial mount and params have changed
+    if (!isInitialMount.current && currentParams !== prevUrlParamsRef.current) {      
+      
+      // Fetch posts with updated parameters
+      (async () => {
+        try {
+          setLoading(true);
+          const body = extractSearchRequest(urlSearchParams);            
+          const page = parseInt(urlSearchParams.get("page") || "1", 10);                
+          
+          const response = await fetch(`/api/posts?page=${page}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          const searchResults = await response.json();                    
+          
+          setPosts(searchResults.content || []);            
+          const pagi = calculatePagination(searchResults.totalElements, 10, page);
+          setPagination(pagi);
+        } catch (error) {
+          console.error('Error fetching posts:', error);
+        } finally {
+          setLoading(false);
+        }
+      })();
     }
+    
+    // Update previous params
+    prevUrlParamsRef.current = currentParams;
   }, [urlSearchParams]);
 
   const setFilterParam = (data: Partial<SearchRequest>) => {

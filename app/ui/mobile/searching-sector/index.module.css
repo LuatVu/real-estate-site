@@ -1,160 +1,314 @@
+.searchContainer {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px 16px 16px 16px;
+    border-bottom: 1px solid #e9ecef;
+}
+
 .searchingsession {
     position: relative;
-    width: 100%;    
-    right: 0%;
-    left: 0%;
-    height: 131px;
-    overflow: hidden;
-    color: #9d9d9f;
-	padding: 45px 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .searchFieldsParent {
     position: relative;
-	width: 100%;	
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	gap: 3px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 12px;
 }
 
 .searchFields {
     align-self: stretch;
-	height: 36px;
-	overflow: hidden;
-	flex-shrink: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 .frameParent {
     align-self: stretch;
-	border-radius: 5px;
-	background-color: #fff;
-	border: 1px solid #38393c;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	padding: 2px 3px 2px 4px;
-	gap: 0px;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 2px solid #e9ecef;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    min-height: 48px;
+}
+
+.frameParent:hover {
+    border-color: #0065ff;
+    box-shadow: 0 4px 12px rgba(0, 101, 255, 0.15);
+}
+
+.frameParent.focused {
+    border-color: #0065ff;
+    box-shadow: 0 0 0 3px rgba(0, 101, 255, 0.1);
+}
+
+.searchIconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    opacity: 0.6;
+}
+
+.searchIconLeft {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
 }
 
 .placeHolderWrapper {
     flex: 1;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
 }
 
 .inputText {
     flex: 1;
-	width: 100%;
-	position: relative;
-	font-size: 15px;
-	font-family: Roboto;
-	color: var(--color-text-t500);
-	text-align: left;
-	display: flex;
-	align-items: center;
-	height: 22px;
-	border: 0;
+    width: 100%;
+    position: relative;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    color: #2c3e50;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border: 0;
+    padding: 0 12px;
+    background: transparent;
+}
+
+.inputText::placeholder {
+    color: #8e9aaf;
+    font-weight: 400;
 }
 
 input.inputText:focus {
-	outline: none;
+    outline: none;
 }
 
-.button8 {
-    width: 40px;
-	border-radius: 5px;
-	background-color: #0065ff;
-	height: 30px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 6px;
-	box-sizing: border-box;
+.clearButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: none;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+    background-color: #e9ecef;
+    transform: scale(1.05);
+}
+
+.clearButton:active {
+    transform: scale(0.95);
+}
+
+.searchButton {
+    width: 48px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0065ff 0%, #0052d1 100%);
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 101, 255, 0.3);
+}
+
+.searchButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 101, 255, 0.4);
+}
+
+.searchButton:active {
+    transform: translateY(0);
+}
+
+.searchButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.searchButton.searching {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
 }
 
 .searchIcon {
-    width: 24px;
-	position: relative;
-	max-height: 100%;
-	overflow: hidden;
-	flex-shrink: 0;	
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+.loadingSpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .filterGroup {
-    width: 266px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 9px;
-	font-size: 11px;
-	color: #747577;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: #495057;
 }
 
-.button9 {
-    width: 80px;
-	border-radius: 5px;
-	background-color: #fefeff;
-	border: 1px solid #a9acaf;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 1px;
-	gap: 1px;
-	cursor: pointer;
-	color: #0f1114;
-	text-align: left;
-	font-size: 11px;
-	font-family: Roboto;
-	padding-right: 5px;
+.filterButton {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 2px solid #e9ecef;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 44px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filterButton:hover {
+    border-color: #0065ff;
+    background-color: #f8f9ff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 101, 255, 0.15);
+}
+
+.filterButton:active {
+    transform: translateY(0);
+}
+
+.filterButton.filterActive {
+    border-color: #0065ff;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e6f2ff 100%);
+    color: #0065ff;
 }
 
 .funnelIcon {
-    width: 24px;	
-	position: relative;
-	max-height: 100%;
-	overflow: hidden;
-	flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
 }
 
-.filter {
+.filterButton:hover .funnelIcon {
+    transform: scale(1.1);
+}
+
+.filterText {
     flex: 1;
-	position: relative;
+    font-weight: 500;
 }
 
-.filterNumZero {
-    background-color: var(--color-secondary-s300);	
-	color: #000;
+.filterBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0065ff 0%, #0052d1 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 101, 255, 0.3);
+    animation: pulse 2s infinite;
 }
 
-.wrapper {
-    width: 24px;
-	border-radius: 5px;
-	position: relative;
-	display: inline-block;
-	height: 20px;	
-	flex-shrink: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;	
-	box-sizing: border-box;
-	font-size: 15px;
+.filterCount {
+    line-height: 1;
 }
 
-.filterNum {
-    background-color: var(--color-primary-p300);
-	color: var(--color-primary-p50);
+.activeFiltersInfo {
+    padding: 0 4px;
+    opacity: 0.8;
+}
+
+.activeFiltersText {
+    font-size: 12px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 375px) {
+    .searchContainer {
+        padding: 16px 12px 12px 12px;
+    }
+    
+    .frameParent {
+        min-height: 44px;
+    }
+    
+    .inputText {
+        font-size: 15px;
+        height: 36px;
+        padding: 0 8px;
+    }
+    
+    .searchButton {
+        width: 44px;
+        height: 36px;
+    }
+    
+    .filterButton {
+        padding: 8px 12px;
+        min-height: 40px;
+        font-size: 13px;
+    }
 }
