@@ -134,7 +134,7 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                             
                             <div className={styles.filterGroupInline}>
                                 <button 
-                                    className={`${styles.filterButtonInline} ${filterNum > 0 ? styles.filterActiveInline : ''}`} 
+                                    className={styles.filterButtonInline} 
                                     onClick={openFilterPopup}
                                     type="button"
                                     title={filterNum > 0 ? `${filterNum} bộ lọc đang áp dụng` : 'Mở bộ lọc'}
@@ -152,6 +152,7 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                                 type="submit" 
                                 className={`${styles.searchButton} ${isSearching ? styles.searching : ''}`}
                                 disabled={isSearching}
+                                title="Tìm kiếm"
                             >
                                 {isSearching ? (
                                     <div className={styles.loadingSpinner}></div>
