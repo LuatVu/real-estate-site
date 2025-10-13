@@ -98,20 +98,13 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                             
                             <button 
                                 type="submit" 
-                                className={`${styles.searchButton} ${isSearching ? styles.searching : ''} ${searchValue.trim() ? styles.searchButtonActive : ''}`}
+                                className={`${styles.searchButton} ${isSearching ? styles.searching : ''}`}
                                 disabled={isSearching}
-                                title={isSearching ? 'Đang tìm kiếm...' : 'Tìm kiếm bất động sản'}
                             >
                                 {isSearching ? (
-                                    <div className={styles.loadingContainer}>
-                                        <div className={styles.loadingSpinner}></div>
-                                        <span className={styles.loadingText}>Đang tìm...</span>
-                                    </div>
+                                    <div className={styles.loadingSpinner}></div>
                                 ) : (
-                                    <div className={styles.searchButtonContent}>
-                                        <Image className={styles.searchIcon} width={20} height={20} alt="Search" src="/icons/search.svg" />
-                                        {/* <span className={styles.searchButtonText}>Tìm</span> */}
-                                    </div>
+                                    <Image className={styles.searchIcon} width={20} height={20} alt="Search" src="/icons/search.svg" />
                                 )}
                             </button>
                         </div>
