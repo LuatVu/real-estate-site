@@ -8,18 +8,32 @@ import { useState, useRef, useEffect } from 'react';
 export default function SearchingSector({searchRequest, openFilterPopup, filterNum}: any) {  
     const router = useRouter(); 
     const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState(searchRequest?.query || '');
     const [isSearching, setIsSearching] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    
+    // Sync searchValue with searchRequest prop
+    useEffect(() => {
+        if (searchRequest?.query !== undefined && searchRequest.query !== searchValue) {
+            setSearchValue(searchRequest.query);
+        }
+    }, [searchRequest?.query]);
+
+
     
     async function search(formData: FormData) {
         setIsSearching(true);
         const query: any = formData.get('searchKeyword');
         
+        // Preserve the current input value
+        const currentQuery = query ? query : "";
+        setSearchValue(currentQuery);
+        
         // Create a new search request object instead of mutating
         const updatedSearchRequest = {
             ...searchRequest,
-            query: query ? query : ""
+            query: currentQuery
         };
         
         const postSearchRequest = transformSearchRequest(updatedSearchRequest);                         
@@ -38,13 +52,48 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value);
+        const newValue = e.target.value;
+        setSearchValue(newValue);
     };
 
     const handleClearSearch = () => {
         setSearchValue('');
         if (inputRef.current) {
             inputRef.current.focus();
+        }
+    };
+
+    const handleAutoSubmit = () => {
+        if (inputRef.current && inputRef.current.form) {
+            // Ensure the input value is current before creating FormData
+            if (inputRef.current.value !== searchValue) {
+                inputRef.current.value = searchValue;
+            }
+            // Create FormData from the form
+            const formData = new FormData(inputRef.current.form);
+            // Trigger the search function
+            search(formData);
+        }
+    };
+
+    const handleInputSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        // When user selects text (like from autocomplete), check if it's a meaningful selection
+        if (target.value.trim().length > 2 && target.selectionStart !== target.selectionEnd) {
+            // Auto-submit immediately when text is selected
+            handleAutoSubmit();
+        }
+    };
+
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Handle Enter key press
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAutoSubmit();
+        }
+        // Handle Tab key (often used to accept autocomplete suggestions)
+        if (e.key === 'Tab' && searchValue.trim()) {
+            handleAutoSubmit();
         }
     };
 
@@ -67,6 +116,9 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                                     onChange={handleInputChange}
                                     onFocus={handleInputFocus}
                                     onBlur={handleInputBlur}
+                                    onSelect={handleInputSelect}
+                                    onKeyDown={handleInputKeyDown}
+                                    autoComplete="on"
                                 />
                                 {searchValue && (
                                     <button 
