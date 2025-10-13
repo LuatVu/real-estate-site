@@ -55,7 +55,7 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                     <div className={styles.searchFields}>
                         <div className={`${styles.frameParent} ${isSearchFocused ? styles.focused : ''}`}>
                             <div className={styles.searchIconContainer}>
-                                <Image className={styles.searchIconLeft} width={20} height={20} alt="Search" src="/icons/search.svg" />
+                                <Image className={styles.searchIconLeft} width={20} height={20} alt="Search" src="/icons/searchBIcon.svg" />
                             </div>
                             <div className={styles.placeHolderWrapper}>
                                 <input 
@@ -79,40 +79,42 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
                                     </button>
                                 )}
                             </div>
+                            
+                            <div className={styles.filterGroupInline}>
+                                <button 
+                                    className={`${styles.filterButtonInline} ${filterNum > 0 ? styles.filterActiveInline : ''}`} 
+                                    onClick={openFilterPopup}
+                                    type="button"
+                                    title={filterNum > 0 ? `${filterNum} bộ lọc đang áp dụng` : 'Mở bộ lọc'}
+                                >
+                                    <Image className={styles.funnelIconInline} width={18} height={18} alt="Filter" src="/icons/Funnel.svg" />
+                                    {filterNum > 0 && (
+                                        <div className={styles.filterBadgeInline}>
+                                            <span className={styles.filterCountInline}>{filterNum}</span>
+                                        </div>
+                                    )}
+                                </button>
+                            </div>
+                            
                             <button 
                                 type="submit" 
-                                className={`${styles.searchButton} ${isSearching ? styles.searching : ''}`}
+                                className={`${styles.searchButton} ${isSearching ? styles.searching : ''} ${searchValue.trim() ? styles.searchButtonActive : ''}`}
                                 disabled={isSearching}
+                                title={isSearching ? 'Đang tìm kiếm...' : 'Tìm kiếm bất động sản'}
                             >
                                 {isSearching ? (
-                                    <div className={styles.loadingSpinner}></div>
+                                    <div className={styles.loadingContainer}>
+                                        <div className={styles.loadingSpinner}></div>
+                                        <span className={styles.loadingText}>Đang tìm...</span>
+                                    </div>
                                 ) : (
-                                    <Image className={styles.searchIcon} width={20} height={20} alt="Search" src="/icons/search.svg" />
+                                    <div className={styles.searchButtonContent}>
+                                        <Image className={styles.searchIcon} width={20} height={20} alt="Search" src="/icons/search.svg" />
+                                        {/* <span className={styles.searchButtonText}>Tìm</span> */}
+                                    </div>
                                 )}
                             </button>
                         </div>
-                    </div>
-                    
-                    <div className={styles.filterGroup}>
-                        <button 
-                            className={`${styles.filterButton} ${filterNum > 0 ? styles.filterActive : ''}`} 
-                            onClick={openFilterPopup}
-                            type="button"
-                        >
-                            <Image className={styles.funnelIcon} width={20} height={20} alt="Filter" src="/icons/Funnel.svg" />
-                            <span className={styles.filterText}>Bộ lọc</span>
-                            {filterNum > 0 && (
-                                <div className={styles.filterBadge}>
-                                    <span className={styles.filterCount}>{filterNum}</span>
-                                </div>
-                            )}
-                        </button>
-                        
-                        {filterNum > 0 && (
-                            <div className={styles.activeFiltersInfo}>
-                                <span className={styles.activeFiltersText}>{filterNum} bộ lọc đang áp dụng</span>
-                            </div>
-                        )}
                     </div>
                 </div>
             </Form>
