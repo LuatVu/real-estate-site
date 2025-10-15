@@ -37,13 +37,13 @@ export default function DistrictPopup({ onClose, city, districtList, selectDistr
                 </div>
                 <div className={styles.itemBlock}>
                     {districtList.map((element:any) => (                        
-                        <div className={styles.items} key={element.value}>
+                        <div className={styles.items} key={element.code}>
                             <div className={styles.textBlock}>
                                 <Image className={styles.locationIcon} width={16} height={16} alt="" src="/icons/location.svg" />
                                 <p>{element.name}</p>
                             </div>
                             <div className={styles.checkboxBlock}>
-                                <input type="checkbox" name={element.value} value={element.value} className={styles.checkbox} onChange={() => {element.checked = !element.checked}}/>
+                                <input type="checkbox" name={element.name} value={element.code} className={styles.checkbox} onChange={() => {element.checked = !element.checked}}/>
                             </div>
                         </div>
                     ))}            

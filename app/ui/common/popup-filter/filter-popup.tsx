@@ -1,7 +1,7 @@
 "use client";
 import styles from "./filter-popup.module.css";
 import Image from "next/image";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import AddressFilterPopup from "../popup-filter-address/address-popup";
 import DistrictPopup from "../popup-district/district-popup";
 import PropertyTypePopup from "../pop-up-property-type/property-type-popup";
@@ -23,24 +23,58 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [acreagePopup, setAcreagePopup] = useState(false);
 
     const [districts, setDistricts] = useState([]);
-    const [city, setCity] = useState();
+    const [city, setCity] = useState<any>();
     const [propertyTypes, setPropertyType] = useState([]);
     const [priceRange, setPriceRange] = useState([]);
     const [acreageRange, setAcreageRange] = useState([]);
+    const [cities, setCities] = useState("");
+    const [wards, setWards] = useState([]);
 
-    const districtList = [{ name: "Hoàn Kiếm", value: "001", checked: false }, { name: "Cửa Nam", value: "002", checked: false }, { name: "Ba Đình", value: "003", checked: false },
-    { name: "Ngọc Hà", value: "004", checked: false }, { name: "Giảng Võ", value: "005", checked: false }, { name: "Hà Bà Trưng", value: "006", checked: false },
-    { name: "Vĩnh Tuy", value: "007", checked: false }, { name: "Bạch Mai", value: "008", checked: false }, { name: "Đống Đa", value: "009", checked: false },
-    { name: "Kim Liên", value: "010", checked: false }
-    ];
+    // const districtList = [{ name: "Hoàn Kiếm", value: "001", checked: false }, { name: "Cửa Nam", value: "002", checked: false }, { name: "Ba Đình", value: "003", checked: false },
+    // { name: "Ngọc Hà", value: "004", checked: false }, { name: "Giảng Võ", value: "005", checked: false }, { name: "Hà Bà Trưng", value: "006", checked: false },
+    // { name: "Vĩnh Tuy", value: "007", checked: false }, { name: "Bạch Mai", value: "008", checked: false }, { name: "Đống Đa", value: "009", checked: false },
+    // { name: "Kim Liên", value: "010", checked: false }
+    // ];
 
-    const cities = [{ name: "Hà Nội", code: "01", image: "/city/HaNoi.jpg" }, { name: "Hồ Chí Minh", code: "02", image: "/city/HoChiMinh.jpg" }, { name: "An Giang", code: "03", image: "/city/AnGiang.jpg" }, { name: "Bắc Ninh", code: "04", image: "/city/BacNinh.jpg" }, { name: "Cà Mau", code: "05", image: "/city/CaMau.jpg" },
-    { name: "Cần Thơ", code: "06", image: "/city/CanTho.jpg" }, { name: "Cao Bằng", code: "07", image: "/city/CaoBang.jpg" }, { name: "Đà Nẵng", code: "08", image: "/city/DaNang.jpg" }, { name: "Đắc Lắc", code: "09", image: "/city/DakLak.jpg" }, { name: "Điện Biên", code: "10", image: "/city/DienBien.jpg" }, { name: "Đồng Nai", code: "11", image: "/city/DongNai.jpg" },
-    { name: "Đồng Tháp", code: "12", image: "/city/DongThap.jpg" }, { name: "Giai Lai", code: "13", image: "/city/GiaLai.jpg" }, { name: "Hà Tĩnh", code: "14", image: "/city/HaTinh.jpg" }, { name: "Hải Phòng", code: "15", image: "/city/HaiPhong.jpg" }, { name: "Huế", code: "16", image: "/city/Hue.jpg" }, { name: "Hưng Yên", code: "17", image: "/city/HungYen.jpg" },
-    { name: "Khánh Hòa", code: "18", image: "/city/KhanhHoa.jpg" }, { name: "Lai Châu", code: "19", image: "/city/LaiChau.jpg" }, { name: "Lâm Đồng", code: "20", image: "/city/LamDong.jpg" }, { name: "Lạng Sơn", code: "21", image: "/city/LangSon.jpg" }, { name: "Lào Cai", code: "22", image: "/city/LaoCai.jpg" }, { name: "Nghệ An", code: "23", image: "/city/NgheAn.jpg" },
-    { name: "Ninh Bình", code: "24", image: "/city/NinhBinh.jpg" }, { name: "Phú Thọ", code: "25", image: "/city/PhuTho.jpg" }, { name: "Quảng Ngãi", code: "26", image: "/city/QuangNgai.jpg" }, { name: "Quảng Ninh", code: "27", image: "/city/QuangNinh.jpg" }, { name: "Quảng Trị", code: "28", image: "/city/QuangTri.jpg" }, { name: "Sơn La", code: "29", image: "/city/SonLa.jpg" },
-    { name: "Tây Ninh", code: "30", image: "/city/TayNinh.jpg" }, { name: "Thái Nguyên", code: "31", image: "/city/ThaiNguyen.jpg" }, { name: "Thanh Hóa", code: "32", image: "/city/ThanhHoa.jpg" }, { name: "Tuyên Quang", code: "33", image: "/city/TuyenQuang.jpg" }, { name: "Vĩnh Long", code: "34", image: "/city/VinhLong.jpg" }
-    ];
+    // const cities = [{ name: "Hà Nội", code: "01", image: "/city/HaNoi.jpg" }, { name: "Hồ Chí Minh", code: "02", image: "/city/HoChiMinh.jpg" }, { name: "An Giang", code: "03", image: "/city/AnGiang.jpg" }, { name: "Bắc Ninh", code: "04", image: "/city/BacNinh.jpg" }, { name: "Cà Mau", code: "05", image: "/city/CaMau.jpg" },
+    // { name: "Cần Thơ", code: "06", image: "/city/CanTho.jpg" }, { name: "Cao Bằng", code: "07", image: "/city/CaoBang.jpg" }, { name: "Đà Nẵng", code: "08", image: "/city/DaNang.jpg" }, { name: "Đắc Lắc", code: "09", image: "/city/DakLak.jpg" }, { name: "Điện Biên", code: "10", image: "/city/DienBien.jpg" }, { name: "Đồng Nai", code: "11", image: "/city/DongNai.jpg" },
+    // { name: "Đồng Tháp", code: "12", image: "/city/DongThap.jpg" }, { name: "Giai Lai", code: "13", image: "/city/GiaLai.jpg" }, { name: "Hà Tĩnh", code: "14", image: "/city/HaTinh.jpg" }, { name: "Hải Phòng", code: "15", image: "/city/HaiPhong.jpg" }, { name: "Huế", code: "16", image: "/city/Hue.jpg" }, { name: "Hưng Yên", code: "17", image: "/city/HungYen.jpg" },
+    // { name: "Khánh Hòa", code: "18", image: "/city/KhanhHoa.jpg" }, { name: "Lai Châu", code: "19", image: "/city/LaiChau.jpg" }, { name: "Lâm Đồng", code: "20", image: "/city/LamDong.jpg" }, { name: "Lạng Sơn", code: "21", image: "/city/LangSon.jpg" }, { name: "Lào Cai", code: "22", image: "/city/LaoCai.jpg" }, { name: "Nghệ An", code: "23", image: "/city/NgheAn.jpg" },
+    // { name: "Ninh Bình", code: "24", image: "/city/NinhBinh.jpg" }, { name: "Phú Thọ", code: "25", image: "/city/PhuTho.jpg" }, { name: "Quảng Ngãi", code: "26", image: "/city/QuangNgai.jpg" }, { name: "Quảng Ninh", code: "27", image: "/city/QuangNinh.jpg" }, { name: "Quảng Trị", code: "28", image: "/city/QuangTri.jpg" }, { name: "Sơn La", code: "29", image: "/city/SonLa.jpg" },
+    // { name: "Tây Ninh", code: "30", image: "/city/TayNinh.jpg" }, { name: "Thái Nguyên", code: "31", image: "/city/ThaiNguyen.jpg" }, { name: "Thanh Hóa", code: "32", image: "/city/ThanhHoa.jpg" }, { name: "Tuyên Quang", code: "33", image: "/city/TuyenQuang.jpg" }, { name: "Vĩnh Long", code: "34", image: "/city/VinhLong.jpg" }
+    // ];
+
+    const fetchCities = async () => {
+        // Fetch city data from API if needed
+        try{
+            const response = await fetch('/api/province', { method: 'GET' });
+            const data = await response.json();
+            setCities(data);
+        }catch(error){
+            console.error("Error fetching cities:", error);
+        }
+    }
+
+    const fetchWards = async (cityCode: string) => {
+        // Fetch wards data based on selected city from API if needed
+        try{
+            const response = await fetch(`/api/province?cityCode=${cityCode}`, { method: 'GET' });
+            const data = await response.json();
+            setWards(data.map((ward: any) => ({ ...ward, checked: false })));
+        }catch(error){
+            console.error("Error fetching wards:", error);
+        }
+    }
+
+    useEffect( () => {
+        fetchCities();
+    }, []);
+
+    useEffect( () => {
+        if(city){
+            fetchWards(city?.code);
+        }
+    }, [city]);
 
     const selectedDistrict = useCallback((values: any) => { setDistricts(values) }, []);
     const removeDistrict = (item: any) => { setDistricts(districts.filter((ele: any) => ele.value !== item.value)) };
@@ -83,7 +117,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
-            {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={districtList} selectDistrict={selectedDistrict} />)}
+            {districtPopup && (<DistrictPopup onClose={closeDistrict} city={city} districtList={wards} selectDistrict={selectedDistrict} />)}
             {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
             {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod}/>)}
             {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod}/>)}
