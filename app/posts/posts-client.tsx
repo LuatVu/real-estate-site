@@ -31,21 +31,15 @@ interface Post {
 }
 
 interface SearchRequest {
+  query: string;
   minPrice?: number;
   maxPrice?: number;
   minAcreage?: number;
   maxAcreage?: number;
-  typeCode?: string;
-  provinceCode?: string;
-  districtCode?: string;
-  wardCode?: string;
-  tab: string;
-  districts?: string[];
-  propertyTypes?: string[];
-  city?: string;
-  priceRange?: string;
-  acreageRange?: string;
-  query: string;
+  typeCodes?: string[];
+  cityCode?: string;
+  wardCodes?: string[];
+  transactionType?: string;
 }
 
 interface PostsClientProps {
@@ -103,7 +97,7 @@ function PostsOnMobile({
   const [filterPopup, setFilterPopup] = useState(false);
   const [homePageVisible, setHomePageVisible] = useState(true);
   const [searchRequest, setSearchRequest] = useState(initialData.searchRequest);
-  const [filterNum, setFilterNum] = useState(0);    
+  const [filterNum, setFilterNum] = useState(1);    
   const [pagination, setPagination] = useState<PaginationData>();
   const { currentPage } = usePagination();
   const [loading, setLoading] = useState(false);
@@ -168,21 +162,15 @@ function PostsOnMobile({
   const setFilterParam = (data: Partial<SearchRequest>) => {
     const updatedSearchRequest: SearchRequest = {
       ...searchRequest, 
+      query: searchRequest.query,
       minPrice: data.minPrice, 
       maxPrice: data.maxPrice,
       minAcreage: data.minAcreage, 
       maxAcreage: data.maxAcreage,
-      typeCode: data.typeCode, 
-      provinceCode: data.provinceCode,
-      districtCode: data.districtCode, 
-      wardCode: data.wardCode, 
-      tab: data.tab || searchRequest.tab,
-      districts: data.districts, 
-      propertyTypes: data.propertyTypes, 
-      city: data.city,
-      priceRange: data.priceRange, 
-      acreageRange: data.acreageRange,
-      query: searchRequest.query
+      typeCodes: data.typeCodes,
+      cityCode: data.cityCode,
+      wardCodes: data.wardCodes, 
+      transactionType: data.transactionType
     };
     setSearchRequest(updatedSearchRequest);
     const numFilter = countParamNum(updatedSearchRequest);
@@ -200,39 +188,48 @@ function PostsOnMobile({
       }
     });
     
-    router.push(`/posts?${newParams.toString()}`);
+    // router.push(`/posts?${newParams.toString()}`);
   }
 
   const countParamNum = (searchRequest: SearchRequest) => {
     let count: number = 0;
-    const relevantKeys: (keyof SearchRequest)[] = ['acreageRange', 'districts', 'priceRange', 'propertyTypes', 'tab'];
     
-    relevantKeys.forEach(key => {
-      const value = searchRequest[key];
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          count += 1;
-        }
-      } else if (value !== undefined && value !== null && value !== '') {
-        count += 1;
-      }
-    });
+    // Check price range (count +1 if at least one of minPrice or maxPrice is present)
+    if ((searchRequest.minPrice !== undefined && searchRequest.minPrice !== null) ||
+        (searchRequest.maxPrice !== undefined && searchRequest.maxPrice !== null)) {
+      count += 1;
+    }
+    
+    // Check acreage range (count +1 if at least one of minAcreage or maxAcreage is present)
+    if ((searchRequest.minAcreage !== undefined && searchRequest.minAcreage !== null) ||
+        (searchRequest.maxAcreage !== undefined && searchRequest.maxAcreage !== null)) {
+      count += 1;
+    }
+
+    // Check typeCodes
+    if (searchRequest.typeCodes !== undefined && searchRequest.typeCodes !== null && searchRequest.typeCodes.length > 0) {
+      count += 1;
+    }
+    
+    // Check cityCode
+    // if (searchRequest.cityCode !== undefined && searchRequest.cityCode !== null && searchRequest.cityCode !== '') {
+    //   count += 1;
+    // }
+    
+    // Check wardCodes (array)
+    if (searchRequest.wardCodes && Array.isArray(searchRequest.wardCodes) && searchRequest.wardCodes.length > 0) {
+      count += 1;
+    }
+    
+    // Check transactionType
+    if (searchRequest.transactionType !== undefined && searchRequest.transactionType !== null && searchRequest.transactionType !== '') {
+      count += 1;
+    }
     
     return count;
   }
 
-  const isReleventKey = (key: string) => {
-    let result: boolean = false;
-    switch (key) {
-      case "acreageRange": ;
-      case "districts": ;
-      case "priceRange": ;
-      case "propertyTypes": ;
-      case "tab": result = true; break;
-      default: result = false;
-    }
-    return result;
-  }    
+     
 
   const closeFilterPopup = useCallback(() => {
     setFilterPopup(false);

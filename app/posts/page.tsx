@@ -31,16 +31,10 @@ interface SearchRequest {
   maxPrice?: number;
   minAcreage?: number;
   maxAcreage?: number;
-  typeCode?: string;
-  provinceCode?: string;
-  districtCode?: string;
-  wardCode?: string;
-  tab: string;
-  districts?: string[];
-  propertyTypes?: string[];
-  city?: string;
-  priceRange?: string;
-  acreageRange?: string;
+  typeCodes?: string[];
+  wardCodes?: string[];
+  transactionType?: string;
+  cityCode?: string;
   query: string;
 }
 
@@ -160,22 +154,24 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
       maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
       minAcreage: searchParams.minAcreage ? Number(searchParams.minAcreage) : undefined,
       maxAcreage: searchParams.maxAcreage ? Number(searchParams.maxAcreage) : undefined,
-      typeCode: searchParams.typeCode as string,
-      provinceCode: searchParams.provinceCode as string,
-      districtCode: searchParams.districtCode as string,
-      wardCode: searchParams.wardCode as string,
-      tab: (searchParams.tab as string) || "BUY",
-      districts: searchParams.districts ? String(searchParams.districts).split(',') : undefined,
-      propertyTypes: searchParams.propertyTypes ? String(searchParams.propertyTypes).split(',') : undefined,
-      city: searchParams.city as string,
-      priceRange: searchParams.priceRange as string,
-      acreageRange: searchParams.acreageRange as string,
+      typeCodes: searchParams.typeCodes 
+        ? Array.isArray(searchParams.typeCodes) 
+          ? searchParams.typeCodes 
+          : searchParams.typeCodes.split(",")
+        : undefined,
+      cityCode: searchParams.cityCode as string,
+      wardCodes: searchParams.wardCodes 
+        ? Array.isArray(searchParams.wardCodes) 
+          ? searchParams.wardCodes 
+          : searchParams.wardCodes.split(",")
+        : undefined,
+      transactionType: searchParams.transactionType  as string,
       query: (searchParams.query as string) || ""
     };
 
-    // Validate tab parameter
-    if (searchRequest.tab && !['BUY', 'RENT'].includes(searchRequest.tab)) {
-      searchRequest.tab = 'BUY';
+    // Validate transactionType parameter
+    if (searchRequest.transactionType && !['BUY', 'RENT', 'PROJECT'].includes(searchRequest.transactionType)) {
+      searchRequest.transactionType = 'BUY';
     }
 
     const baseUrl = process.env.SPRING_API || 'http://localhost:8080';
@@ -190,7 +186,6 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
         next: { revalidate: 60 }, // Revalidate every 60 seconds
         signal: controller.signal
       });
-
       clearTimeout(timeoutId);
 
       if (!response.ok) {
@@ -219,24 +214,16 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
       throw fetchError;
     }
   } catch (error) {
-    console.error('Error fetching posts:', error);
-    
     // Return empty data structure as fallback
     const fallbackSearchRequest: SearchRequest = {
       minPrice: undefined, 
       maxPrice: undefined,
       minAcreage: undefined, 
       maxAcreage: undefined, 
-      typeCode: undefined, 
-      provinceCode: undefined,
-      districtCode: undefined, 
-      wardCode: undefined, 
-      tab: "BUY", 
-      districts: undefined, 
-      propertyTypes: undefined,
-      city: undefined, 
-      priceRange: undefined, 
-      acreageRange: undefined, 
+      typeCodes: undefined, 
+      wardCodes: undefined, 
+      transactionType: "BUY", 
+      cityCode: undefined, 
       query: ""
     };
 

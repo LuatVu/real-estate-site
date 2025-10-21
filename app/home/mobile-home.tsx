@@ -16,11 +16,12 @@ export default function MobileHome() {
     const [filterPopup, setFilterPopup] = useState(false);
     const [searchRequest, setSearchRequest] = useState({
         minPrice: undefined, maxPrice: undefined,
-        minAcreage: undefined, maxAcreage: undefined, typeCode: undefined, provinceCode: undefined,
-        districtCode: undefined, wardCode: undefined, tab: "BUY", districts: undefined, propertyTypes: undefined,
-        city: undefined, priceRange: undefined, acreageRange: undefined, query: ""
+        minAcreage: undefined, maxAcreage: undefined, 
+        typeCodes: undefined, cityCode: undefined,
+        wardCodes: undefined, transactionType: "BUY", 
+        query: ""
     });
-    const [filterNum, setFilterNum] = useState(0);
+    const [filterNum, setFilterNum] = useState(1);
     const {data: session} = useSession();
 
     const openFilterPopup = useCallback(() => {
@@ -37,10 +38,9 @@ export default function MobileHome() {
         const updatedSearchRequest = {
             ...searchRequest, minPrice: data.minPrice, maxPrice: data.maxPrice,
             minAcreage: data.minAcreage, maxAcreage: data.maxAcreage,
-            typeCode: data.typeCode, provinceCode: data.provinceCode,
-            districtCode: data.districtCode, wardCode: data.wardCode, tab: data.tab,
-            districts: data.districts, propertyTypes: data.propertyTypes, city: data.city,
-            priceRange: data.priceRange, acreageRange: data.acreageRange
+            typeCodes: data.typeCodes, cityCode: data.cityCode,
+            wardCodes: data.wardCodes, transactionType: data.transactionType,
+            query: searchRequest.query
         };
         setSearchRequest(updatedSearchRequest);
         const numFilter = countParamNum(updatedSearchRequest);
@@ -49,31 +49,33 @@ export default function MobileHome() {
 
     const countParamNum = (searchRequest: any) => {
         let count: number = 0;
-        for (let key in searchRequest) {
-            if (searchRequest.hasOwnProperty(key) && isReleventKey(key)) {
-                if (searchRequest[key] instanceof Array) {
-                    if (searchRequest[key].length > 0) {
-                        count = count + 1;
-                    }
-                } else if (searchRequest[key] != undefined) {
-                    count = count + 1;
-                }
-            }
+        // Check price range (count +1 if at least one of minPrice or maxPrice is present)
+        if ((searchRequest.minPrice !== undefined && searchRequest.minPrice !== null) ||
+            (searchRequest.maxPrice !== undefined && searchRequest.maxPrice !== null)) {
+            count += 1;
+        }
+        // Check acreage range (count +1 if at least one of minAcreage or maxAcreage is present)
+        if ((searchRequest.minAcreage !== undefined && searchRequest.minAcreage !== null) ||
+            (searchRequest.maxAcreage !== undefined && searchRequest.maxAcreage !== null)) {
+            count += 1;
+        }
+        // Check typeCodes
+        if (searchRequest.typeCodes !== undefined && searchRequest.typeCodes !== null && searchRequest.typeCodes.length > 0) {
+            count += 1;
+        }
+        // Check cityCode
+        // if (searchRequest.cityCode !== undefined && searchRequest.cityCode !== null && searchRequest.cityCode !== '') {
+        //     count += 1;
+        // }
+        // Check wardCodes (array)
+        if (searchRequest.wardCodes && Array.isArray(searchRequest.wardCodes) && searchRequest.wardCodes.length > 0) {
+            count += 1;
+        }
+        // Check transactionType
+        if (searchRequest.transactionType !== undefined && searchRequest.transactionType !== null && searchRequest.transactionType !== '') {
+            count += 1;
         }
         return count;
-    }
-
-    const isReleventKey = (key: string) => {
-        let result: boolean = false;
-        switch (key) {
-            case "acreageRange": ;
-            case "districts": ;
-            case "priceRange": ;
-            case "propertyTypes": ;
-            case "tab": result = true; break;
-            default: result = false;
-        }
-        return result;
     }
 
     return (

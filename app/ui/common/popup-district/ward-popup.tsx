@@ -1,18 +1,18 @@
 "use client";
 import { useCallback, useState } from "react";
-import styles from "./district-popup.module.css";
+import styles from "./ward-popup.module.css";
 import Image from "next/image";
 import Form from "next/form";
 
-export default function DistrictPopup({ onClose, city, districtList, selectDistrict }: any) {
+export default function WardPopup({ onClose, city, wardList, selectWard }: any) {
     const submit = () => {
-        const selectedDistricts: any = [];
-        districtList.forEach((element: any) => {
+        const selectedWards: any = [];
+        wardList.forEach((element: any) => {
             if(element.checked){
-                selectedDistricts.push(element);
+                selectedWards.push(element);
             }
         });
-        selectDistrict(selectedDistricts);
+        selectWard(selectedWards);
         onClose();
     }
 
@@ -36,7 +36,7 @@ export default function DistrictPopup({ onClose, city, districtList, selectDistr
                     </div>
                 </div>
                 <div className={styles.itemBlock}>
-                    {districtList.map((element:any) => (                        
+                    {wardList.map((element:any) => (                        
                         <div className={styles.items} key={element.code}>
                             <div className={styles.textBlock}>
                                 <Image className={styles.locationIcon} width={16} height={16} alt="" src="/icons/location.svg" />
