@@ -5,8 +5,22 @@ import Image from "next/image";
 import { useState } from "react";
 import RangeSlider from "../range-slider/range-slider";
 
-export default function AcreagePopup({onClose, setRangeMethod}: any){
-    const [acreageRange, setAcreageRange] = useState([30,100]);
+export default function AcreagePopup({onClose, setRangeMethod, currentMinAcreage, currentMaxAcreage}: any){
+    // Initialize with current values if they exist, otherwise use default [30, 100]
+    const initializeAcreageRange = () => {
+        if (currentMinAcreage !== undefined && currentMaxAcreage !== undefined) {
+            return [currentMinAcreage, currentMaxAcreage];
+        }
+        if (currentMinAcreage !== undefined) {
+            return [currentMinAcreage, 1000]; // Default max if only min is set
+        }
+        if (currentMaxAcreage !== undefined) {
+            return [0, currentMaxAcreage]; // Default min if only max is set
+        }
+        return [30, 100]; // Default range
+    };
+
+    const [acreageRange, setAcreageRange] = useState(initializeAcreageRange());
     const submit = () =>{
         setRangeMethod(acreageRange);
         onClose();

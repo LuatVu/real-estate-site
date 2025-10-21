@@ -35,7 +35,7 @@ export function extractSearchRequest(searchParam: any) {
         minAcreage: searchParam.get('minAcreage'), 
         maxAcreage: searchParam.get('maxAcreage'),
         cityCode: searchParam.get('cityCode'),
-        typeCode: searchParam.get('typeCode')?.split(","),
+        typeCodes: searchParam.get('typeCodes')?.split(","),
         wardCodes: searchParam.get('wardCodes')?.split(","),
         transactionType: searchParam.get('transactionType')
     };

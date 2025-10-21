@@ -1,14 +1,29 @@
 import Image from "next/image";
 import styles from "./popup.module.css";
 import Form from "next/form";
+import { useState } from "react";
 
-export default function PropertyTypePopup({ onClose, selectProperType }: any) {
+export default function PropertyTypePopup({ onClose, selectProperType, selectedPropertyTypes = [] }: any) {
+    // Initialize property types with checked state based on selectedPropertyTypes
+    const initializePropertyTypes = () => {
+        const allTypes = [
+            { name: "Tất cả nhà bán", value: "ALL", checked: false, image: "/icons/BuildingApartment.svg" }, 
+            { name: "Căn hộ chung cư", value: "CHCC", checked: false, image:"/icons/Building.svg" },
+            { name: "Nhà riêng, biệt thự, nhà phố", value: "NHA_RIENG", checked: false, image: "/icons/HouseLine.svg" },
+            { name: "Đất nền", value: "DAT_NEN", checked: false, image: "/icons/BaseSquare.svg" }, 
+            { name: "Condotel", value: "CONDOTEL", checked: false, image: "/icons/Condotel.svg" },
+            { name: "Kho, nhà xưởng", value: "KHO_NHA_XUONG", checked: false, image: "/icons/Warehouse.svg" }, 
+            { name: "Bất động sản khác", value: "BDS_KHAC", checked: false, image: "/icons/OtherProperty.svg" }        
+        ];
 
-    const properTypes = [{ name: "Tất cả nhà bán", value: "ALL", checked: false, image: "/icons/BuildingApartment.svg" }, { name: "Căn hộ chung cư", value: "CHCC", checked: false, image:"/icons/Building.svg" },
-         { name: "Nhà riêng, biệt thự, nhà phố", value: "NHA_RIENG", checked: false, image: "/icons/HouseLine.svg" },
-    { name: "Đất nền", value: "DAT_NEN", checked: false, image: "/icons/BaseSquare.svg" }, { name: "Condotel", value: "CONDOTEL", checked: false, image: "/icons/Condotel.svg" },
-    { name: "Kho, nhà xưởng", value: "KHO_NHA_XUONG", checked: false, image: "/icons/Warehouse.svg" }, { name: "Bất động sản khác", value: "BDS_KHAC", checked: false, image: "/icons/OtherProperty.svg" }        
-    ];
+        // Mark as checked if the type is in selectedPropertyTypes
+        return allTypes.map(type => ({
+            ...type,
+            checked: selectedPropertyTypes.some((selected: any) => selected.value === type.value)
+        }));
+    };
+
+    const [properTypes, setProperTypes] = useState(initializePropertyTypes());
 
     const submit = () => {
         const _selectedProperType:any = [];
@@ -38,7 +53,20 @@ export default function PropertyTypePopup({ onClose, selectProperType }: any) {
                             <p>{element.name}</p>
                         </div>
                         <div className={styles.checkboxBlock}>
-                            <input type="checkbox" name={element.value} value={element.value} className={styles.checkbox} onChange={() => {element.checked = !element.checked}} />
+                            <input 
+                                type="checkbox" 
+                                name={element.value} 
+                                value={element.value} 
+                                className={styles.checkbox} 
+                                checked={element.checked}
+                                onChange={() => {
+                                    setProperTypes(prev => prev.map(type => 
+                                        type.value === element.value 
+                                            ? { ...type, checked: !type.checked }
+                                            : type
+                                    ));
+                                }} 
+                            />
                         </div>                                                
                     </div>
                 ))}
