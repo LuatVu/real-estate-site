@@ -55,7 +55,7 @@ export async function generateMetadata({ searchParams }: {
   if (tab === 'RENT') {
     title = 'Cho thuê bất động sản';
     description = 'Tìm kiếm bất động sản cho thuê chất lượng';
-  } else if (tab === 'BUY') {
+  } else if (tab === 'SELL') {
     title = 'Mua bán bất động sản';
     description = 'Tìm kiếm bất động sản mua bán uy tín';
   }
@@ -170,8 +170,8 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
     };
 
     // Validate transactionType parameter
-    if (searchRequest.transactionType && !['BUY', 'RENT', 'PROJECT'].includes(searchRequest.transactionType)) {
-      searchRequest.transactionType = 'BUY';
+    if (searchRequest.transactionType && !['SELL', 'RENT', 'PROJECT'].includes(searchRequest.transactionType)) {
+      searchRequest.transactionType = 'SELL';
     }
 
     const baseUrl = process.env.SPRING_API || 'http://localhost:8080';
@@ -222,7 +222,7 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
       maxAcreage: undefined, 
       typeCodes: undefined, 
       wardCodes: undefined, 
-      transactionType: "BUY", 
+      transactionType: "SELL", 
       cityCode: undefined, 
       query: ""
     };

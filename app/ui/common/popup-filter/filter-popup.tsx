@@ -11,12 +11,12 @@ import AcreagePopup from "../acreage-popup/acreage-popup";
 export default function FilterPopup({ onClose, setFilterParam, filterParam }: any) {
     const [searchRequest, setSearchRequest] = useState(filterParam);
     const [tabBtnState, setTabBtnState] = useState({
-        btnBuy: filterParam.transactionType == "BUY" ? styles.btnBuy + " " + styles.primaryBtn : styles.btnBuy,
+        btnBuy: filterParam.transactionType == "SELL" ? styles.btnBuy + " " + styles.primaryBtn : styles.btnBuy,
         btnRent: filterParam.transactionType == "RENT" ? styles.btnRent + " " + styles.primaryBtn : styles.btnRent,
         btnProj: filterParam.transactionType == "PROJECT" ? styles.btnProj + " " + styles.primaryBtn : styles.btnProj
     });
     const [addressPopup, setAddressPopup] = useState(false);
-    const [districtPopup, setDistrictPopup] = useState(false);
+    const [wardPopup, setWardPopup] = useState(false);
     const [filterPopup, setFilterPopup] = useState(true);
     const [properTypePopup, setProperTypePopup] = useState(false);
     const [pricePopup, setPricePopup] = useState(false);
@@ -85,15 +85,15 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     function selectTab(value: string) {
         setSearchRequest({ ...searchRequest, transactionType: value });
         switch (value) {
-            case "BUY": setTabBtnState({ ...tabBtnState, btnBuy: styles.btnBuy + " " + styles.primaryBtn, btnRent: styles.btnRent, btnProj: styles.btnProj }); break;
+            case "SELL": setTabBtnState({ ...tabBtnState, btnBuy: styles.btnBuy + " " + styles.primaryBtn, btnRent: styles.btnRent, btnProj: styles.btnProj }); break;
             case "RENT": setTabBtnState({ ...tabBtnState, btnBuy: styles.btnBuy, btnRent: styles.btnRent + " " + styles.primaryBtn, btnProj: styles.btnProj }); break;
             case "PROJECT": setTabBtnState({ ...tabBtnState, btnBuy: styles.btnBuy, btnRent: styles.btnRent, btnProj: styles.btnProj + " " + styles.primaryBtn }); break;
         }
     }
 
     const closePopupAddressClick = useCallback(() => { setAddressPopup(false); setFilterPopup(true); }, []);
-    const selectCity = useCallback((city: any) => { setAddressPopup(false); setDistrictPopup(true); setCity(city) }, []);
-    const closeDistrict = useCallback(() => { setFilterPopup(true); setAddressPopup(false); setDistrictPopup(false); }, []);
+    const selectCity = useCallback((city: any) => { setAddressPopup(false); setWardPopup(true); setCity(city) }, []);
+    const closeWard = useCallback(() => { setFilterPopup(true); setAddressPopup(false); setWardPopup(false); }, []);
     const onBtnAddressClick = useCallback(() => { setAddressPopup(true); setFilterPopup(false); }, []);
     const closeProperType = useCallback(() => { setFilterPopup(true); setProperTypePopup(false); }, []);
     const onBtnProTypeClick = useCallback(() => { setProperTypePopup(true); setFilterPopup(false); }, []);
@@ -107,7 +107,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
-            {districtPopup && (<WardPopup onClose={closeDistrict} city={city} wardList={wards} selectWard={setSelectedWards} />)}
+            {wardPopup && (<WardPopup onClose={closeWard} city={city} wardList={wards} selectWard={setSelectedWards} />)}
             {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} />)}
             {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod}/>)}
             {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod}/>)}
@@ -124,7 +124,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                         </div>
                         <div className={styles.filterBody}>
                             <div className={styles.btnTab}>
-                                <button name="btnBuy" className={tabBtnState.btnBuy} onClick={() => selectTab("BUY")}>Mua bán</button>
+                                <button name="btnBuy" className={tabBtnState.btnBuy} onClick={() => selectTab("SELL")}>Mua bán</button>
                                 <button name="btnRent" className={tabBtnState.btnRent} onClick={() => selectTab("RENT")}>Cho thuê</button>
                                 <button name="btnProject" className={tabBtnState.btnProj} onClick={() => selectTab("PROJECT")}>Dự án</button>
                             </div>

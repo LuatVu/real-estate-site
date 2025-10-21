@@ -19,13 +19,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/posts?tab=BUY`,
+      url: `${baseUrl}/posts?transactionType=SELL`,
       lastModified: new Date(),
       changeFrequency: 'hourly' as const,
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/posts?tab=RENT`,
+      url: `${baseUrl}/posts?transactionType=RENT`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/posts?transactionType=PROJECT`,
       lastModified: new Date(),
       changeFrequency: 'hourly' as const,
       priority: 0.8,
@@ -58,13 +64,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/posts?city=${city}&tab=BUY`,
+      url: `${baseUrl}/posts?city=${city}&transactionType=SELL`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.6,
     },
     {
-      url: `${baseUrl}/posts?city=${city}&tab=RENT`,
+      url: `${baseUrl}/posts?city=${city}&transactionType=RENT`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/posts?city=${city}&transactionType=PROJECT`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.6,

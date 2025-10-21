@@ -115,8 +115,8 @@ The implementation focuses on:
 ### URL Structure
 - `/posts` - All properties
 - `/posts?city=HaNoi` - City-specific
-- `/posts?tab=RENT` - Rental properties
-- `/posts?city=HaNoi&tab=BUY&page=2` - Complex filters
+- `/posts?transactionType=RENT` - Rental properties
+- `/posts?city=HaNoi&transactionType=SELL&page=2` - Complex filters
 
 ## 🚀 Performance Optimizations
 

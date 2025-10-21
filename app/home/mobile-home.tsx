@@ -19,7 +19,7 @@ export default function MobileHome() {
         minPrice: undefined, maxPrice: undefined,
         minAcreage: undefined, maxAcreage: undefined, 
         typeCodes: undefined, cityCode: undefined,
-        wardCodes: undefined, transactionType: "BUY", 
+        wardCodes: undefined, transactionType: "SELL", 
         query: ""
     });
     const [filterNum, setFilterNum] = useState(1);
