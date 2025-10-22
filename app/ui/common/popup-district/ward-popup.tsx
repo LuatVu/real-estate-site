@@ -54,9 +54,12 @@ export default function WardPopup({ onClose, city, wardList, selectWard, selecte
             <div className={styles.bodyPopup}>
                 <div className={styles.titleBlock}>
                     <div className={styles.title}>
-                        <p>Bạn đang tìm tại:</p><p className={styles.dynamicTitle}>{city.name}</p>
-                        <button onClick={back2Address}>
-                            <Image className={styles.caretDown} width={16} height={16} alt="" src="/icons/CaretDown.svg" />
+                        <button className={styles.cityButton} onClick={back2Address}>
+                            <div className={styles.cityButtonContent}>
+                                <p className={styles.cityLabel}>Bạn đang tìm tại:</p>
+                                <p className={styles.dynamicTitle}>{city.name}</p>
+                                <Image className={styles.caretDown} width={16} height={16} alt="" src="/icons/CaretDown.svg" />
+                            </div>
                         </button>                        
                     </div>
                 </div>
