@@ -24,6 +24,8 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [properTypePopup, setProperTypePopup] = useState(false);
     const [pricePopup, setPricePopup] = useState(false);
     const [acreagePopup, setAcreagePopup] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isApplying, setIsApplying] = useState(false);
 
     const [selectedWards, setSelectedWards] = useState([]);
     const [city, setCity] = useState<any>();
@@ -38,11 +40,14 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const fetchCities = async () => {
         // Fetch city data from API if needed
         try{
+            setIsLoading(true);
             const response = await fetch('/api/province', { method: 'GET' });
             const data = await response.json();
             setCities(data);
         }catch(error){
             console.error("Error fetching cities:", error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -156,29 +161,41 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const setPriceRangeMethod = (item: any) => { setMinPrice(item[0]); setMaxPrice(item[1]);};
     const setAcreageRangeMethod = (item: any) => { setMinAcreage(item[0]); setMaxAcreage(item[1]);};
 
-    function applyFilter() {
-        // Handle empty arrays properly - pass undefined instead of empty array
-        const mappedTypeCodes = propertyTypes && propertyTypes.length > 0 ? propertyTypes.map((ele: any) => ele.value) : undefined;
-        const mappedWardCodes = selectedWards && selectedWards.length > 0 ? selectedWards.map((e: any) => e.code) : undefined;
+    async function applyFilter() {
+        setIsApplying(true);
         
-        const updateRequest = {...searchRequest, 
-            cityCode: city?.code, 
-            wardCodes: mappedWardCodes, 
-            typeCodes: mappedTypeCodes, 
-            minPrice: minPrice, 
-            maxPrice: maxPrice, 
-            minAcreage: minAcreage, 
-            maxAcreage: maxAcreage,
-            transactionType: searchRequest.transactionType };
-        
-        setSearchRequest(updateRequest); 
-        setFilterParam(updateRequest);
-        
-        // Transform search request and navigate to posts page with filters - similar to search() method
-        const postSearchRequest = transformSearchRequest(updateRequest);
-        const newUrl = `/posts?${postSearchRequest}&page=1`;
-        router.push(newUrl);
-        onClose();
+        try {
+            // Handle empty arrays properly - pass undefined instead of empty array
+            const mappedTypeCodes = propertyTypes && propertyTypes.length > 0 ? propertyTypes.map((ele: any) => ele.value) : undefined;
+            const mappedWardCodes = selectedWards && selectedWards.length > 0 ? selectedWards.map((e: any) => e.code) : undefined;
+            
+            const updateRequest = {...searchRequest, 
+                cityCode: city?.code, 
+                wardCodes: mappedWardCodes, 
+                typeCodes: mappedTypeCodes, 
+                minPrice: minPrice, 
+                maxPrice: maxPrice, 
+                minAcreage: minAcreage, 
+                maxAcreage: maxAcreage,
+                transactionType: searchRequest.transactionType };
+            
+            setSearchRequest(updateRequest); 
+            setFilterParam(updateRequest);
+            
+            // Transform search request and navigate to posts page with filters - similar to search() method
+            const postSearchRequest = transformSearchRequest(updateRequest);
+            const newUrl = `/posts?${postSearchRequest}&page=1`;
+            
+            // Add a small delay for better UX
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            router.push(newUrl);
+            onClose();
+        } catch (error) {
+            console.error("Error applying filters:", error);
+        } finally {
+            setIsApplying(false);
+        }
     }
 
     function resetFilters() {
@@ -246,6 +263,16 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const openAcreagePopup = useCallback(() => {setFilterPopup(false);setAcreagePopup(true)},[]);
     const closeAcreagePopup = useCallback(() => {setFilterPopup(true); setAcreagePopup(false)}, []);
 
+    // Calculate active filters count for better UX
+    const getActiveFiltersCount = () => {
+        let count = 1;
+        if (selectedWards.length > 0) count++;
+        if (propertyTypes.length > 0) count++;
+        if (minPrice || maxPrice) count++;
+        if (minAcreage || maxAcreage) count++;
+        return count;
+    };
+
     return (
         <div className='h-full'>
             {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
@@ -254,38 +281,122 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
             {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod} currentMinPrice={minPrice} currentMaxPrice={maxPrice} />)}
             {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod} currentMinAcreage={minAcreage} currentMaxAcreage={maxAcreage} />)}
             {filterPopup && (
-                <div>
+                <div role="dialog" aria-modal="true" aria-labelledby="filter-title">
                     <div className={styles.filterContainer}>
                         <div className={styles.headerFilter}>
                             <div className={styles.khuVcParent}>
-                                <div className={styles.khuVc}>Bộ lọc</div>
-                                <button onClick={onClose}>
-                                    <Image className={styles.xIcon} width={24} height={24} alt="" src="/icons/X.svg" />
+                                <div className={styles.khuVc} id="filter-title">
+                                    Bộ lọc
+                                    {getActiveFiltersCount() > 0 && (
+                                        <span style={{
+                                            marginLeft: '8px',
+                                            backgroundColor: 'var(--color-primary-p300)',
+                                            color: 'white',
+                                            borderRadius: '12px',
+                                            padding: '2px 8px',
+                                            fontSize: '12px',
+                                            fontWeight: '500'
+                                        }}>
+                                            {getActiveFiltersCount()}
+                                        </span>
+                                    )}
+                                </div>
+                                <button 
+                                    onClick={onClose} 
+                                    aria-label="Đóng bộ lọc"
+                                    disabled={isApplying}
+                                >
+                                    <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
                                 </button>
                             </div>
                         </div>
                         <div className={styles.filterBody}>
-                            <div className={styles.btnTab}>
-                                <button name="btnBuy" className={tabBtnState.btnBuy} onClick={() => selectTab("SELL")}>Mua bán</button>
-                                <button name="btnRent" className={tabBtnState.btnRent} onClick={() => selectTab("RENT")}>Cho thuê</button>
-                                <button name="btnProject" className={tabBtnState.btnProj} onClick={() => selectTab("PROJECT")}>Dự án</button>
+                            <div className={styles.btnTab} role="tablist" aria-label="Loại giao dịch">
+                                <button 
+                                    name="btnBuy" 
+                                    className={tabBtnState.btnBuy} 
+                                    onClick={() => selectTab("SELL")}
+                                    role="tab"
+                                    aria-selected={searchRequest.transactionType === "SELL"}
+                                    disabled={isApplying}
+                                >
+                                    Mua bán
+                                </button>
+                                <button 
+                                    name="btnRent" 
+                                    className={tabBtnState.btnRent} 
+                                    onClick={() => selectTab("RENT")}
+                                    role="tab"
+                                    aria-selected={searchRequest.transactionType === "RENT"}
+                                    disabled={isApplying}
+                                >
+                                    Cho thuê
+                                </button>
+                                <button 
+                                    name="btnProject" 
+                                    className={tabBtnState.btnProj} 
+                                    onClick={() => selectTab("PROJECT")}
+                                    role="tab"
+                                    aria-selected={searchRequest.transactionType === "PROJECT"}
+                                    disabled={isApplying}
+                                >
+                                    Dự án
+                                </button>
                             </div>
                             <div className={styles.areaBlock}>
                                 <div className={styles.itemTitle}>
                                     <p>Khu vực</p>
+                                    {selectedWards.length > 0 && (
+                                        <div className={styles.titleActions}>
+                                            <span className={styles.itemCount}>({selectedWards.length} vùng)</span>
+                                            {selectedWards.length > 1 && (
+                                                <button 
+                                                    className={styles.clearAllBtn}
+                                                    onClick={() => setSelectedWards([])}
+                                                    aria-label="Xóa tất cả khu vực"
+                                                >
+                                                    Xóa tất cả
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className={styles.criteriaBlk}>
-                                    {selectedWards.map((element: any) => (
+                                    {selectedWards.slice(0, 3).map((element: any) => (
                                         <div className={styles.criteria} key={element.code}>
                                             <p className={styles.criTitle}>{element.name}</p>
-                                            <button onClick={() => removeSelectedWard(element)}>
-                                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                                            <button 
+                                                onClick={() => removeSelectedWard(element)}
+                                                aria-label={`Xóa ${element.name}`}
+                                                disabled={isApplying}
+                                            >
+                                                <Image className={styles.xIcon} width={16} height={16} alt="Xóa" src="/icons/X.svg" />
                                             </button>
                                         </div>
                                     ))}
+                                    {selectedWards.length > 3 && (
+                                        <div className={styles.moreIndicator}>
+                                            <button 
+                                                className={styles.moreBtn}
+                                                onClick={onBtnAddressClick}
+                                                aria-label={`Xem thêm ${selectedWards.length - 3} khu vực`}
+                                            >
+                                                +{selectedWards.length - 3} thêm
+                                            </button>
+                                        </div>
+                                    )}
                                     <div>
-                                        <button className={styles.addBtn} onClick={onBtnAddressClick}>
-                                            <Image className={styles.xIcon} width={12} height={12} alt="" src="/icons/Plus.svg" />
+                                        <button 
+                                            className={styles.addBtn} 
+                                            onClick={onBtnAddressClick}
+                                            aria-label="Thêm khu vực"
+                                            disabled={isApplying}
+                                        >
+                                            {isLoading ? (
+                                                <div className={styles.loadingSpinner}></div>
+                                            ) : (
+                                                <Image width={12} height={12} alt="Thêm" src="/icons/Plus.svg" />
+                                            )}
                                             <p className={styles.addTitle}>Thêm</p>
                                         </button>
                                     </div>
@@ -294,22 +405,56 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                             <div className={styles.proTypeBlock}>
                                 <div className={styles.itemTitle}>
                                     <p>Loại bất động sản</p>
+                                    {propertyTypes.length > 0 && (
+                                        <div className={styles.titleActions}>
+                                            <span className={styles.itemCount}>({propertyTypes.length} loại)</span>
+                                            {propertyTypes.length > 1 && (
+                                                <button 
+                                                    className={styles.clearAllBtn}
+                                                    onClick={() => setPropertyType([])}
+                                                    aria-label="Xóa tất cả loại bất động sản"
+                                                >
+                                                    Xóa tất cả
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className={styles.criteriaBlk}>
-                                    {propertyTypes.map((element: any) => (
+                                    {propertyTypes.slice(0, 2).map((element: any) => (
                                         <div className={styles.criteria} key={element.value}>
                                             <p className={styles.criTitle}>{element.name}</p>
-                                            <button onClick={() =>removeProperType(element)}>
-                                                <Image className={styles.xIcon} width={16} height={16} alt="" src="/icons/X.svg" />
+                                            <button 
+                                                onClick={() => removeProperType(element)}
+                                                aria-label={`Xóa ${element.name}`}
+                                                disabled={isApplying}
+                                            >
+                                                <Image className={styles.xIcon} width={16} height={16} alt="Xóa" src="/icons/X.svg" />
                                             </button>
                                         </div>
-                                    ))}                                   
+                                    ))}
+                                    {propertyTypes.length > 2 && (
+                                        <div className={styles.moreIndicator}>
+                                            <button 
+                                                className={styles.moreBtn}
+                                                onClick={onBtnProTypeClick}
+                                                aria-label={`Xem thêm ${propertyTypes.length - 2} loại bất động sản`}
+                                            >
+                                                +{propertyTypes.length - 2} thêm
+                                            </button>
+                                        </div>
+                                    )}                                   
                                     <div>
-                                        <button className={styles.addBtn} onClick={() => {
-                                            console.log('Current propertyTypes before opening popup:', propertyTypes);
-                                            onBtnProTypeClick();
-                                        }}>
-                                            <Image className={styles.xIcon} width={12} height={12} alt="" src="/icons/Plus.svg" />
+                                        <button 
+                                            className={styles.addBtn} 
+                                            onClick={() => {
+                                                console.log('Current propertyTypes before opening popup:', propertyTypes);
+                                                onBtnProTypeClick();
+                                            }}
+                                            aria-label="Thêm loại bất động sản"
+                                            disabled={isApplying}
+                                        >
+                                            <Image width={12} height={12} alt="Thêm" src="/icons/Plus.svg" />
                                             <p className={styles.addTitle}>Thêm</p>
                                         </button>
                                     </div>
@@ -319,29 +464,68 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                 <div className={styles.itemTitle}>
                                     <p>Mức giá</p>
                                 </div>
-                                <button className={styles.itemBody} onClick={openPricePopup}>
-                                    <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
-                                    {!(minPrice && maxPrice)?(<p>Tất cả</p>):(<p>{minPrice/1000000000} - {maxPrice/1000000000} tỷ</p>) }
-                                    <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
+                                <button 
+                                    className={styles.itemBody} 
+                                    onClick={openPricePopup}
+                                    aria-label="Chọn mức giá"
+                                    disabled={isApplying}
+                                >
+                                    <Image width={16} height={16} alt="Giá" src="/icons/CurrencyCircleDollar.svg" />
+                                    {!(minPrice && maxPrice) ? (
+                                        <p>Tất cả</p>
+                                    ) : (
+                                        <p>{minPrice/1000000000} - {maxPrice/1000000000} tỷ</p>
+                                    )}
+                                    <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
                                 </button>
                             </div>
                             <div className={styles.acreageBlock}>
                                 <div className={styles.itemTitle}>
                                     <p>Diện tích</p>
                                 </div>
-                                <button className={styles.itemBody} onClick={openAcreagePopup}>
-                                    <Image width={11} height={11} alt="" src="/icons/CurrencyCircleDollar.svg" />
-                                    {!(minAcreage && maxAcreage)?(<p>Tất cả</p>):(<p>{minAcreage} - {maxAcreage} m2</p>) }
-                                    <Image className={styles.caretRightIcon} width={11} height={11} alt="" src="/icons/CaretRight.svg" />
+                                <button 
+                                    className={styles.itemBody} 
+                                    onClick={openAcreagePopup}
+                                    aria-label="Chọn diện tích"
+                                    disabled={isApplying}
+                                >
+                                    <Image width={16} height={16} alt="Diện tích" src="/icons/CurrencyCircleDollar.svg" />
+                                    {!(minAcreage && maxAcreage) ? (
+                                        <p>Tất cả</p>
+                                    ) : (
+                                        <p>{minAcreage} - {maxAcreage} m²</p>
+                                    )}
+                                    <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
                                 </button>
                             </div>
                         </div>
                         <div className={styles.footer}>
                             <div className={styles.resetBlock}>
-                                <button className={styles.btnReset} onClick={resetFilters}>Đặt lại</button>
+                                <button 
+                                    className={styles.btnReset} 
+                                    onClick={resetFilters}
+                                    disabled={isApplying}
+                                    aria-label="Đặt lại tất cả bộ lọc"
+                                >
+                                    Đặt lại
+                                </button>
                             </div>
                             <div className={styles.applyBlock}>
-                                <button className={styles.btnApply} onClick={applyFilter}>Áp dụng</button>
+                                <button 
+                                    className={`${styles.btnApply} ${isApplying ? styles.loading : ''}`} 
+                                    onClick={applyFilter}
+                                    disabled={isApplying}
+                                    aria-label="Áp dụng bộ lọc"
+                                >
+                                    {isApplying ? (
+                                        <>
+                                            <div className={styles.loadingSpinner}></div>
+                                            Đang áp dụng...
+                                        </>
+                                    ) : (
+                                        'Áp dụng'
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>
