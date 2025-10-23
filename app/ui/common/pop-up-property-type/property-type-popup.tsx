@@ -3,10 +3,27 @@ import styles from "./popup.module.css";
 import Form from "next/form";
 import { useState } from "react";
 
-export default function PropertyTypePopup({ onClose, selectProperType, selectedPropertyTypes = [] }: any) {
+interface PropertyType {
+    name: string;
+    value: string;
+    checked: boolean;
+    image?: string;
+}
+
+interface PropertyTypePopupProps {
+    onClose: () => void;
+    selectProperType: (types: PropertyType[]) => void;
+    selectedPropertyTypes?: PropertyType[];
+}
+
+export default function PropertyTypePopup({ 
+    onClose, 
+    selectProperType, 
+    selectedPropertyTypes = [] 
+}: PropertyTypePopupProps) {
     // Initialize property types with checked state based on selectedPropertyTypes
-    const initializePropertyTypes = () => {
-        const allTypes = [
+    const initializePropertyTypes = (): PropertyType[] => {
+        const allTypes: PropertyType[] = [
             { name: "Tất cả nhà bán", value: "ALL", checked: false}, 
             { name: "Căn hộ chung cư", value: "CHCC", checked: false, image:"/icons/Building.svg" },
             { name: "Nhà riêng, biệt thự, nhà phố", value: "NHA_RIENG", checked: false, image: "/icons/HouseLine.svg" },
@@ -19,15 +36,15 @@ export default function PropertyTypePopup({ onClose, selectProperType, selectedP
         // Mark as checked if the type is in selectedPropertyTypes
         return allTypes.map(type => ({
             ...type,
-            checked: selectedPropertyTypes.some((selected: any) => selected.value === type.value)
+            checked: selectedPropertyTypes.some((selected: PropertyType) => selected.value === type.value)
         }));
     };
 
-    const [properTypes, setProperTypes] = useState(initializePropertyTypes());
+    const [properTypes, setProperTypes] = useState<PropertyType[]>(initializePropertyTypes());
 
     const submit = () => {
-        const _selectedProperType:any = [];
-        properTypes.forEach((element: any) => {
+        const _selectedProperType: PropertyType[] = [];
+        properTypes.forEach((element: PropertyType) => {
             // Exclude "ALL" checkbox from the values sent to API
             if(element.checked && element.value !== "ALL"){
                 _selectedProperType.push(element);
@@ -35,33 +52,72 @@ export default function PropertyTypePopup({ onClose, selectProperType, selectedP
         });
         selectProperType(_selectedProperType);
         onClose();
-    }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+    };
     return (
-        <Form action={submit} className={styles.container}>
+        <Form 
+            action={submit} 
+            className={styles.container}
+            onKeyDown={handleKeyDown}
+            role="dialog" 
+            aria-labelledby="property-type-title"
+            aria-modal="true"
+        >
             <div className={styles.headerPopup}>
                 <div className={styles.loiBtNgSnParent}>
-                    <div className={styles.loiBtNg}>Loại bất động sản</div>
-                    <button onClick={onClose}>
-                        <Image className={styles.xIcon} width={24} height={24} alt="" src="/icons/X.svg" />
+                    <h2 id="property-type-title" className={styles.loiBtNg}>Loại bất động sản</h2>
+                    <button 
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Đóng popup"
+                        title="Đóng popup"
+                    >
+                        <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
                     </button>
                 </div>
             </div>
             <div className={styles.bodyPopup}>
-                {properTypes.map((element: any) => (
-                    <div className={styles.frameParent} key={element.value}>
+                {properTypes.map((element: PropertyType) => (
+                    <label 
+                        className={styles.frameParent} 
+                        key={element.value}
+                        htmlFor={`property-${element.value}`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                const checkbox = document.getElementById(`property-${element.value}`) as HTMLInputElement;
+                                checkbox?.click();
+                            }
+                        }}
+                    >
                         <div className={styles.buildingapartmentParent}>
                             {element.image && (
-                                <Image className={styles.buildingapartmentIcon} width={16} height={16} alt="" src={element.image} />
+                                <Image 
+                                    className={styles.buildingapartmentIcon} 
+                                    width={20} 
+                                    height={20} 
+                                    alt={`${element.name} icon`} 
+                                    src={element.image} 
+                                />
                             )}
                             <p>{element.name}</p>
                         </div>
                         <div className={styles.checkboxBlock}>
                             <input 
                                 type="checkbox" 
+                                id={`property-${element.value}`}
                                 name={element.value} 
                                 value={element.value} 
                                 className={styles.checkbox} 
                                 checked={element.checked}
+                                aria-describedby={`desc-${element.value}`}
                                 onChange={() => {
                                     if (element.value === "ALL") {
                                         // If ALL is clicked, check/uncheck all other checkboxes
@@ -94,12 +150,18 @@ export default function PropertyTypePopup({ onClose, selectProperType, selectedP
                                 }} 
                             />
                         </div>                                                
-                    </div>
+                    </label>
                 ))}
 
             </div>
             <div className={styles.footerPopup}>
-                <button type="submit" className={styles.btnApply}>Áp dụng</button>
+                <button 
+                    type="submit" 
+                    className={styles.btnApply}
+                    aria-label="Áp dụng các loại bất động sản đã chọn"
+                >
+                    Áp dụng
+                </button>
             </div>
         </Form>);
 }

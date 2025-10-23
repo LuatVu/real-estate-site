@@ -1,292 +1,175 @@
-.btnApply{
+.btnApply {
     width: 100%;
-    height: 38px;
-    border-radius: 2px;
-    padding: 10px;
-    gap: 4px;
+    height: 48px;
+    border-radius: 8px;
+    padding: 12px 24px;
     background-color: var(--color-primary-p300);
     font-family: Roboto;
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--color-secondary-s50);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.button {
-    width: 26.88%;
-    margin: 0 !important;
-    position: absolute;
-    top: 0px;
-    right: 73.13%;
-    left: 0%;
-    border-radius: 2px;
-    background-color: #fefeff;
-    border: 1px solid #a9acaf;
-    box-sizing: border-box;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    z-index: 0;
+.btnApply:hover {
+    background-color: var(--color-primary-p400);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 101, 255, 0.3);
 }
-.button2 {
-    width: 63.44%;
-    margin: 0 !important;
-    position: absolute;
-    top: 0px;
-    right: 0%;
-    left: 36.56%;
-    border-radius: 2px;
-    background-color: #0065ff;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    z-index: 1;
-    color: #fefeff;
+
+.btnApply:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 101, 255, 0.2);
 }
-.buttonParent {
-    position: absolute;
-    width: 88.15%;
-    top: 19px;
-    right: 7.44%;
-    left: 4.41%;
-    height: 38px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 31px;
+
+.btnApply:focus {
+    outline: 2px solid var(--color-primary-p100);
+    outline-offset: 2px;
 }
+
+/* Removed unused button styles */
 .footerPopup {
     position: absolute;
     width: 100%;
     bottom: 0;    
     background-color: #fff;
-    border-top: 0.5px solid #f2f5fa;
+    border-top: 1px solid var(--color-secondary-s300);
     box-sizing: border-box;
-    height: 75px;
+    height: 90px;
     overflow: hidden;    
-    padding: 21px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .buildingapartmentIcon {
-    width: 16px;
+    width: 20px;
+    height: 20px;
     position: relative;
-    max-height: 100%;
-    overflow: hidden;
     flex-shrink: 0;
+    filter: opacity(0.7);
+    transition: filter 0.2s ease;
 }
-.ttCNh {
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    height: 18px;
-    flex-shrink: 0;
+
+.frameParent:hover .buildingapartmentIcon {
+    filter: opacity(1);
 }
+/* Removed unused styles */
 .buildingapartmentParent {
     display: flex;
     align-items: center;
+    gap: 12px;
+    flex: 1;
 }
 
-.checkbox{
-    width: 17px;
-    height: 17px;    
+.buildingapartmentParent p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--color-text-t300);
+    line-height: 1.4;
 }
 
-.checkboxBlock{    
-    display: flex;
-    position: absolute;
-    right: 21px;
-}
-
-.frameChild {
-    width: 100.16%;
-    position: absolute;
-    margin: 0 !important;
-    top: 18.75px;
-    right: -0.08%;
-    left: -0.08%;
-    border-top: 0.5px solid #f2f5fa;
-    box-sizing: border-box;
-    height: 0.5px;
-    z-index: 1;
-}
-.frameItem {
-    width: 17px;
-    margin: 0 !important;
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-secondary-s400);
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
     position: relative;
-    left: calc(50% + 139.45px);
-    border-radius: 3px;
-    border: 0.5px solid #a9acaf;
-    box-sizing: border-box;
-    height: 17px;
-    z-index: 2;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
+
+.checkbox:checked {
+    background-color: var(--color-primary-p300);
+    border-color: var(--color-primary-p300);
+}
+
+.checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox:hover {
+    border-color: var(--color-primary-p200);
+    transform: scale(1.05);
+}
+
+.checkbox:focus {
+    outline: 2px solid var(--color-primary-p100);
+    outline-offset: 2px;
+}
+
+.checkboxBlock {    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Removed unused frame styles */
 .frameParent {
     width: 100%;
-    display: grid;
-    gap: 15px;
-}
-.cnHChung {
-    width: 100%;
-    position: relative;
     display: flex;
-    align-items: flex-end;
-    height: 18px;
-    flex-shrink: 0;
-}
-.buildingParent {
-    width: 100%;
-    margin: 0 !important;
-    position: absolute;
-    top: 0px;
-    right: 63.45%;
-    left: 0%;
-    height: 18px;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    gap: 2px;
-    z-index: 0;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-secondary-s200);
 }
-.frameInner {
-    width: 17px;
-    margin: 0 !important;
-    position: absolute;
-    top: 0px;
-    left: calc(50% + 139.45px);
-    border-radius: 3px;
-    border: 0.5px solid #a9acaf;
-    box-sizing: border-box;
-    height: 17px;
-    z-index: 1;
+
+.frameParent:last-child {
+    border-bottom: none;
 }
-.lineDiv {
-    width: 100.16%;
-    position: relative;
-    margin: 0 !important;
-    border-top: 0.5px solid #f2f5fa;
-    box-sizing: border-box;
-    height: 0.5px;
-    z-index: 2;
+
+.frameParent:hover {
+    background-color: var(--color-secondary-s100);
+    padding-left: 8px;
+    padding-right: 8px;
 }
-.frameGroup {
-    position: absolute;
-    width: 85.94%;
-    top: 61px;
-    right: 8%;
-    left: 6.06%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
-.nhRingBit {
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    height: 18px;
-    flex-shrink: 0;
-}
-.frameContainer {
-    position: absolute;
-    width: 85.94%;
-    top: 95px;
-    right: 7.72%;
-    left: 6.34%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
-.vectorIcon {
-    width: 16px;
-    position: relative;
-    height: 12px;
-}
-.frameParent1 {
-    position: absolute;
-    width: 85.94%;
-    top: 129px;
-    right: 7.71%;
-    left: 6.35%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
-.frameParent2 {
-    position: absolute;
-    width: 85.94%;
-    top: 163px;
-    right: 7.98%;
-    left: 6.08%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
-.frameParent3 {
-    position: absolute;
-    width: 85.94%;
-    top: 197px;
-    right: 7.98%;
-    left: 6.08%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
-.frameParent4 {
-    position: absolute;
-    width: 85.94%;
-    top: 231px;
-    right: 7.71%;
-    left: 6.35%;
-    height: 19px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 1px 192px;
-}
+/* Removed unused positioning styles - now using flexbox layout */
 .bodyPopup {
     position: absolute;
-    padding: 5px 21px;
-    top: 35px;        
-    bottom: 75px;
+    padding: 16px 24px;
+    top: 60px;        
+    bottom: 90px;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    overflow: scroll;    
+    gap: 4px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-secondary-s400) transparent;
+}
+
+.bodyPopup::-webkit-scrollbar {
+    width: 6px;
+}
+
+.bodyPopup::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.bodyPopup::-webkit-scrollbar-thumb {
+    background-color: var(--color-secondary-s400);
+    border-radius: 3px;
 }
 .loiBtNg {
     position: relative;
@@ -301,16 +184,33 @@
 .loiBtNgSnParent {
     position: absolute;
     width: 100%;
-    top: 6px;
+    top: 50%;
     right: 0%;
     left: 0%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0px 10px;
+    padding: 0px 24px;
     box-sizing: border-box;
     gap: 0px;
+}
+
+.loiBtNgSnParent button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loiBtNgSnParent button:hover {
+    background-color: var(--color-secondary-s200);
 }
 .headerPopup {
     position: absolute;
@@ -319,25 +219,29 @@
     right: 0%;
     left: 0%;
     background-color: #fff;
-    border-bottom: 0.5px solid #f2f5fa;
+    border-bottom: 1px solid var(--color-secondary-s300);
     box-sizing: border-box;
-    height: 35px;
+    height: 60px;
     overflow: hidden;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-t400);
 }
 .container {    
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 3px;
+    border-radius: 12px;
     background-color: #fff;
-    border: 1px solid #f2f5fa;
+    border: 1px solid var(--color-secondary-s300);
     text-align: left;
     font-size: 15px;
-    color: #000;
+    color: var(--color-text-t300);
     font-family: Roboto;
     justify-content: center;
     align-items: flex-start;
     display: flex;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
 }
 
