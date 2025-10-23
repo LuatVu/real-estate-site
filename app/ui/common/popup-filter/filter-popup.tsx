@@ -32,7 +32,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const [maxPrice, setMaxPrice] = useState<number | undefined>(filterParam.maxPrice);
     const [minAcreage, setMinAcreage] = useState<number | undefined>(filterParam.minAcreage);
     const [maxAcreage, setMaxAcreage] = useState<number | undefined>(filterParam.maxAcreage);
-    const [cities, setCities] = useState("");
+    const [cities, setCities] = useState<any[]>([]);
     const [wards, setWards] = useState([]);
 
     const fetchCities = async () => {

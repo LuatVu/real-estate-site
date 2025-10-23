@@ -11,6 +11,15 @@ interface Ward {
 }
 
 export default function WardPopup({ onClose, city, wardList, selectWard, selectedWards = [], back2Address }: any) {
+    // Function to remove Vietnamese accents for search matching
+    const removeVietnameseAccents = (str: string): string => {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Remove combining diacritical marks
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D");
+    };
+
     // Initialize ward list with proper checked state based on selectedWards
     const initializeWardList = () => {
         // Handle case where wardList might be undefined or empty
@@ -26,10 +35,12 @@ export default function WardPopup({ onClose, city, wardList, selectWard, selecte
     const [wards, setWards] = useState<Ward[]>(initializeWardList());
     const [searchTerm, setSearchTerm] = useState<string>("");
     
-    // Filter wards based on search term
-    const filteredWards = wards.filter(ward => 
-        ward.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter wards based on search term with Vietnamese accent-insensitive matching
+    const filteredWards = wards.filter(ward => {
+        const normalizedWardName = removeVietnameseAccents(ward.name.toLowerCase());
+        const normalizedSearchTerm = removeVietnameseAccents(searchTerm.toLowerCase());
+        return normalizedWardName.includes(normalizedSearchTerm);
+    });
     
     // Check if all filtered wards are selected
     const allWardsSelected = filteredWards.length > 0 && filteredWards.every(ward => ward.checked);
