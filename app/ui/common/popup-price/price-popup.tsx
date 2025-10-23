@@ -28,19 +28,65 @@ export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, c
         const filterRange = [priceRange[0] * 1000000000, priceRange[1] * 1000000000];
         setRangeMethod(filterRange);
         onClose();
-    }
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+    };
+
+    const formatPrice = (value: number) => {
+        return `${value} tỷ`;
+    };
+
+    const resetPriceRange = () => {
+        setPriceRange([3, 100]);
+    };
 
     return (
-        <Form action={submit} className={styles.container}>
+        <Form 
+            action={submit} 
+            className={styles.container}
+            onKeyDown={handleKeyDown}
+            role="dialog"
+            aria-labelledby="price-popup-title"
+            aria-modal="true"
+        >
             <div className={styles.header}>
-                <div className={styles.title}>Mức giá</div>
-                <button onClick={onClose}>
-                    <Image className={styles.xIcon} width={24} height={24} alt="" src="/icons/X.svg" />
+                <h2 id="price-popup-title" className={styles.title}>Mức giá</h2>
+                <button 
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Đóng popup"
+                    title="Đóng popup"
+                    className={styles.closeButton}
+                >
+                    <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
                 </button>
             </div>
+            
             <div className={styles.bodyPopup}>
-                
-                    
+                {/* Price Range Display */}
+                <div className={styles.priceDisplay}>
+                    <div className={styles.priceInfo}>
+                        <span className={styles.priceLabel}>Khoảng giá đã chọn:</span>
+                        <span className={styles.priceValue}>
+                            {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+                        </span>
+                    </div>
+                    <button 
+                        type="button"
+                        onClick={resetPriceRange}
+                        className={styles.resetButton}
+                        title="Đặt lại về mặc định"
+                    >
+                        Đặt lại
+                    </button>
+                </div>
+
+                {/* Range Slider */}
+                <div className={styles.sliderSection}>
                     <RangeSlider
                         label="Giá (Tỷ)"
                         min={0}
@@ -53,10 +99,60 @@ export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, c
                         suffix="Tỷ"
                         minLabel="Giá tối thiểu"
                         maxLabel="Giá tối đa"
-                    />                                    
+                    />
+                </div>
+
+                {/* Quick Price Options */}
+                <div className={styles.quickOptions}>
+                    <div className={styles.quickOptionsTitle}>Lựa chọn nhanh:</div>
+                    <div className={styles.quickButtons}>
+                        <button 
+                            type="button"
+                            onClick={() => setPriceRange([0, 5])}
+                            className={styles.quickButton}
+                        >
+                            Dưới 5 tỷ
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setPriceRange([5, 10])}
+                            className={styles.quickButton}
+                        >
+                            5 - 10 tỷ
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setPriceRange([10, 20])}
+                            className={styles.quickButton}
+                        >
+                            10 - 20 tỷ
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setPriceRange([20, 50])}
+                            className={styles.quickButton}
+                        >
+                            20 - 50 tỷ
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => setPriceRange([50, 500])}
+                            className={styles.quickButton}
+                        >
+                            Trên 50 tỷ
+                        </button>
+                    </div>
+                </div>
             </div>
+            
             <div className={styles.footer}>
-                <button type="submit" className={styles.btnApply}>Áp dụng</button>
+                <button 
+                    type="submit" 
+                    className={styles.btnApply}
+                    aria-label={`Áp dụng khoảng giá từ ${formatPrice(priceRange[0])} đến ${formatPrice(priceRange[1])}`}
+                >
+                    Áp dụng ({formatPrice(priceRange[0])} - {formatPrice(priceRange[1])})
+                </button>
             </div>
         </Form>
     )
