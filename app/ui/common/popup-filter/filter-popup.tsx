@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { transformSearchRequest } from '../../../utils/transform.param';
 import AddressFilterPopup from "../popup-filter-address/address-popup";
-import WardPopup from "../popup-district/ward-popup";
+import WardPopup from "../popup-ward/ward-popup";
 import PropertyTypePopup from "../pop-up-property-type/property-type-popup";
 import PricePopup from "../popup-price/price-popup";
 import AcreagePopup from "../acreage-popup/acreage-popup";
