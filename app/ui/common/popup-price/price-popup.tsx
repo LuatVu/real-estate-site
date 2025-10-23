@@ -88,6 +88,7 @@ export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, c
                 {/* Range Slider */}
                 <div className={styles.sliderSection}>
                     <RangeSlider
+                        key={`${priceRange[0]}-${priceRange[1]}`}
                         label="Giá (Tỷ)"
                         min={0}
                         max={500}

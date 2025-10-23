@@ -14,12 +14,26 @@
   width: 100%;
   height: 100%;
   border: 1px solid var(--color-secondary-s300);
-  border-radius: 3px;
+  border-radius: 12px;
   justify-content: center;
   align-items: flex-start;
   background-color: #ffffff;
   display: flex;
   font-family: Roboto;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .xIcon {
@@ -38,28 +52,198 @@
   right: 0%;
   left: 0%;
   background-color: #fff;
-  border-bottom: 0.5px solid #f2f5fa;
+  border-bottom: 1px solid var(--color-secondary-s300);
   box-sizing: border-box;
-  height: 35px;
+  height: 60px;
   overflow: hidden;
-  font-size: 19px;
-  color: #000;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 10px;
+  padding: 0px 24px;
   gap: 0px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-t400);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background-color: var(--color-secondary-s200);
 }
 
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 75px;
+  height: 90px;
   background-color: #fff;
-  border-color: var(--color-secondary-s300);
-  padding: 21px;
+  border-top: 1px solid var(--color-secondary-s300);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnApply {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  padding: 12px 24px;
+  background-color: var(--color-primary-p300);
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-secondary-s50);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btnApply:hover {
+  background-color: var(--color-primary-p400);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 101, 255, 0.3);
+}
+
+.btnApply:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 101, 255, 0.2);
+}
+
+.btnApply:focus {
+  outline: 2px solid var(--color-primary-p100);
+  outline-offset: 2px;
+}
+
+/* Acreage Display Section */
+.acreageDisplay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-primary-p50);
+  border: 1px solid var(--color-primary-p200);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.acreageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.acreageLabel {
+  font-size: 13px;
+  color: var(--color-text-t100);
+  font-weight: 400;
+}
+
+.acreageValue {
+  font-size: 16px;
+  color: var(--color-primary-p400);
+  font-weight: 700;
+}
+
+.resetButton {
+  background-color: var(--color-secondary-s200);
+  border: 1px solid var(--color-secondary-s300);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--color-text-t300);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.resetButton:hover {
+  background-color: var(--color-secondary-s300);
+  border-color: var(--color-secondary-s400);
+}
+
+/* Slider Section */
+.sliderSection {
+  margin-bottom: 32px;
+}
+
+/* Quick Options Section */
+.quickOptions {
+  margin-top: 24px;
+}
+
+.quickOptionsTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-t300);
+  margin-bottom: 12px;
+}
+
+.quickButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.quickButton {
+  background-color: var(--color-secondary-s100);
+  border: 1px solid var(--color-secondary-s300);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--color-text-t300);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  text-align: center;
+}
+
+.quickButton:hover {
+  background-color: var(--color-primary-p50);
+  border-color: var(--color-primary-p200);
+  color: var(--color-primary-p400);
+}
+
+.quickButton:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .acreageDisplay {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .quickButtons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quickButton {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
 }
 
 .bodyPopup {
@@ -67,9 +251,24 @@
   flex: 1;
   width: 100%;
   height: auto;
-  bottom: 75px;
-  top: 35px;
+  bottom: 90px;
+  top: 60px;
   background-color: #fff;
-  overflow: scroll;
-  padding: 25px 21px;
+  overflow-y: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-s400) transparent;
+}
+
+.bodyPopup::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bodyPopup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bodyPopup::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-s400);
+  border-radius: 3px;
 }
