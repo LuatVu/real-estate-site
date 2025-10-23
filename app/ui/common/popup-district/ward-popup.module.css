@@ -2,12 +2,26 @@
     width: 100%;
     height: 100%;
     border: 1px solid var(--color-secondary-s300);
-    border-radius: 3px;    
+    border-radius: 12px;    
     justify-content: center;
     align-items: flex-start;
     background-color: #ffffff;
     display: flex;    
     font-family: Roboto;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .headerPopupAddress {
@@ -17,27 +31,45 @@
     right: 0%;
     left: 0%;
     background-color: #fff;
-    border-bottom: 0.5px solid #f2f5fa;
+    border-bottom: 1px solid var(--color-secondary-s300);
     box-sizing: border-box;
-    height: 35px;
+    height: 60px;
     overflow: hidden;
-    font-size: 19px;
-    color: #000;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-t400);
 }
 
 .khuVcParent {
     position: absolute;
     width: 100%;
-    top: 6px;
+    top: 50%;
     right: 0%;
     left: 0%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0px 10px;
+    padding: 0px 24px;
     box-sizing: border-box;
     gap: 0px;
+}
+
+.khuVcParent button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.khuVcParent button:hover {
+    background-color: var(--color-secondary-s200);
 }
 
 .khuVc {
@@ -77,51 +109,105 @@
     flex: 1;
     width: 100%;    
     height: auto;    
-    bottom: 75px;
-    top: 35px;    
+    bottom: 90px;
+    top: 60px;    
     background-color: #fff;
-    overflow: scroll;
-    padding: 5px 21px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-secondary-s400) transparent;
+}
+
+.bodyPopup::-webkit-scrollbar {
+    width: 6px;
+}
+
+.bodyPopup::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.bodyPopup::-webkit-scrollbar-thumb {
+    background-color: var(--color-secondary-s400);
+    border-radius: 3px;
 }
 
 .footerPopup{
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 75px;
+    height: 90px;
     background-color: #fff;
-    border-color: var(--color-secondary-s300);
-    padding: 21px;
+    border-top: 1px solid var(--color-secondary-s300);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.btnApply{
+.btnApply {
     width: 100%;
-    height: 38px;
-    border-radius: 2px;
-    padding: 10px;
-    gap: 4px;
+    height: 48px;
+    border-radius: 8px;
+    padding: 12px 24px;
     background-color: var(--color-primary-p300);
     font-family: Roboto;
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--color-secondary-s50);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btnApply:hover {
+    background-color: var(--color-primary-p400);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 101, 255, 0.3);
+}
+
+.btnApply:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 101, 255, 0.2);
+}
+
+.btnApply:focus {
+    outline: 2px solid var(--color-primary-p100);
+    outline-offset: 2px;
 }
 
 .items{
     align-items: center;
     width: 100%;
-    height: 24px;
-    font-size: 13px;
+    min-height: 48px;
+    font-size: 14px;
     font-family: Roboto;
-    display: flex;   
-    border-style: none none solid none;
-    border-color: var(--color-secondary-s300);
-    border-width: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-secondary-s200);
+    margin-bottom: 4px;
+}
+
+.items:hover {
+    background-color: var(--color-secondary-s100);
+}
+
+.items:has(.checkbox:checked) {
+    background-color: var(--color-primary-p50);
+    border-color: var(--color-primary-p200);
 }
 
 .titleBlock {
     width: 100%;
-    height: 16px;
     display: flex;
+    margin-bottom: 20px;
 }
 
 .itemBlock{
@@ -131,7 +217,7 @@
 }
 
 .title{
-    height: 100%;
+    width: 100%;
     display: flex;
     font-size: 11px;
     font-family: Roboto;
@@ -148,74 +234,314 @@
     right: 21px;
 }
 
-.checkbox{
-    width: 17px;
-    height: 17px;    
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-secondary-s400);
+    border-radius: 4px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.checkbox:checked {
+    background-color: var(--color-primary-p300);
+    border-color: var(--color-primary-p300);
+}
+
+.checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox:indeterminate {
+    background-color: var(--color-primary-p200);
+    border-color: var(--color-primary-p200);
+}
+
+.checkbox:indeterminate::after {
+    content: '−';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.checkbox:hover {
+    border-color: var(--color-primary-p200);
+}
+
+.checkbox:focus {
+    outline: 2px solid var(--color-primary-p100);
+    outline-offset: 2px;
 }
 
 .textBlock{    
     display: flex;
     align-items: center;
+    gap: 8px;
+    flex: 1;
 }
 
-/* Enhanced styles for city button */
+.textBlock p {
+    margin: 0;
+    color: var(--color-text-t300);
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.checkboxBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Clean, modern city button */
 .cityButton {
-    border: none;
-    background: transparent;
-    padding: 8px 12px;
-    border-radius: 6px;
+    background-color: var(--color-secondary-s100);
+    border: 1px solid var(--color-secondary-s300);
+    border-radius: 8px;
+    padding: 12px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    border: 1px solid var(--color-secondary-s300);
-    background-color: #f8f9fa;
 }
 
 .cityButton:hover {
-    background-color: var(--color-primary-p50);
-    border-color: var(--color-primary-p300);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-secondary-s75);
+    border-color: var(--color-primary-p200);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .cityButton:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cityButton:focus {
+    outline: 2px solid var(--color-primary-p300);
+    outline-offset: 2px;
 }
 
 .cityButtonContent {
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
     justify-content: space-between;
+    width: 100%;
 }
 
-.cityLabel {
-    font-size: 11px;
+.locationSection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.locationIcon {
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+.locationText {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
     font-family: Roboto;
-    color: #666;
-    margin: 0;
 }
 
-.dynamicTitle {
+.locationLabel {
+    font-size: 13px;
+    color: var(--color-text-t100);
+    font-weight: 400;
+}
+
+.locationName {
+    font-size: 14px;
+    color: var(--color-text-t300);
+    font-weight: 600;
+}
+
+.actionSection {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.changeText {
+    font-size: 13px;
     color: var(--color-primary-p300);
-    margin: 0;
     font-weight: 500;
-    font-size: 12px;
+    transition: color 0.2s ease;
 }
 
-.caretDown {
-    width: 16px;
-    height: 16px;
-    transition: transform 0.2s ease;
-    opacity: 0.7;
+.cityButton:hover .changeText {
+    color: var(--color-primary-p400);
 }
 
-.cityButton:hover .caretDown {
-    transform: translateY(1px);
+.chevronIcon {
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.cityButton:hover .chevronIcon {
     opacity: 1;
+    transform: translateX(2px);
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .cityButton {
+        padding: 10px 14px;
+    }
+    
+    .locationText {
+        gap: 4px;
+    }
+    
+    .locationLabel {
+        font-size: 12px;
+    }
+    
+    .locationName {
+        font-size: 13px;
+    }
+    
+    .changeText {
+        font-size: 12px;
+    }
+    
+    .chevronIcon {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+/* Check All Section Styles */
+.checkAllSection {
+    border-bottom: 2px solid var(--color-primary-p100);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+
+.checkAllItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background-color: var(--color-primary-p50);
+    padding-left: 8px;
+    padding-right: 8px;
+    font-weight: 600;
+}
+
+.checkAllItem:hover {
+    background-color: var(--color-primary-p75);
+}
+
+.checkAllItem .textBlock {
+    color: var(--color-primary-p400);
+}
+
+.checkAllItem .textBlock p {
+    font-weight: 600;
+    margin: 0;
+}
+
+.checkAllItem .locationIcon {
+    filter: brightness(0) saturate(100%) invert(21%) sepia(100%) saturate(3282%) hue-rotate(218deg) brightness(94%) contrast(101%);
+}
+
+/* Search Section Styles */
+.searchSection {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-secondary-s200);
+}
+
+.searchInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-secondary-s100);
+    border: 2px solid var(--color-secondary-s300);
+    border-radius: 8px;
+    padding: 0 12px;
+    transition: all 0.2s ease;
+}
+
+.searchInputWrapper:focus-within {
+    border-color: var(--color-primary-p300);
+    box-shadow: 0 0 0 3px rgba(0, 101, 255, 0.1);
+}
+
+.searchIcon {
+    margin-right: 8px;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 14px;
+    font-family: Roboto;
+    color: var(--color-text-t300);
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: var(--color-text-t100);
+}
+
+.clearSearch {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+    opacity: 0.6;
+}
+
+.clearSearch:hover {
+    background-color: var(--color-secondary-s200);
+    opacity: 1;
+}
+
+.noResults {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--color-text-t100);
+    font-style: italic;
+}
+
+.noResults p {
+    margin: 0;
+    font-size: 14px;
 }

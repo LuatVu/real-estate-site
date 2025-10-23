@@ -153,7 +153,6 @@
 
 .checkbox:hover {
     border-color: var(--color-primary-p200);
-    transform: scale(1.05);
 }
 
 .checkbox:focus {
@@ -186,8 +185,6 @@
 
 .frameParent:hover {
     background-color: var(--color-secondary-s100);
-    padding-left: 8px;
-    padding-right: 8px;
     border-color: var(--color-primary-p100);
 }
 
