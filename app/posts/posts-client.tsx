@@ -115,6 +115,12 @@ function PostsOnMobile({
     setPagination(pagi);
   }, [initialData]);
 
+  // Calculate filterNum on first render based on initial search request
+  useEffect(() => {
+    const initialFilterNum = countParamNum(initialData.searchRequest);
+    setFilterNum(initialFilterNum);
+  }, [initialData.searchRequest]);
+
   // Initialize URL tracking after first render
   useEffect(() => {
     // Set initial URL params on mount
