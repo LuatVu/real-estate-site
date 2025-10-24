@@ -471,10 +471,10 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                     disabled={isApplying}
                                 >
                                     <Image width={16} height={16} alt="Giá" src="/icons/CurrencyCircleDollar.svg" />
-                                    {!(minPrice && maxPrice) ? (
+                                    {(minPrice === null || minPrice === undefined) && (maxPrice === null || maxPrice === undefined) ? (
                                         <p>Tất cả</p>
                                     ) : (
-                                        <p>{minPrice/1000000000} - {maxPrice/1000000000} tỷ</p>
+                                        <p>{(minPrice ?? 0)/1000000000} - {(maxPrice ?? 0)/1000000000} tỷ</p>
                                     )}
                                     <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
                                 </button>
@@ -490,10 +490,10 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                     disabled={isApplying}
                                 >
                                     <Image width={16} height={16} alt="Diện tích" src="/icons/CurrencyCircleDollar.svg" />
-                                    {!(minAcreage && maxAcreage) ? (
+                                    {(minAcreage === null || minAcreage === undefined) && (maxAcreage === null || maxAcreage === undefined) ? (
                                         <p>Tất cả</p>
                                     ) : (
-                                        <p>{minAcreage} - {maxAcreage} m²</p>
+                                        <p>{minAcreage ?? 0} - {maxAcreage ?? 0} m²</p>
                                     )}
                                     <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
                                 </button>
