@@ -54,6 +54,7 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setSearchValue(newValue);
+        searchRequest.query = newValue;
     };
 
     const handleClearSearch = () => {
