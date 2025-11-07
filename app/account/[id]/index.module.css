@@ -1,0 +1,481 @@
+/* Account Page Styles */
+.balanceCard {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+.balanceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.balanceHeader:hover {
+    background-color: rgba(0, 123, 255, 0.02);
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+.balanceHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.balanceHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.balanceIconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--color-primary-p200);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.balanceIcon {
+    filter: brightness(0) invert(1);
+}
+
+.balanceSummary {
+    flex: 1;
+}
+
+.balanceTitle {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.totalBalanceAmount {
+    color: #007bff;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.balanceContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0;
+}
+
+.balanceContent.expanded {
+    max-height: 300px;
+    padding: 16px 0 0 0;
+}
+
+.balanceItem {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.balanceLabel {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.balanceAmount {
+    color: #333;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.balanceExpiry {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.depositButton {
+    background: var(--color-primary-p200);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.depositButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.depositIcon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+}
+
+.packageCard {
+    background: white;
+    border-radius: 12px;
+    margin: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+.packageTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.packageSummary {
+    display: flex;
+    align-items: center;
+}
+
+.packageCount {
+    background: var(--color-primary-p200);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.packagesList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.packageItemCompact {
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.packageItemCompact:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.packageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.packageHeader:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.packageHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.packageBasicInfo {
+    flex: 1;
+}
+
+.packageNameCompact {
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+}
+
+.packageQuickStats {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.quickStat {
+    font-size: 12px;
+    color: #6c757d;
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.packageHeaderRight {
+    display: flex;
+    align-items: center;
+}
+
+.caretIcon {
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.caretIcon:hover {
+    opacity: 1;
+}
+
+.caretOpen {
+    transform: rotate(180deg);
+}
+
+.packageContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 16px;
+}
+
+.packageContent.expanded {
+    max-height: 600px;
+    padding: 0 16px 16px 16px;
+}
+
+.packageItem {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.packageName {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.packageStatus {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.statusActive {
+    color: #28a745;
+}
+
+.statusInactive {
+    color: #dc3545;
+}
+
+.packageExpiry {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Package Posts Information Styles */
+.postsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.postCard {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.postCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.postCard:hover::before {
+    opacity: 1;
+}
+
+.postCard:hover {
+    transform: translateY(-2px) scale(1.02);    
+}
+
+.postIcon {
+    font-size: 20px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.postDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.postLabel {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    opacity: 0.8;
+}
+
+.postValue {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Different themes for each post type */
+.diamondPost {
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    /* color: white; */
+}
+
+/* .goldPost {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.silverPost {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.normalPost {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+} */
+
+/* Responsive design for single column on very small screens */
+@media (max-width: 320px) {
+    .postsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.vipBadge {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.packageImageContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    overflow: hidden;    
+    transition: all 0.3s ease;
+}
+
+.packageImageContainer:hover {
+    transform: translateY(-2px) scale(1.05);    
+}
+
+.packageImageContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 237, 78, 0.1));
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.packageImageContainer:hover::before {
+    opacity: 1;
+}
+
+.packageImageContainer :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.packageImageContainer:hover :global(img) {
+    transform: scale(1.1);
+}
+
+.emptyPackages {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.emptyMessage {
+    color: #6c757d;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.exploreButton {
+    background: var(--color-primary-p200);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.exploreButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}

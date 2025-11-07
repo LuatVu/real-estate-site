@@ -51,6 +51,7 @@ export const config = {
     "/api/media/upload/:path*",
     "/api/manage/:path*",
     "/api/manage/posts/:path*",
-    "/api/manage/post-status/:path*",    
+    "/api/manage/post-status/:path*",
+    "/api/packages/:path*",
   ]
 };
