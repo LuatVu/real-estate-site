@@ -124,6 +124,11 @@ export default function NavBarMobile({displayNav, session}: any){
 									<Image width={20} height={20} alt="Profile" src="/icons/useIcon.svg" />
 									<span>Thông tin cá nhân</span>
 								</Link>
+
+								<Link href={`/account/${session.user?.id}`} className={styles.profileMenuItem} onClick={handleCloseMenu}>
+									<Image width={20} height={20} alt="Profile" src="/icons/account.svg" />
+									<span>Quản lý tài khoản</span>
+								</Link>
 								
 								<Link href="/manage/posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
 									<Image width={20} height={20} alt="Posts" src="/icons/Building.svg" />
