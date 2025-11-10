@@ -249,13 +249,21 @@ function MobileAccount({ session }: { session?: any }){
                             </div>
                         </div>
                     ))}
+                                        
+                    <div className={styles.addMorePackages}>
+                        <button className={styles.registerMoreButton}>
+                            <Image src="/icons/plus.svg" alt="Đăng ký thêm" width={16} height={16} className={styles.registerButtonIcon} />
+                            <span>Đăng ký thêm</span>
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className={styles.emptyPackages}>
                     <div className="mb-4">
                         <p className={styles.emptyMessage}>Bạn chưa đăng ký gói hội viên nào</p>
                         <button className={styles.exploreButton}>
-                            Tìm hiểu ngay
+                            <Image src="/icons/question.svg" alt="Đăng ký thêm" width={16} height={16} className={styles.exploreButtonIcon} />
+                            <span>Tìm hiểu ngay</span>
                         </button>
                     </div>
                 </div>
