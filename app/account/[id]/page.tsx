@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import styles from './index.module.css'
 import NavBarMobile from "../../ui/mobile/navigation/nav-bar-mobile";
 import { useState, useEffect, use } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Account(){
@@ -24,6 +24,7 @@ function MobileAccount({ session }: { session?: any }){
     const [expandedPackages, setExpandedPackages] = useState<{ [key: number]: boolean }>({});
     const [isBalanceExpanded, setIsBalanceExpanded] = useState<boolean>(false);
     const params = useParams();
+    const router = useRouter();
 
     const fetchUserBalance = async () => {
         const userId = params.id || session?.user?.id;
@@ -72,36 +73,45 @@ function MobileAccount({ session }: { session?: any }){
         setIsBalanceExpanded(prev => !prev);
     };
 
+    const depositMoney = () => {
+        router.push(`/deposit/${params.id || session?.user?.id}`);
+    }
+
     return <div className="flex flex-col min-h-screen">
         <NavBarMobile displayNav={true} session={session} />
         
         {/* Balance Section - Collapsible */}
         <div className={styles.balanceCard}>
-            {/* Balance Header - Always Visible */}
-            <div className={styles.balanceHeader} onClick={toggleBalanceExpansion}>
-                <div className={styles.balanceHeaderLeft}>
-                    <div className={styles.balanceIconContainer}>
-                        <Image src="/icons/CurrencyCircleDollar.svg" alt="Total Balance" width={16} height={16} className={styles.balanceIcon} />
-                    </div>
-                    <div className={styles.balanceSummary}>
-                        <h3 className={styles.balanceTitle}>Tổng số dư</h3>
-                        <p className={styles.totalBalanceAmount}>
-                            {((userBalance.mainBalance || 0) + (userBalance.promoBalance || 0)).toLocaleString('vi-VN')} VND
-                        </p>
-                    </div>
+            {/* Balance Header Row - Contains both expandable content and deposit button */}
+            <div className="flex justify-between items-center">
+                {/* Balance Header - Clickable for expansion */}
+                <div className={styles.balanceHeader} onClick={toggleBalanceExpansion} style={{ flex: 1, margin: 0 }}>
+                    <div className={styles.balanceHeaderLeft}>
+                        <div className={styles.balanceIconContainer}>
+                            <Image src="/icons/CurrencyCircleDollar.svg" alt="Total Balance" width={16} height={16} className={styles.balanceIcon} />
+                        </div>
+                        <div className={styles.balanceSummary}>
+                            <h3 className={styles.balanceTitle}>Tổng số dư</h3>
+                            <p className={styles.totalBalanceAmount}>
+                                {((userBalance.mainBalance || 0) + (userBalance.promoBalance || 0)).toLocaleString('vi-VN')} VND
+                            </p>
+                        </div>
+                        <Image
+                            src="/icons/CaretDown.svg"
+                            alt="Expand"
+                            width={16}
+                            height={16}
+                            className={`${styles.caretIcon} ${isBalanceExpanded ? styles.caretOpen : ''}`}
+                        />
+                    </div>               
                 </div>
+                
+                {/* Deposit Button - Separate from collapsible area */}
                 <div className={styles.balanceHeaderRight}>
-                    <button className={styles.depositButton}>
+                    <button className={styles.depositButton} onClick={depositMoney}>
                         <Image src="/icons/deposit.svg" alt="Nạp tiền" width={16} height={16} className={styles.depositIcon} />
                         <span>Nạp tiền</span>
-                    </button>
-                    <Image
-                        src="/icons/CaretDown.svg"
-                        alt="Expand"
-                        width={16}
-                        height={16}
-                        className={`${styles.caretIcon} ${isBalanceExpanded ? styles.caretOpen : ''}`}
-                    />
+                    </button>                    
                 </div>
             </div>
 

@@ -15,10 +15,7 @@
     padding: 4px 0;
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-.balanceHeader:hover {
-    background-color: rgba(0, 123, 255, 0.02);
+    background-color: #f8f9fa;
     border-radius: 8px;
     padding: 4px 8px;
 }
@@ -34,6 +31,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-left: 5px;
 }
 
 .balanceIconContainer {
@@ -111,7 +109,7 @@
     background: var(--color-primary-p200);
     border: none;
     border-radius: 8px;
-    padding: 10px 16px;
+    padding: 10px 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;

@@ -1,0 +1,68 @@
+.depositContainer {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
+}
+
+.paymentMethodsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.paymentMethod:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.paymentMethod:active {
+  transform: translateY(0);
+}
+
+.paymentIcon {
+  width: 48px;
+  height: 48px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.paymentText {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.bankMethod:hover {
+  background-color: #f8fff9;
+}
+
+.momoMethod:hover {
+  background-color: #fef5f8;
+}
+
+.visaMethod:hover {
+  background-color: #f7f9fc;
+}
