@@ -1,0 +1,339 @@
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.popupContainer {
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.header {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #ffffff;
+}
+
+.headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    background-color: #f5f5f5;
+}
+
+.body {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.packageInfo {
+    margin-bottom: 24px;
+}
+
+.packageHeader {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.packageImage {
+    width: 56px;
+    height: 56px;
+    margin-right: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.packageDetails {
+    flex: 1;
+}
+
+.packageName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 6px 0;
+}
+
+.packagePrice {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    font-weight: 500;
+}
+
+.durationSection {
+    margin-bottom: 24px;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 16px 0;
+}
+
+.durationOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.durationOption {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    text-align: left;
+}
+
+.durationOption:hover {
+    border-color: var(--color-primary-p200);
+    background: #f8f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15);
+}
+
+.durationOption.selected {
+    border-color: var(--color-primary-p200);
+    background: #f8f9ff;
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.optionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.durationLabel {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.discountBadge {
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.priceInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.monthlyPrice {
+    font-size: 13px;
+    color: #666;
+}
+
+.savings {
+    font-size: 11px;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.totalPrice {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary-p200);
+}
+
+.summary {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.summaryRow:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 1px solid #dee2e6;
+}
+
+.summaryLabel {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.summaryValue {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.summaryTotal {
+    font-size: 20px;
+    font-weight: 700;
+    color: #007bff;
+}
+
+.footer {
+    padding: 20px 24px 24px 24px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #ffffff;
+}
+
+.paymentButton {
+    width: 100%;
+    background: var(--color-primary-p200);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.paymentButton:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.paymentButton:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
+}
+
+.paymentButton:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.paymentButton:disabled:hover {
+    background: #6c757d;
+    transform: none;
+    box-shadow: none;
+}
+
+.errorMessage {
+    margin: 0 0 12px 0;
+    padding: 12px;
+    background: #fff5f5;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.errorText {
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    flex: 1;
+}
+
+.depositButton {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.depositButton:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.depositButton:active {
+    transform: translateY(0);
+}

@@ -77,6 +77,10 @@ function MobileAccount({ session }: { session?: any }){
         router.push(`/deposit/${params.id || session?.user?.id}`);
     }
 
+    const registerPackage = () => {
+        router.push(`/packages/${params.id || session?.user?.id}`);
+    }
+
     return <div className="flex flex-col min-h-screen">
         <NavBarMobile displayNav={true} session={session} />
         
@@ -251,7 +255,7 @@ function MobileAccount({ session }: { session?: any }){
                     ))}
                                         
                     <div className={styles.addMorePackages}>
-                        <button className={styles.registerMoreButton}>
+                        <button className={styles.registerMoreButton} onClick={registerPackage}>
                             <Image src="/icons/plus.svg" alt="Đăng ký thêm" width={16} height={16} className={styles.registerButtonIcon} />
                             <span>Đăng ký thêm</span>
                         </button>
@@ -261,7 +265,7 @@ function MobileAccount({ session }: { session?: any }){
                 <div className={styles.emptyPackages}>
                     <div className="mb-4">
                         <p className={styles.emptyMessage}>Bạn chưa đăng ký gói hội viên nào</p>
-                        <button className={styles.exploreButton}>
+                        <button className={styles.exploreButton} onClick={registerPackage}>
                             <Image src="/icons/question.svg" alt="Đăng ký thêm" width={16} height={16} className={styles.exploreButtonIcon} />
                             <span>Tìm hiểu ngay</span>
                         </button>

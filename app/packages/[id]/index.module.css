@@ -1,0 +1,300 @@
+.packagesContainer {
+    padding: 20px;
+    background: #f9f9f9;
+    min-height: 100vh;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.packagesList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.packageItem {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.packageHeader {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.packageHeader:hover {
+    background-color: #f8f8f8;
+}
+
+.packageInfo {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.packageImage {
+    width: 48px;
+    height: 48px;
+    margin-right: 12px;
+    border-radius: 8px;
+}
+
+.packageDetails {
+    flex: 1;
+}
+
+.packageName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+}
+
+.packagePrice {
+    font-size: 16px;
+    color: #e74c3c;
+    font-weight: 500;
+    margin: 0;
+}
+
+.caretIcon {
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.caretIcon:hover {
+    opacity: 1;
+}
+
+.caretOpen {
+    transform: rotate(180deg);
+}
+
+.packageContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0;
+}
+
+.packageContent.expanded {
+    max-height: 500px;
+    padding: 16px 0 0 0;
+}
+
+.packageBody {
+    padding: 16px;
+}
+
+.description {
+    margin-bottom: 16px;
+}
+
+.descriptionTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.postsList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.postItem {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+    padding-left: 16px;
+    position: relative;
+}
+
+.postItem::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.buyButton {
+    width: 100%;
+    background: var(--color-primary-p200);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buyButton:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.buyButton:active {
+    transform: translateY(0);
+}
+
+/* Desktop-specific styles */
+.desktopPackagesContainer {
+    padding: 40px;
+    background: #f9f9f9;
+    min-height: 100vh;
+}
+
+.desktopTitle {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.desktopPackagesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.desktopPackageItem {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.desktopPackageItem:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: #007bff;
+}
+
+.desktopPackageHeader {
+    padding: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.desktopPackageInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.desktopPackageImage {
+    width: 64px;
+    height: 64px;
+    margin-right: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.desktopPackageDetails {
+    flex: 1;
+}
+
+.desktopPackageName {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 6px 0;
+}
+
+.desktopPackagePrice {
+    font-size: 18px;
+    color: #007bff;
+    font-weight: 600;
+    margin: 0;
+}
+
+.desktopDescription {
+    margin-bottom: 0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.desktopDescriptionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.desktopPostsList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.desktopPostItem {
+    font-size: 14px;
+    color: #666;
+    padding: 8px 12px;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border-left: 3px solid #007bff;
+    font-weight: 500;
+}
+
+.desktopPackageBody {
+    padding: 24px;    
+}
+
+.desktopBuyButton {
+    width: 100%;
+    background: var(--color-primary-p200);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    margin-top: 20px;
+}
+
+.desktopBuyButton:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.desktopBuyButton:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
+}
