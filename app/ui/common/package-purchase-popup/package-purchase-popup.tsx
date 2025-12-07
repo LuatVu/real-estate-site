@@ -2,6 +2,9 @@
 import styles from "./package-purchase-popup.module.css";
 import Image from "next/image";
 import { useState } from 'react';
+import Loading from "../loading";
+import { useRouter } from "next/navigation";
+import PortalPopup from "../portal-popup/portal-popup";
 
 interface PackagePurchasePopupProps {
     onClose: () => void;
@@ -9,23 +12,54 @@ interface PackagePurchasePopupProps {
         packageId: string;
         packageName: string;
         price: number;
+        discount: number;
         image: string;
     };
     userBalance: {
         mainBalance: number;
         promoBalance?: number;
     };
+    session: any
 }
 
-export default function PackagePurchasePopup({ onClose, packageData, userBalance }: PackagePurchasePopupProps) {
+export default function PackagePurchasePopup({ onClose, packageData, userBalance, session }: PackagePurchasePopupProps) {
     const [selectedDuration, setSelectedDuration] = useState<number>(1);
-    
+    const [totalPrice, setTotalPrice] = useState<number>(0);    
+    const [isLoading, setIsLoading] = useState(false);    
+    const router = useRouter();
+
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN').format(price);
     };
 
+    const registerPackage = async () => {   
+        setIsLoading(true);
+        try{
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/packages`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    userId: userId,
+                    packageId: packageData.packageId,
+                    months: selectedDuration,
+                    paymentAmount: totalPrice
+                })
+            });
+            if(response.ok){
+                const res = await response.json();                
+            }
+        }catch(error){
+            console.log(error);            
+        } finally{            
+            setIsLoading(false);
+            router.push(`/account/${session.user?.id}`);
+        }                
+    }
+
     const getDurationOptions = () => {
         const basePrice = packageData.price;
+        const discount = packageData.discount;
         return [
             {
                 duration: 1,
@@ -37,15 +71,15 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                 duration: 3,
                 label: '3 Tháng',
                 price: basePrice,
-                discount: 0.95,
-                totalPrice: basePrice * 3 * 0.95
+                discount: 1 - discount * 2,
+                totalPrice: basePrice * 3 * (1 - discount * 2)
             },
             {
                 duration: 6,
                 label: '6 Tháng',
                 price: basePrice,
-                discount: 0.9,
-                totalPrice: basePrice * 6 * 0.9
+                discount: 1.0 - discount * 5,
+                totalPrice: basePrice * 6 * (1.0 - discount * 5)
             }
         ];
     };
@@ -55,10 +89,8 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
     
     const isInsufficientBalance = userBalance.mainBalance < (selectedOption?.totalPrice || 0);
 
-    const handlePayment = () => {
-        // TODO: Implement payment logic
-        console.log(`Processing payment for package: ${packageData.packageName}, Duration: ${selectedDuration} months, Total: ${selectedOption?.totalPrice}`);
-        onClose();
+    const handlePayment = () => {                
+        registerPackage();        
     };
 
     return (
@@ -107,13 +139,16 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                                     className={`${styles.durationOption} ${
                                         selectedDuration === option.duration ? styles.selected : ''
                                     }`}
-                                    onClick={() => setSelectedDuration(option.duration)}
+                                    onClick={() => {
+                                        setSelectedDuration(option.duration);
+                                        setTotalPrice(option.totalPrice);
+                                    }}
                                 >
                                     <div className={styles.optionHeader}>
                                         <span className={styles.durationLabel}>{option.label}</span>
                                         {option.discount && (
                                             <span className={styles.discountBadge}>
-                                                -{Math.round((1 - option.discount) * 100)}%
+                                                -{((1 - option.discount) * 100).toFixed(1)}%
                                             </span>
                                         )}
                                     </div>
@@ -162,7 +197,7 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                                 className={styles.depositButton}
                                 onClick={() => {
                                     // TODO: Navigate to deposit page
-                                    console.log('Navigate to deposit page');
+                                    router.push(`/deposit/${session.user?.id}`);
                                 }}
                             >
                                 Nạp tiền
@@ -178,6 +213,13 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                     </button>
                 </div>
             </div>
+            {isLoading && (
+                <Loading
+                    fullScreen
+                    size="large"
+                    message="Đang thanh toán..."
+                />
+            )}
         </div>
     );
 }

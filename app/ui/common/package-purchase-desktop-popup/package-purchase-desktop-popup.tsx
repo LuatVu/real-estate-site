@@ -9,6 +9,7 @@ interface PackagePurchaseDesktopPopupProps {
         packageId: string;
         packageName: string;
         price: number;
+        discount: number;
         image: string;
     };
     userBalance: {
@@ -26,6 +27,7 @@ export default function PackagePurchaseDesktopPopup({ onClose, packageData, user
 
     const getDurationOptions = () => {
         const basePrice = packageData.price;
+        const discount = packageData.discount;
         return [
             {
                 duration: 1,
@@ -37,15 +39,15 @@ export default function PackagePurchaseDesktopPopup({ onClose, packageData, user
                 duration: 3,
                 label: '3 Tháng',
                 price: basePrice,
-                discount: 0.95,
-                totalPrice: basePrice * 3 * 0.95
+                discount: 1 - discount * 2,
+                totalPrice: basePrice * 3 * (1 - discount * 2)
             },
             {
                 duration: 6,
                 label: '6 Tháng',
                 price: basePrice,
-                discount: 0.9,
-                totalPrice: basePrice * 6 * 0.9
+                discount: 1.0 - discount * 5,
+                totalPrice: basePrice * 6 * (1.0 - discount * 5)
             }
         ];
     };
@@ -113,7 +115,7 @@ export default function PackagePurchaseDesktopPopup({ onClose, packageData, user
                                         <span className={styles.durationLabel}>{option.label}</span>
                                         {option.discount && (
                                             <span className={styles.discountBadge}>
-                                                -{Math.round((1 - option.discount) * 100)}%
+                                                -{((1 - option.discount) * 100).toFixed(1)}%
                                             </span>
                                         )}
                                     </div>

@@ -173,9 +173,11 @@ function MobilePackages({ session }: { session?: any }){
                         packageId: selectedPackage.packageId,
                         packageName: selectedPackage.packageName,
                         price: selectedPackage.price,
+                        discount: selectedPackage.discount,
                         image: selectedPackage.image
                     }}
                     userBalance={userBalance}
+                    session={session}
                 />
             )}
         </div>
@@ -317,6 +319,7 @@ function DesktopPackages({ session }: { session?: any }){
                         packageId: selectedPackage.packageId,
                         packageName: selectedPackage.packageName,
                         price: selectedPackage.price,
+                        discount: selectedPackage.discount,
                         image: selectedPackage.image
                     }}
                     userBalance={userBalance}
