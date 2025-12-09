@@ -5,10 +5,25 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (!id) {
         return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
     }
-    const response = await fetch(`${process.env.SPRING_API}/api/public/get-post/${id}`, {
-        method: 'GET',
-        headers: {'Content-Type': 'application/json'},        
-    });
-    const data = await response.json();    
-    return NextResponse.json(data);
+    
+    try {
+        const response = await fetch(`${process.env.SPRING_API}/api/public/get-post/${id}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},        
+        });
+        
+        const data = await response.json();
+        
+        // Forward the actual status code from the backend
+        if (!response.ok) {
+            return NextResponse.json(data, { status: response.status });
+        }
+        
+        return NextResponse.json(data, { status: response.status });
+    } catch (error) {
+        return NextResponse.json(
+            { status: "500", message: "Internal server error" }, 
+            { status: 500 }
+        );
+    }
 }

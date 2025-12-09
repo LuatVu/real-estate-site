@@ -50,8 +50,7 @@ export async function POST(request: NextRequest) {
         }
         
         return NextResponse.json(data, { status: response.status });
-    } catch (error) {
-        console.error('Error calling packages API:', error);
+    } catch (error) {        
         return NextResponse.json(
             { status: "500", message: "Internal server error" }, 
             { status: 500 }
