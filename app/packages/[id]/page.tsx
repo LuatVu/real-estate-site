@@ -323,6 +323,7 @@ function DesktopPackages({ session }: { session?: any }){
                         image: selectedPackage.image
                     }}
                     userBalance={userBalance}
+                    session={session}
                 />
             )}
         </div>

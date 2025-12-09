@@ -25,7 +25,10 @@ interface PackagePurchasePopupProps {
 export default function PackagePurchasePopup({ onClose, packageData, userBalance, session }: PackagePurchasePopupProps) {
     const [selectedDuration, setSelectedDuration] = useState<number>(1);
     const [totalPrice, setTotalPrice] = useState<number>(0);    
-    const [isLoading, setIsLoading] = useState(false);    
+    const [isLoading, setIsLoading] = useState(false);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [showFailurePopup, setShowFailurePopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const router = useRouter();
 
     const formatPrice = (price: number) => {
@@ -46,14 +49,20 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                     paymentAmount: totalPrice
                 })
             });
+            
+            const res = await response.json();
+            
             if(response.ok){
-                const res = await response.json();                
+                setShowSuccessPopup(true); // Show success popup
+            } else {
+                setErrorMessage(res.message || 'Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
+                setShowFailurePopup(true); // Show failure popup
             }
         }catch(error){
-            console.log(error);            
+            setErrorMessage('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
+            setShowFailurePopup(true);  // Show failure popup
         } finally{            
             setIsLoading(false);
-            router.push(`/account/${session.user?.id}`);
         }                
     }
 
@@ -219,6 +228,97 @@ export default function PackagePurchasePopup({ onClose, packageData, userBalance
                     size="large"
                     message="Đang thanh toán..."
                 />
+            )}
+
+            {/* Success Popup */}
+            {showSuccessPopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"
+                    zIndex={1100} // Higher than package popup z-index (1000)                  
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#22c55e', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Thanh toán thành công!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Gói hội viên đã được kích hoạt thành công.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    onClose();
+                                    router.push(`/account/${session.user?.id}`);
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Đi tới tài khoản
+                            </button>                            
+                        </div>
+                    </div>
+                </PortalPopup>
+            )}
+
+            {/* Failure Popup */}
+            {showFailurePopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"
+                    zIndex={1100} // Higher than package popup z-index (1000)                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#ef4444', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Thanh toán thất bại!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                {errorMessage}
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowFailurePopup(false)}
+                            style={{
+                                padding: '12px 24px',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                width: '100%'
+                            }}
+                        >
+                            Đóng
+                        </button>
+                    </div>
+                </PortalPopup>
             )}
         </div>
     );
