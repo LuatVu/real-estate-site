@@ -270,11 +270,11 @@ function MobileView({ session }: { session?: any }) {
             case 'DRAFT':
                 return 'upload-new';
             case 'EXPIRED':
-                return 'repost';
+                return 'renew';
             case 'PUBLISHED':
                 return 'reup';
             default:
-                return 'repost';
+                return 'renew';
         }
     }
 
@@ -369,6 +369,24 @@ function MobileView({ session }: { session?: any }) {
         { id: 'expired', label: 'Hết hạn', count: tabData.expired },
         { id: 'pending', label: 'Chờ xuất bản', count: tabData.pending }
     ];
+
+    const fetchChargeFee = async (postId: string) => {
+        try{
+            const response = await fetch(`/api/manage/posts/charge-fee/${postId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }                
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();        
+        }catch(error){
+            console.error("Error charging fee:", error);
+            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");            
+        }
+    }
 
     // Fetch posts from API
     const fetchPosts = async (params = searchParams) => {
@@ -777,7 +795,7 @@ function MobileView({ session }: { session?: any }) {
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
-                                                <Image src={getRepostIcon(post.status)} alt="Repost" width={16} height={16} />
+                                                <Image src={getRepostIcon(post.status)} alt="renew" width={16} height={16} />
                                                 {getRepostLabel(post.status)}
                                             </button>
                                             <button
