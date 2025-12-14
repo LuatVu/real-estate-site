@@ -6,7 +6,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
     try{
         const authorization = req.headers.get('authorization');
-        const response = await fetch(`${process.env.SPRING_API}/api/posts/reup/${id}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/manage/posts/reup/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', 
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         const data = await response.json();
         if (!response.ok) {
             return NextResponse.json(
-                { status: response.status.toString(), message: "Failed to reup post" }, 
+                { status: response.status.toString(), message: data.message || "Failed to reup post" }, 
                 { status: response.status }
             );
         }

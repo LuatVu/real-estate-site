@@ -6,7 +6,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
     try{
         const authorization = req.headers.get('authorization');
-        const response = await fetch(`${process.env.SPRING_API}/api/posts/renew/${id}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/manage/posts/renew/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', 
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         const data = await response.json();
         if (!response.ok) {
             return NextResponse.json(
-                { status: response.status.toString(), message: "Failed to renew post" }, 
+                { status: response.status.toString(), message: data.message || "Failed to renew post" }, 
                 { status: response.status }
             );
         }

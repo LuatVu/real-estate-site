@@ -9,6 +9,7 @@ import Alert from '../../ui/common/alert';
 import { useAlert } from '../../hook/useAlert';
 import Confirmation from '../../ui/common/confirmation';
 import { useConfirmation } from '../../hook/useConfirmation';
+import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
 
 export default function Page() {
     const screenSize = useScreenSize();
@@ -47,6 +48,15 @@ function MobileView({ session }: { session?: any }) {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage] = useState(10); // Number of posts per page
+    
+    // Charge fee popup state
+    const [chargeFeePopup, setChargeFeePopup] = useState({
+        isVisible: false,
+        postId: '',
+        type: 'new' as 'new' | 'up' | 'renew',
+        postTitle: '',
+        confirmButtonLoading: false
+    });
 
     // Handle search input events
     const handleSearchSubmit = async () => {
@@ -83,6 +93,58 @@ function MobileView({ session }: { session?: any }) {
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
+        }
+    };
+
+    // Charge fee popup handlers
+    const showChargeFeePopup = (postId: string, type: 'new' | 'up' | 'renew', postTitle: string) => {
+        setChargeFeePopup({
+            isVisible: true,
+            postId,
+            type,
+            postTitle,
+            confirmButtonLoading: false
+        });
+    };
+
+    const hideChargeFeePopup = () => {
+        setChargeFeePopup(prev => ({
+            ...prev,
+            isVisible: false,
+            confirmButtonLoading: false
+        }));
+    };
+
+    const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
+        setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
+        
+        try {                  
+            if(chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew'){
+                const response = await renewPost(chargeFeePopup.postId);
+                const data = await response.json();
+                if(!response.ok){
+                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                    showError(`Thanh toán thất bại. ${data.message || ''}`);                    
+                    return;
+                }
+
+            } else if(chargeFeePopup.type === 'up'){
+                const response = await reupPost(chargeFeePopup.postId);
+                const data = await response.json();
+                if(!response.ok){
+                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                    showError(`Thanh toán thất bại. ${data.message || ''}`);
+                    return;
+                }
+            }
+            
+            hideChargeFeePopup();
+            showSuccess(`Thanh toán thành công!`);
+            // Refresh posts data
+            await fetchPosts(searchParams);
+        } catch (error) {
+            setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+            showError('Thanh toán thất bại. Vui lòng thử lại sau.');
         }
     };
 
@@ -146,56 +208,14 @@ function MobileView({ session }: { session?: any }) {
         setOpenDropdownId(null);
 
         switch (action) {
-            case 'upload-new': // status = 'DRAFT'
-                showConfirmation({
-                    title: 'Xác nhận đăng tin',
-                    message: `Bạn có chắc chắn muốn đăng tin "${post.title}"?`,
-                    type: 'warning',
-                    confirmText: 'Đăng tin',
-                    cancelText: 'Hủy',
-                    onConfirm: async () => {
-                        setConfirmButtonLoading(true);
-                        try {
-                            await updatePostStatus(post.postId, 'PUBLISHED');
-                            hideConfirmation();
-                            showSuccess(`Đã đăng "${post.title}" thành công`);
-                            await fetchPosts(searchParams);
-                        } catch (error) {
-                            setConfirmButtonLoading(false);
-                            showError('Không thể đăng tin. Vui lòng thử lại sau.');
-                        }
-                    },
-                    onCancel: () => {
-                        hideConfirmation();                        
-                    }
-                });
+            case 'upload-new': // status = 'DRAFT'                
+                showChargeFeePopup(post.postId, 'new', post.title);
                 break;
             case 'reup': // status = 'Published'
-                console.log('Reup post:', post.postId);
+                showChargeFeePopup(post.postId, 'up', post.title);
                 break;
-            case 'repost': // status = 'Expired'
-                showConfirmation({
-                    title: 'Xác nhận đăng lại tin',
-                    message: `Bạn có chắc chắn muốn đăng lại tin "${post.title}"?`,
-                    type: 'warning',
-                    confirmText: 'Đăng tin',
-                    cancelText: 'Hủy',
-                    onConfirm: async () => {
-                        setConfirmButtonLoading(true);
-                        try {
-                            await updatePostStatus(post.postId, 'PUBLISHED');
-                            hideConfirmation();
-                            showSuccess(`Đã đăng lại "${post.title}" thành công`);
-                            await fetchPosts(searchParams);
-                        } catch (error) {
-                            setConfirmButtonLoading(false);
-                            showError('Không thể đăng lại tin. Vui lòng thử lại sau.');
-                        }
-                    },
-                    onCancel: () => {
-                        hideConfirmation();                        
-                    }
-                });
+            case 'renew': // status = 'Expired'
+                showChargeFeePopup(post.postId, 'renew', post.title);
                 break;
             case 'edit':
                 console.log('Edit post:', post.postId);
@@ -243,11 +263,11 @@ function MobileView({ session }: { session?: any }) {
             case 'PUBLISHED':
                 return 'Đẩy tin';
             case 'EXPIRED':
-                return 'Đăng lại';
+                return 'Gia hạn';
             case 'DRAFT':
                 return 'Đăng tin';
             default:
-                return 'Đăng lại';
+                return 'Gia hạn';
         };
     };
 
@@ -428,6 +448,26 @@ function MobileView({ session }: { session?: any }) {
             },
         });                     
     };
+
+    const reupPost = async (postId: string): Promise<Response> => {        
+        const response = await fetch(`/api/manage/posts/reup/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
+    };
+
+    const renewPost = async (postId: string): Promise<Response> => {        
+        const response = await fetch(`/api/manage/posts/renew/${postId}`, {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
+    }
 
     useEffect(() => {
         fetchPosts();
@@ -986,6 +1026,17 @@ function MobileView({ session }: { session?: any }) {
                 onConfirm={confirmation.onConfirm}
                 onCancel={confirmation.onCancel}
                 confirmButtonLoading={confirmation.confirmButtonLoading}
+            />
+            
+            {/* Charge Fee Popup */}
+            <ChargeFeePopup
+                isVisible={chargeFeePopup.isVisible}
+                postId={chargeFeePopup.postId}
+                type={chargeFeePopup.type}
+                postTitle={chargeFeePopup.postTitle}
+                onConfirm={handleChargeFeeConfirm}
+                onCancel={hideChargeFeePopup}
+                confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
             />
         </div>
     );

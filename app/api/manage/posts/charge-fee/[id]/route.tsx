@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
     const authorization = request.headers.get('authorization');
     try {
-        const response = await fetch(`${process.env.SPRING_API}/api/posts/charge-fee/${id}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/manage/posts/charge-fee/${id}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json', 'Authorization': authorization || ''},        
         });
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         
         // Forward the actual status code from the backend
         if (!response.ok) {
-            return NextResponse.json(data, { status: response.status });
+            return NextResponse.json({ status: response.status, message: data.message || "Failed to fetch charge fee data" }, { status: response.status });
         }
         
         return NextResponse.json(data, { status: response.status });
