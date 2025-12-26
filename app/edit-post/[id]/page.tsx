@@ -43,6 +43,52 @@ const DIRECTION_TYPES = [
     { value: 'TAY_NAM', label: 'Tây Nam' }
 ];
 
+interface UploadedImage {
+    id: string;
+    file: File;
+    preview: string;
+    isPrimary: boolean;
+    rotation: number;
+}
+
+interface EditImage {
+    imageId: string;    
+    postId: string;
+    fileUrl: string;
+    fileName: string;
+    isPrimary: boolean;
+    updatedType: UpdateType;
+}
+
+enum UpdateType {
+    ADD,
+    DELETE,
+    UPDATE
+}
+
+interface FormData {
+    postId: string | any;
+    title: string;
+    description: string;
+    acreage: string;
+    bedrooms: string;
+    bathrooms: string;
+    furniture: string;
+    floors: number;
+    legal: string;
+    price: number;
+    provinceCode: string;
+    wardCode: string;
+    address: string;
+    direction: string;
+    type: string;    
+    frontage: string;
+    contactName: string;
+    phone: string;
+    images: EditImage[];
+}
+
+
 export default function EditPostPage() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
@@ -80,7 +126,8 @@ function MobileEditPostPage({ session }: { session?: any }) {
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
     const params = useParams();
     // Form validation states
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
+        postId: params.id?.toString() || '',
         title: '',
         description: '',
         acreage: '',
@@ -95,25 +142,68 @@ function MobileEditPostPage({ session }: { session?: any }) {
         address: '',
         direction: '',
         type: '',
-        rankingDto: {
-            priorityLevel: 'NORMAL'
-        },
         frontage: '',
         contactName: '',
         phone: '',
         images: []
-    });
-
-    interface UploadedImage {
-        id: string;
-        file: File;
-        preview: string;
-        isPrimary: boolean;
-        rotation: number;
-    }
+    });    
 
     const editPost = async () => {
+        try {
+            const updatedPostData = updatePostData(formData, uploadedImages);
+            const response = await fetch(`/api/manage/posts/edit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedPostData)
+            });
+            if (response.ok) {
+                const data = await response.json();
+                // Handle success (e.g., show a success message, redirect, etc.)
+                console.log("Post edited successfully:", data);
+            }
+        } catch (error) {
+            console.error("Error editing post:", error);
+        }
+    }
 
+    const updatePostData = (formData: FormData, uploadedImages: UploadedImage[]): FormData => {
+        const data: any = {};
+        data['postId'] = formData.postId;
+        data['title'] = formData.title;
+        data['description'] = formData.description;
+        data['acreage'] = formData.acreage;
+        data['bedrooms'] = formData.bedrooms;
+        data['bathrooms'] = formData.bathrooms;
+        data['furniture'] = formData.furniture;
+        data['floors'] = formData.floors;
+        data['legal'] = formData.legal;
+        data['price'] = formData.price;
+        data['provinceCode'] = formData.provinceCode;
+        data['wardCode'] = formData.wardCode;
+        data['address'] = formData.address;
+        data['direction'] = formData.direction;
+        data['type'] = formData.type;        
+        data['frontage'] = formData.frontage;
+        data['contactName'] = formData.contactName;
+        data['phone'] = formData.phone;
+        data['images'] = [];
+
+        const images = uploadedImages.map(img => ({
+            id: img.id,
+            isPrimary: img.isPrimary,
+            updatedType: "ADD"
+        }));        
+        data['images'].push(...images);
+
+        const imagesEdit = formData.images.filter(img => img.updatedType).map(img => ({
+            imageId: img.imageId,
+            isPrimary: img.isPrimary,
+            updatedType: img.updatedType
+        }));
+        data['images'].push(...imagesEdit);
+        return data;
     }
 
     const handleStepChange = (newStep: number) => {
@@ -268,6 +358,10 @@ function MobileEditPostPage({ session }: { session?: any }) {
         });
     };
 
+    const isStep2Valid = () => {
+        return (uploadedImages.length + (formData.images?.filter((img: any) => img.updatedType !== 'DELETE').length || 0)) >= 4;
+    };
+
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files) return;
@@ -279,11 +373,15 @@ function MobileEditPostPage({ session }: { session?: any }) {
         fileArray.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = (e) => {
+                // Check if there's already a primary image (either in existing images or uploaded images)
+                const hasExistingPrimary = formData.images?.some((img: any) => img.isPrimary && img.updatedType !== 'DELETE') || 
+                                         uploadedImages.some(img => img.isPrimary);
+                
                 const newImage: UploadedImage = {
                     id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                     file,
                     preview: e.target?.result as string,
-                    isPrimary: uploadedImages.length === 0 && index === 0, // Only first image is primary when no existing images
+                    isPrimary: !hasExistingPrimary && uploadedImages.length === 0 && index === 0, // Only set as primary if no other primary exists
                     rotation: 0
                 };
                 newImages.push(newImage);
@@ -331,6 +429,44 @@ function MobileEditPostPage({ session }: { session?: any }) {
         });
     };
 
+    const setPrimaryExistingImage = (imageId: string) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.map((img: any) => ({
+                ...img,
+                isPrimary: img.imageId === imageId,
+                updatedType: img.imageId === imageId ? 'SET_PRIMARY' : (img.isPrimary ? 'UNSET_PRIMARY' : img.updatedType)
+            }))
+        }));
+    };
+
+    const removeExistingImage = (imageId: string) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.map((img: any) => 
+                img.imageId === imageId 
+                    ? { ...img, updatedType: 'DELETE' }
+                    : img
+            ).filter((img: any) => img.updatedType !== 'DELETE')
+        }));
+        
+        // If we removed the primary image, set the first remaining image as primary
+        setFormData(prev => {
+            const remainingImages = prev.images.filter((img: any) => img.updatedType !== 'DELETE');
+            if (remainingImages.length > 0 && !remainingImages.some((img: any) => img.isPrimary)) {
+                return {
+                    ...prev,
+                    images: prev.images.map((img: any, index: number) => 
+                        index === 0 && img.updatedType !== 'DELETE'
+                            ? { ...img, isPrimary: true, updatedType: 'SET_PRIMARY' }
+                            : img
+                    )
+                };
+            }
+            return prev;
+        });
+    };
+
     const fetchPostData = async () => {
         try {
             const postId = params.id;
@@ -368,7 +504,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
                 setPropertyType(data.type || 'NHA_RIENG');
                 setLegalType(data.legal || 'SO_DO');
                 setFurnitureType(data.furniture || '');
-                setDirectionType(data.direction || '');                
+                setDirectionType(data.direction || '');
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
@@ -386,7 +522,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
             if (!response.ok) {
                 throw new Error("Failed to fetch provinces");
             }
-            const data = await response.json();            
+            const data = await response.json();
             setProvince(data);
         } catch (error) {
             console.error("Error fetching provinces:", error);
@@ -404,7 +540,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
             if (!response.ok) {
                 throw new Error("Failed to fetch wards");
             }
-            const data = await response.json();            
+            const data = await response.json();
             setWards(data);
         } catch (error) {
             console.error("Error fetching wards:", error);
@@ -418,11 +554,11 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
     useEffect(() => {
         const selectedProvinceData: any = provinces.find((prov: any) => prov.code === formData.provinceCode);
-        if (selectedProvinceData) {            
+        if (selectedProvinceData) {
             fetchWards(formData.provinceCode);
             setSelectedProvince(selectedProvinceData.name);
         }
-        
+
     }, [formData.provinceCode]);
 
     useEffect(() => {
@@ -896,83 +1032,108 @@ function MobileEditPostPage({ session }: { session?: any }) {
                                         />
                                         Thêm hình ảnh
                                     </label>
-                                    {uploadedImages.length < 4 && (
+                                    {(uploadedImages.length + (formData.images?.filter((img: any) => img.updatedType !== 'DELETE').length || 0)) < 4 && (
                                         <p className="text-sm text-red-600 mt-2">
-                                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
+                                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length + (formData.images?.filter((img: any) => img.updatedType !== 'DELETE').length || 0)}/4)
                                         </p>
                                     )}
-                                    {uploadedImages.length >= 4 && (
+                                    {(uploadedImages.length + (formData.images?.filter((img: any) => img.updatedType !== 'DELETE').length || 0)) >= 4 && (
                                         <p className="text-sm text-green-600 mt-2">
-                                            ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình)
+                                            ✓ Đã có đủ hình ảnh ({uploadedImages.length + (formData.images?.filter((img: any) => img.updatedType !== 'DELETE').length || 0)} hình)
                                         </p>
                                     )}
-                                </div>                                {/* Image Preview Grid */}
-                                {uploadedImages.length > 0 && (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {[...uploadedImages].sort((a, b) => {
-                                            // Primary image always comes first
-                                            if (a.isPrimary) return -1;
-                                            if (b.isPrimary) return 1;
-                                            return 0;
-                                        }).map((image) => (
-                                            <div key={image.id} className="relative bg-gray-100 rounded-lg overflow-hidden">
-                                                {/* Primary Badge */}
-                                                {image.isPrimary && (
-                                                    <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded z-10">
-                                                        Ảnh chính
-                                                    </div>
-                                                )}
+                                </div>
 
-                                                {/* Image */}
-                                                <div className="aspect-square relative">
-                                                    <img
-                                                        src={image.preview}
-                                                        alt="Preview"
-                                                        className="w-full h-full object-cover"
-                                                        style={{
-                                                            transform: `rotate(${image.rotation}deg)`
-                                                        }}
-                                                    />
-                                                </div>
-
-                                                {/* Control Buttons */}
-                                                <div className="absolute bottom-2 right-2 flex gap-1">
-                                                    {/* Set as Primary Button */}
-                                                    {!image.isPrimary && (
-                                                        <button
-                                                            onClick={() => setPrimaryImage(image.id)}
-                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
-                                                            title="Đặt làm ảnh chính"
-                                                        >
-                                                            ⭐
-                                                        </button>
+                                {/* Combined Image Grid */}
+                                {((formData.images && formData.images.filter((img: any) => img.updatedType !== 'DELETE').length > 0) || uploadedImages.length > 0) && (
+                                    <div className="mb-6">
+                                        <h3 className="text-md font-medium mb-3 text-gray-700">Hình ảnh</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {/* Combine and sort all images */}
+                                            {[
+                                                // Existing images
+                                                ...(formData.images?.filter((img: any) => img.updatedType !== 'DELETE').map((element: any) => ({
+                                                    ...element,
+                                                    type: 'existing',
+                                                    key: element.imageId,
+                                                    src: `http://localhost:8080/api/public/image/${element.fileUrl}`,
+                                                    alt: element.fileName
+                                                })) || []),
+                                                // New uploaded images
+                                                ...uploadedImages.map((image) => ({
+                                                    ...image,
+                                                    type: 'uploaded',
+                                                    key: image.id,
+                                                    src: image.preview,
+                                                    alt: 'Preview'
+                                                }))
+                                            ].sort((a, b) => {
+                                                // Primary image always comes first
+                                                if (a.isPrimary) return -1;
+                                                if (b.isPrimary) return 1;
+                                                return 0;
+                                            }).map((item) => (
+                                                <div key={item.key} className="relative bg-gray-100 rounded-lg overflow-hidden">
+                                                    {/* Primary Badge */}
+                                                    {item.isPrimary && (
+                                                        <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded z-10">
+                                                            Ảnh chính
+                                                        </div>
                                                     )}
 
-                                                    {/* Rotate Button */}
-                                                    <button
-                                                        onClick={() => rotateImage(image.id)}
-                                                        className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded text-xs"
-                                                        title="Xoay ảnh"
-                                                    >
-                                                        ↻
-                                                    </button>
+                                                    {/* Image */}
+                                                    <div className="aspect-square relative">
+                                                        <img
+                                                            src={item.src}
+                                                            alt={item.alt}
+                                                            className="w-full h-full object-cover"
+                                                            style={item.type === 'uploaded' ? {
+                                                                transform: `rotate(${item.rotation}deg)`
+                                                            } : {}}
+                                                        />
+                                                    </div>
 
-                                                    {/* Delete Button */}
-                                                    <button
-                                                        onClick={() => removeImage(image.id)}
-                                                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
-                                                        title="Xóa ảnh"
-                                                    >
-                                                        ×
-                                                    </button>
+                                                    {/* Control Buttons */}
+                                                    <div className="absolute bottom-2 right-2 flex gap-1">
+                                                        {/* Set as Primary Button */}
+                                                        {!item.isPrimary && (
+                                                            <button
+                                                                onClick={() => item.type === 'existing' ? setPrimaryExistingImage(item.imageId) : setPrimaryImage(item.id)}
+                                                                className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
+                                                                title="Đặt làm ảnh chính"
+                                                            >
+                                                                ⭐
+                                                            </button>
+                                                        )}
+
+                                                        {/* Rotate Button - Only for uploaded images */}
+                                                        {item.type === 'uploaded' && (
+                                                            <button
+                                                                onClick={() => rotateImage(item.id)}
+                                                                className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded text-xs"
+                                                                title="Xoay ảnh"
+                                                            >
+                                                                ↻
+                                                            </button>
+                                                        )}
+
+                                                        {/* Delete Button */}
+                                                        <button
+                                                            onClick={() => item.type === 'existing' ? removeExistingImage(item.imageId) : removeImage(item.id)}
+                                                            className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
+                                                            title="Xóa ảnh"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
 
                                 {/* Empty State */}
-                                {uploadedImages.length === 0 && (
+                                {(uploadedImages.length === 0 && (!formData.images || formData.images.filter((img: any) => img.updatedType !== 'DELETE').length === 0)) && (
                                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                                         <Image
                                             src="/icons/CameraIcon.svg"
@@ -1012,7 +1173,8 @@ function MobileEditPostPage({ session }: { session?: any }) {
                             <button
                                 type="submit"
                                 form="edit-post-form"
-                                className={styles.nextButton}
+                                className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={!isStep2Valid()}
                             >
                                 Hoàn tất
                             </button>

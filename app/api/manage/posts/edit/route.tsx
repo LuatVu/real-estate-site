@@ -3,7 +3,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const authorization = request.headers.get('authorization');
-        const response = await fetch(`${process.env.SPRING_API}/api/posts/upload`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/manage/posts/edit`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
