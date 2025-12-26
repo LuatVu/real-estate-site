@@ -22,15 +22,27 @@ interface PostClientProps {
 
 export default function PostClient({ post, session }: PostClientProps) {
   const screenSize = useScreenSize();
+  const [isClient, setIsClient] = useState(false);
   
-  // Add viewport event for better mobile performance
+  // Ensure client-side hydration
   useEffect(() => {
+    setIsClient(true);
+    
     // Optimize viewport for mobile devices
     const viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
       viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes');
     }
   }, []);
+  
+  // Prevent hydration mismatch by showing loading state until client renders
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   
   return (
     <div>
@@ -368,11 +380,11 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
 
       {/* Contact Footer */}
       <footer className={styles.footer}>
-        <Image
+        <img
           className={styles.profileMenuAvatar}
-          width="48"
-          height="48"
-          alt={`${post?.user?.fullName || 'User'} profile picture`}
+          width="60"
+          height="60"
+          alt={`${post?.user?.username || 'User profile picture'}`}
           src={post?.user?.profilePicture || "/temp/avatar.jpg"}
         />
         <Image src="/icons/zaloIcon.svg" width={60} height={60} alt="Contact via Zalo" />

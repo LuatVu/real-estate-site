@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { options as authOptions } from "../../api/auth/[...nextauth]/options";
 import PostClient from "./post-client";
+import ErrorBoundary from "./error-boundary";
 
 // Generate static params for popular posts (optional - improves performance)
 export async function generateStaticParams() {
@@ -29,15 +30,26 @@ export async function generateStaticParams() {
 }
 
 // Generate dynamic metadata for SEO
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {
-    const {id} = await params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/posts/${id}`, {
-      cache: 'no-store'
+    
+    const response = await fetch(`${baseUrl}/api/public/posts/${id}`, {
+      next: { revalidate: 300 } // Revalidate every 5 minutes
     });
     
     if (!response.ok) {
+      return {
+        title: 'Property Details | Real Estate Site',
+        description: 'View detailed property information'
+      };
+    }
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {      
       return {
         title: 'Property Details | Real Estate Site',
         description: 'View detailed property information'
@@ -118,17 +130,23 @@ async function getPostData(id: string) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/posts/${id}`,
+      `${baseUrl}/api/public/posts/${id}`,
       { 
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
         headers: {
           'Content-Type': 'application/json',
         }
       }
     );
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch post');
+    if (!response.ok) {      
+      return null;
+    }
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {      
+      return null;
     }
     
     const result = await response.json();
@@ -233,41 +251,60 @@ function generateStructuredData(post: any, postId: string) {
   return [realEstateListing, breadcrumbList, webPage];
 }
 
-export default async function Posts({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
-  const {id} = await params;
-  const post = await getPostData(id);
-  
-  if (!post) {
+export default async function Posts({ params }: { params: Promise<{ id: string }> }) {
+  try {
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
+    
+    const [session, post] = await Promise.all([
+      getServerSession(authOptions),
+      getPostData(id)
+    ]);
+    
+    if (!post) {
+      return (
+        <ErrorBoundary>
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">Property Not Found</h1>
+              <p className="text-gray-600">The requested property could not be found.</p>
+            </div>
+          </div>
+        </ErrorBoundary>
+      );
+    }
+    
+    const structuredDataArray = generateStructuredData(post, id);
+    
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Property Not Found</h1>
-          <p className="text-gray-600">The requested property could not be found.</p>
+      <ErrorBoundary>
+        {/* Structured Data for SEO */}
+        {structuredDataArray.map((data, index) => (
+          <script
+            key={index}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(data)
+            }}
+          />
+        ))}
+        
+        {/* Main Content - no Suspense needed since server component already awaits data */}
+        <PostClient post={post} session={session} />
+      </ErrorBoundary>
+    );
+  } catch (error) {    
+    return (
+      <ErrorBoundary>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Error Loading Property</h1>
+            <p className="text-gray-600">There was an error loading the property details.</p>
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
-  
-  const structuredDataArray = generateStructuredData(post, id);
-  
-  return (
-    <>
-      {/* Structured Data for SEO */}
-      {structuredDataArray.map((data, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(data)
-          }}
-        />
-      ))}
-      
-      {/* Main Content */}
-      <PostClient post={post} session={session} />
-    </>
-  );
 }
 
 
