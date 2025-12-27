@@ -10,6 +10,7 @@ import { useAlert } from '../../hook/useAlert';
 import Confirmation from '../../ui/common/confirmation';
 import { useConfirmation } from '../../hook/useConfirmation';
 import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
     const screenSize = useScreenSize();
@@ -57,6 +58,7 @@ function MobileView({ session }: { session?: any }) {
         postTitle: '',
         confirmButtonLoading: false
     });
+    const router = useRouter();
 
     // Handle search input events
     const handleSearchSubmit = async () => {
@@ -220,8 +222,9 @@ function MobileView({ session }: { session?: any }) {
             case 'edit':
                 console.log('Edit post:', post.postId);
                 // Implement edit logic
-                showInfo(`Chuyển đến trang chỉnh sửa tin "${post.title}"`);
+                // showInfo(`Chuyển đến trang chỉnh sửa tin "${post.title}"`);
                 // TODO: Add navigation to edit page here
+                router.push(`/edit-post/${post.postId}`);
                 break;
             case 'upgrade':
                 console.log('Upgrade post:', post.postId);

@@ -124,6 +124,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
     const [isFurnitureTypeOpen, setIsFurnitureTypeOpen] = useState(false);
     const [directionType, setDirectionType] = useState('');
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+    const [imageMapping] = useState<{ [key: string]: string }>({});
     const params = useParams();
     // Form validation states
     const [formData, setFormData] = useState<FormData>({
@@ -150,6 +151,8 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
     const editPost = async () => {
         try {
+            await draftUploadImages();
+
             const updatedPostData = updatePostData(formData, uploadedImages);
             const response = await fetch(`/api/manage/posts/edit`, {
                 method: 'POST',
@@ -159,9 +162,19 @@ function MobileEditPostPage({ session }: { session?: any }) {
                 body: JSON.stringify(updatedPostData)
             });
             if (response.ok) {
-                const data = await response.json();
-                // Handle success (e.g., show a success message, redirect, etc.)
-                console.log("Post edited successfully:", data);
+                for(const img of uploadedImages) {                    
+                    try{
+                        const formData = new FormData();
+                        formData.append('file', img.file);
+                        const key = imageMapping[img.id] || img.file.name;
+                        await fetch(`/api/media/upload/${key}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }catch(error){
+                        console.error('Error uploading image:', error);
+                    }
+                }
             }
         } catch (error) {
             console.error("Error editing post:", error);
@@ -191,7 +204,9 @@ function MobileEditPostPage({ session }: { session?: any }) {
         data['images'] = [];
 
         const images = uploadedImages.map(img => ({
-            id: img.id,
+            imageId: img.id,
+            fileName: img.file.name,
+            fileUrl: imageMapping[img.id] || img.file.name,
             isPrimary: img.isPrimary,
             updatedType: "ADD"
         }));        
@@ -399,6 +414,31 @@ function MobileEditPostPage({ session }: { session?: any }) {
         event.target.value = '';
     };
 
+    const draftUploadImages = async () => {
+        if(Object.keys(imageMapping).length > 0) return; // Already uploaded
+        
+        for (const img of uploadedImages) {
+            try {
+                const formData = new FormData();
+                formData.append('file', img.file);
+                const response = await fetch('/api/media/draft', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload images');
+                }
+
+                const result = await response.json();                
+                imageMapping[img.id] = result.imageUrl;
+
+            } catch (error) {
+                console.error('Error uploading draft images:', error);
+            }
+        }        
+    };
+
     const setPrimaryImage = (imageId: string) => {
         setUploadedImages(prev =>
             prev.map(img => ({
@@ -435,7 +475,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
             images: prev.images.map((img: any) => ({
                 ...img,
                 isPrimary: img.imageId === imageId,
-                updatedType: img.imageId === imageId ? 'SET_PRIMARY' : (img.isPrimary ? 'UNSET_PRIMARY' : img.updatedType)
+                updatedType: img.imageId === imageId ? 'UPDATE' : undefined
             }))
         }));
     };
@@ -447,7 +487,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
                 img.imageId === imageId 
                     ? { ...img, updatedType: 'DELETE' }
                     : img
-            ).filter((img: any) => img.updatedType !== 'DELETE')
+            )
         }));
         
         // If we removed the primary image, set the first remaining image as primary
