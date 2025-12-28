@@ -405,27 +405,30 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const draftUploadImages = async () => {
         if(Object.keys(imageMapping).length > 0) return; // Already uploaded
-        
+        if(uploadedImages.length === 0){
+            return;
+        }
+        const formData = new FormData();        
         for (const img of uploadedImages) {
-            try {
-                const formData = new FormData();
-                formData.append('file', img.file);
-                const response = await fetch('/api/media/draft', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to upload images');
-                }
-
-                const result = await response.json();                
-                imageMapping[img.id] = result.imageUrl;
-
-            } catch (error) {
-                console.error('Error uploading draft images:', error);
-            }
+            formData.append('files', img.file.name);
         }        
+        const response = await fetch('/api/media/draft', {
+                method: 'POST',
+                body: formData
+            });
+
+        if (!response.ok) {
+            setShowFailurePopup(true);
+            throw new Error('Failed to create image url before upload');                    
+        }
+
+        const result = await response.json();
+        for(const img of uploadedImages){
+            const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
+            if(fileImg){
+                imageMapping[img.id] = fileImg.fileUrl;
+            }            
+        }
     };
 
     const uploadPost = async () => {        
@@ -464,12 +467,23 @@ function MobileUploadPost({ session }: { session?: any }) {
                         const formData = new FormData();
                         formData.append('file', img.file);
                         const key = imageMapping[img.id] || img.file.name;
-                        await fetch(`/api/media/upload/${key}`, {
+                        const uploadResponse = await fetch(`/api/media/upload/${key}`, {
                             method: 'POST',
                             body: formData
                         });
+                        if(!uploadResponse.ok){
+                            throw new Error('Failed to upload image');
+                        }
                     }catch(error){
                         console.error('Error uploading images:', error);
+                        if(imageMapping[img.id]){
+                            await fetch(`/api/media/delete-image/${imageMapping[img.id]}`, {
+                                method:'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            })
+                        }
                     }
                 }
                 setShowSuccessPopup(true); // Show success popup

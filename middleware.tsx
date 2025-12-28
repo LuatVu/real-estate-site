@@ -50,6 +50,7 @@ export const config = {
     "/api/posts/:path*",
     "/api/media/draft/:path*",
     "/api/media/upload/:path*",
+    "/api/media/delete-image/:path*",
     "/api/manage/:path*",
     "/api/manage/posts/:path*",
     "/api/manage/post-status/:path*",

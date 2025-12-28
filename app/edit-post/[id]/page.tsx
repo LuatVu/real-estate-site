@@ -6,6 +6,8 @@ import styles from './index.module.css';
 import Image from 'next/image';
 import NavBarMobile from "@/app/ui/mobile/navigation/nav-bar-mobile";
 import { use, useEffect, useState } from 'react';
+import Loading from "@/app/ui/common/loading";
+import PortalPopup from "@/app/ui/common/portal-popup/portal-popup";
 
 // Property type options constant
 const PROPERTY_TYPES = [
@@ -125,7 +127,11 @@ function MobileEditPostPage({ session }: { session?: any }) {
     const [directionType, setDirectionType] = useState('');
     const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
     const [imageMapping] = useState<{ [key: string]: string }>({});
+    const [isUploading, setIsUploading] = useState(true);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [showFailurePopup, setShowFailurePopup] = useState(false);
     const params = useParams();
+    const router = useRouter();
     // Form validation states
     const [formData, setFormData] = useState<FormData>({
         postId: params.id?.toString() || '',
@@ -150,6 +156,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
     });    
 
     const editPost = async () => {
+        setIsUploading(true);
         try {
             await draftUploadImages();
 
@@ -161,23 +168,42 @@ function MobileEditPostPage({ session }: { session?: any }) {
                 },
                 body: JSON.stringify(updatedPostData)
             });
-            if (response.ok) {
+            const res = await response.json();            
+            if (response.ok) {                
                 for(const img of uploadedImages) {                    
                     try{
                         const formData = new FormData();
                         formData.append('file', img.file);
                         const key = imageMapping[img.id] || img.file.name;
-                        await fetch(`/api/media/upload/${key}`, {
+                        const uploadResponse = await fetch(`/api/media/upload/${key}`, {
                             method: 'POST',
                             body: formData
                         });
+                        if (!uploadResponse.ok) {
+                            throw new Error('Failed to upload image');
+                        }
                     }catch(error){
                         console.error('Error uploading image:', error);
+                        // Delete the image by file url record if upload fails                        
+                        if(imageMapping[img.id]){
+                            await fetch(`/api/media/delete-image/${imageMapping[img.id]}`, {
+                                method:'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            })
+                        }
                     }
                 }
+                setShowSuccessPopup(true);
+            }else{
+                setShowFailurePopup(true);
             }
         } catch (error) {
             console.error("Error editing post:", error);
+            setShowFailurePopup(true);
+        }finally {
+            setIsUploading(false);
         }
     }
 
@@ -416,26 +442,29 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
     const draftUploadImages = async () => {
         if(Object.keys(imageMapping).length > 0) return; // Already uploaded
-        
+        if(uploadedImages.length === 0){
+            return;
+        }
+        const formData = new FormData();        
         for (const img of uploadedImages) {
-            try {
-                const formData = new FormData();
-                formData.append('file', img.file);
-                const response = await fetch('/api/media/draft', {
-                    method: 'POST',
-                    body: formData
-                });
+            formData.append('files', img.file.name);
+        }        
+        const response = await fetch('/api/media/draft', {
+                method: 'POST',
+                body: formData
+            });
 
-                if (!response.ok) {
-                    throw new Error('Failed to upload images');
-                }
+        if (!response.ok) {
+            setShowFailurePopup(true);
+            throw new Error('Failed to create image url before upload');                    
+        }
 
-                const result = await response.json();                
-                imageMapping[img.id] = result.imageUrl;
-
-            } catch (error) {
-                console.error('Error uploading draft images:', error);
-            }
+        const result = await response.json(); 
+        for(const img of uploadedImages){
+            const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
+            if(fileImg){
+                imageMapping[img.id] = fileImg.fileUrl;
+            }            
         }        
     };
 
@@ -462,7 +491,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
         setUploadedImages(prev => {
             const updatedImages = prev.filter(img => img.id !== imageId);
             // If we removed the primary image, make the first remaining image primary
-            if (updatedImages.length > 0 && !updatedImages.some(img => img.isPrimary)) {
+            if (updatedImages.length > 0 && formData.images.length === 0 && !updatedImages.some(img => img.isPrimary)) {
                 updatedImages[0].isPrimary = true;
             }
             return updatedImages;
@@ -475,7 +504,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
             images: prev.images.map((img: any) => ({
                 ...img,
                 isPrimary: img.imageId === imageId,
-                updatedType: img.imageId === imageId ? 'UPDATE' : undefined
+                updatedType: img.imageId === imageId ? 'UPDATE' : img.updatedType
             }))
         }));
     };
@@ -494,12 +523,16 @@ function MobileEditPostPage({ session }: { session?: any }) {
         setFormData(prev => {
             const remainingImages = prev.images.filter((img: any) => img.updatedType !== 'DELETE');
             if (remainingImages.length > 0 && !remainingImages.some((img: any) => img.isPrimary)) {
+                // Find the first remaining image to set as primary
+                const firstRemainingImageId = remainingImages[0].imageId;
                 return {
                     ...prev,
-                    images: prev.images.map((img: any, index: number) => 
-                        index === 0 && img.updatedType !== 'DELETE'
-                            ? { ...img, isPrimary: true, updatedType: 'SET_PRIMARY' }
-                            : img
+                    images: prev.images.map((img: any) => 
+                        img.imageId === firstRemainingImageId && img.updatedType !== 'DELETE'
+                            ? { ...img, isPrimary: true, updatedType: 'UPDATE' }
+                            : img.updatedType !== 'DELETE'
+                                ? { ...img, isPrimary: false }
+                                : img
                     )
                 };
             }
@@ -548,6 +581,8 @@ function MobileEditPostPage({ session }: { session?: any }) {
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
+        } finally {
+            setIsUploading(false);
         }
     }
 
@@ -1223,6 +1258,117 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
                 </div>
             </div>
+            {showSuccessPopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#22c55e', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Sửa tin thành công!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Tin đăng của bạn đã được sửa thành công.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    window.location.reload();
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Tiếp tục sửa tin
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    router.push('/manage/posts');
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Quản lý tin đăng
+                            </button>
+                        </div>
+                    </div>
+                </PortalPopup>
+            )}
+
+            {showFailurePopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#ef4444', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Sửa tin thất bại!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Có lỗi xảy ra khi sửa tin. Vui lòng thử lại.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowFailurePopup(false)}
+                            style={{
+                                padding: '12px 24px',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                width: '100%'
+                            }}
+                        >
+                            Đóng
+                        </button>
+                    </div>
+                </PortalPopup>
+            )}
+
+            {isUploading && (
+                <Loading 
+                    fullScreen
+                    size="large"
+                    message="Đang tải dữ liệu..." 
+                />
+            )}
         </div>
     );
 }
