@@ -12,6 +12,63 @@ import { useConfirmation } from '../../hook/useConfirmation';
 import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
 import { useRouter } from 'next/navigation';
 
+// Function to convert property type codes to readable labels
+function getPropertyTypeLabel(type: string): string {
+    const typeLabels: { [key: string]: string } = {
+        'CHCC': 'Can hộ chung cư',
+        'NHA_RIENG': 'Nhà riêng',
+        'BIET_THU': 'Biệt thự',
+        'NHA_PHO': 'Nhà phố',
+        'DAT_NEN': 'Đất nền',
+        'CONDOTEL': 'Condotel',
+        'KHO_NHA_XUONG': 'Kho/Nhà xưởng',
+        'BDS_KHAC': 'BDS khác'
+    };
+    return typeLabels[type] || type;
+}
+
+// Function to convert transaction type codes to readable labels
+function getTransactionTypeLabel(transactionType: string): string {
+    const transactionLabels: { [key: string]: string } = {
+        'SELL': 'Bán',
+        'RENT': 'Cho thuê',
+        'PROJECT': 'Dự án'
+    };
+    return transactionLabels[transactionType] || transactionType;
+}
+
+// Function to get CSS class for transaction type
+function getTransactionTypeClass(transactionType: string): string {
+    const transactionClasses: { [key: string]: string } = {
+        'SELL': 'sellType',
+        'RENT': 'rentType',
+        'PROJECT': 'projectType'
+    };
+    return transactionClasses[transactionType] || 'sellType';
+}
+
+// Function to convert priority level codes to readable labels
+function getPriorityLevelLabel(priorityLevel: string): string {
+    const priorityLabels: { [key: string]: string } = {
+        'DIAMOND': 'Kim cương',
+        'GOLD': 'Vàng',
+        'SILVER': 'Bạc',
+        'NORMAL': 'Thường'
+    };
+    return priorityLabels[priorityLevel] || priorityLevel;
+}
+
+// Function to get CSS class for priority level
+function getPriorityLevelClass(priorityLevel: string): string {
+    const priorityClasses: { [key: string]: string } = {
+        'DIAMOND': 'priorityDiamond',
+        'GOLD': 'priorityGold',
+        'SILVER': 'prioritySilver',
+        'NORMAL': 'priorityNormal'
+    };
+    return priorityClasses[priorityLevel] || 'priorityNormal';
+}
+
 export default function Page() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
@@ -747,14 +804,18 @@ function MobileView({ session }: { session?: any }) {
 
                                 <div className={styles.postInfo}>
                                     <div className={styles.postType}>
-                                        <span className={`${styles.transactionType} ${post.transactionType === 'SELL' ? styles.sellType : styles.rentType}`}>
-                                            {post.transactionType === 'SELL' ? 'Bán' : 'Cho thuê'}
+                                        <span className={`${styles.transactionType} ${styles[getTransactionTypeClass(post.transactionType)]}`}>
+                                            {getTransactionTypeLabel(post.transactionType)}
                                         </span>
                                         <span className={styles.propertyType}>
-                                            {post.type === 'NHA_RIENG' ? 'Nhà riêng' :
-                                                post.type === 'CHUNG_CU' ? 'Chung cư' :
-                                                    post.type === 'VILLA' ? 'Villa' : post.type}
+                                            {getPropertyTypeLabel(post.type)}
                                         </span>
+                                        {post.rankingDto?.priorityLevel && (
+                                            <span className={`${styles.priorityLevel} ${styles[getPriorityLevelClass(post.rankingDto.priorityLevel)]}`}>
+                                                {getPriorityLevelLabel(post.rankingDto.priorityLevel)}
+                                            </span>
+                                        )}
+
                                     </div>
 
                                     <div className={styles.postAddress}>

@@ -54,6 +54,10 @@ html{
   --color-yellow-y300: #fed766ff;
   --color-yellow-y400: #b29747ff;
   --color-yellow-y500: #9b833eff;
+  --vip-diamond: #AD2E24;
+  --vip-gold: #B29747;
+  --vip-silver: #0065FF;
+  --normal-level: #A9ACAF;
 }
 
 .heading-h1 {

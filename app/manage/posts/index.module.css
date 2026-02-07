@@ -275,6 +275,11 @@
     color: white;
 }
 
+.projectType {
+    background-color: #10B981;
+    color: white;
+}
+
 .propertyType {
     background-color: #F3F4F6;
     color: #6B7280;
@@ -282,6 +287,31 @@
     border-radius: 12px;
     font-size: 11px;
     font-weight: 500;
+}
+
+.priorityLevel {
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;    
+    letter-spacing: 0.5px;
+}
+
+.priorityDiamond {
+    background-color: var(--vip-diamond);
+}
+
+.priorityGold {
+    background-color: var(--vip-gold);
+}
+
+.prioritySilver {
+    background-color: var(--vip-silver);
+}
+
+.priorityNormal {
+    background-color: var(--normal-level);
 }
 
 .postAddress {
