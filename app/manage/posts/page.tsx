@@ -997,7 +997,7 @@ function MobileView({ session }: { session?: any }) {
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
                                                 <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} />
-                                                Nâng Vip
+                                                Nâng/Hạ Vip
                                             </button>
                                             <button
                                                 onClick={() => handleDropdownAction('delete', post)}
