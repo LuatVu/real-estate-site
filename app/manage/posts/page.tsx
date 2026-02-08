@@ -10,6 +10,7 @@ import { useAlert } from '../../hook/useAlert';
 import Confirmation from '../../ui/common/confirmation';
 import { useConfirmation } from '../../hook/useConfirmation';
 import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
+import VipPackagePopup, { PostChargeFeeData } from '../../ui/common/vip-package-popup';
 import { useRouter } from 'next/navigation';
 
 // Function to convert property type codes to readable labels
@@ -115,6 +116,15 @@ function MobileView({ session }: { session?: any }) {
         postTitle: '',
         confirmButtonLoading: false
     });
+    
+    // VIP package popup state
+    const [vipPackagePopup, setVipPackagePopup] = useState({
+        isVisible: false,
+        postId: '',
+        postTitle: '',
+        confirmButtonLoading: false
+    });
+    
     const router = useRouter();
 
     // Handle search input events
@@ -174,6 +184,24 @@ function MobileView({ session }: { session?: any }) {
         }));
     };
 
+    // VIP package popup handlers
+    const showVipPackagePopup = (postId: string, postTitle: string) => {
+        setVipPackagePopup({
+            isVisible: true,
+            postId,
+            postTitle,
+            confirmButtonLoading: false
+        });
+    };
+
+    const hideVipPackagePopup = () => {
+        setVipPackagePopup(prev => ({
+            ...prev,
+            isVisible: false,
+            confirmButtonLoading: false
+        }));
+    };
+
     const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
         setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
         
@@ -204,6 +232,38 @@ function MobileView({ session }: { session?: any }) {
         } catch (error) {
             setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
             showError('Thanh toán thất bại. Vui lòng thử lại sau.');
+        }
+    };
+
+    const handleVipPackageConfirm = async (selectedPackage: PostChargeFeeData) => {
+        setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: true }));
+        
+        try {
+            const response = await fetch('/api/posts/update-priority', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postId: vipPackagePopup.postId,
+                    priorityLevel: selectedPackage.priorityLevel
+                })
+            });
+            
+            const data = await response.json();
+            if (!response.ok) {
+                setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                showError(`Cập nhật gói VIP thất bại. ${data.message || ''}`);
+                return;
+            }
+            
+            hideVipPackagePopup();
+            showSuccess('Cập nhật gói VIP thành công!');
+            // Refresh posts data
+            await fetchPosts(searchParams);
+        } catch (error) {
+            setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+            showError('Cập nhật gói VIP thất bại. Vui lòng thử lại sau.');
         }
     };
 
@@ -276,18 +336,11 @@ function MobileView({ session }: { session?: any }) {
             case 'renew': // status = 'Expired'
                 showChargeFeePopup(post.postId, 'renew', post.title);
                 break;
-            case 'edit':
-                console.log('Edit post:', post.postId);
-                // Implement edit logic
-                // showInfo(`Chuyển đến trang chỉnh sửa tin "${post.title}"`);
-                // TODO: Add navigation to edit page here
+            case 'edit':                             
                 router.push(`/edit-post/${post.postId}`);
                 break;
             case 'upgrade':
-                console.log('Upgrade post:', post.postId);
-                // Implement upgrade logic
-                showInfo(`Đang xử lý nâng cấp VIP cho tin "${post.title}"`);
-                // TODO: Add actual upgrade API call here
+                showVipPackagePopup(post.postId, post.title);
                 break;
             case 'delete':                
                 // Show confirmation dialog for delete
@@ -1101,6 +1154,16 @@ function MobileView({ session }: { session?: any }) {
                 onConfirm={handleChargeFeeConfirm}
                 onCancel={hideChargeFeePopup}
                 confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
+            />
+            
+            {/* VIP Package Popup */}
+            <VipPackagePopup
+                isVisible={vipPackagePopup.isVisible}
+                postId={vipPackagePopup.postId}
+                postTitle={vipPackagePopup.postTitle}
+                onConfirm={handleVipPackageConfirm}
+                onCancel={hideVipPackagePopup}
+                confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
             />
         </div>
     );

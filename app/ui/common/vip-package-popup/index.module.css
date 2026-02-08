@@ -1,0 +1,422 @@
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+/* Popup Container */
+.popup {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #f3f4f6;
+}
+
+.closeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Content */
+.content {
+    padding: 20px 24px;
+    min-height: 200px;
+}
+
+/* Loading State */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px 20px;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Error State */
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.error p {
+    margin: 0;
+    color: #ef4444;
+    font-size: 14px;
+}
+
+.retryButton {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+    background-color: #2563eb;
+}
+
+/* Package Info */
+.packageInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.postTitle {
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 6px;
+    border-left: 3px solid #3b82f6;
+    font-size: 14px;
+    color: #374151;
+}
+
+.currentPackage {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.label {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.priorityLevel {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priorityDIAMOND {
+    background-color: #B9F2FF;
+    color: #0369a1;
+}
+
+.priorityGOLD {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.prioritySILVER {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #94a3b8;
+}
+
+.priorityNORMAL {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.packageSelectionTitle {
+    font-size: 15px;
+    color: #374151;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Package Options */
+.packageOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.packageOption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: white;
+}
+
+.packageOption:hover:not(.disabled) {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+}
+
+.packageOption.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.packageOption.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f9fafb;
+}
+
+.radioContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.radioInput {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    margin: 0;
+}
+
+.radioInput:checked {
+    border-color: #3b82f6;
+    background-color: #3b82f6;
+}
+
+.radioInput:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.radioInput:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.packageDetails {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.packageName {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.currentBadge {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.packagePrice {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary-p200, #3b82f6);
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cancelButton {
+    flex: 1;
+    padding: 12px 24px;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.cancelButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.confirmButton {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    background-color: var(--color-primary-p200, #3b82f6);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.confirmButton:hover:not(:disabled) {
+    background-color: var(--color-primary-p300, #2563eb);
+}
+
+.confirmButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.buttonSpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+    .overlay {
+        padding: 16px;
+    }
+    
+    .popup {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .header {
+        padding: 16px 20px 12px;
+    }
+    
+    .title {
+        font-size: 16px;
+    }
+    
+    .content {
+        padding: 16px 20px;
+    }
+    
+    .packageOption {
+        padding: 12px;
+    }
+    
+    .packageDetails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .packagePrice {
+        font-size: 14px;
+    }
+    
+    .actions {
+        padding: 12px 20px 16px;
+        flex-direction: column;
+    }
+    
+    .actions button {
+        width: 100%;
+    }
+}
