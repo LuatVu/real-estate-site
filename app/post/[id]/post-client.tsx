@@ -182,6 +182,26 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
     return directionMap[direction] || direction;
   };
 
+  // Helper function to format description with line breaks
+  const formatDescription = (description: string) => {
+    if (!description) return null;
+    
+    // Replace various escape sequences with line breaks
+    const processedText = description
+      .replace(/\\\\n/g, '\n')  // Replace \\\\n with newline
+      .replace(/\\n/g, '\n')    // Replace \\n with newline
+      .replace(/\\\\/g, '')     // Remove other backslashes
+      .trim();
+    
+    // Split by newlines and map to JSX elements
+    return processedText.split('\n').map((line, index) => (
+      <span key={index}>
+        {line}
+        {index < processedText.split('\n').length - 1 && <br />}
+      </span>
+    ));
+  };
+
   return (
     <main className="flex flex-col min-h-screen">
       <div className={`${styles.rootContainer} flex-1`}>
@@ -254,44 +274,62 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
         <article className={styles.postContainer} itemScope itemType="https://schema.org/RealEstateListing">
           {/* Property Title and Address */}
           <header className={styles.headingBlock}>
-            <h1 className="heading-h9" itemProp="name">{post?.title}</h1>
-            <address className={styles.subHeading + " body-sm"} itemProp="address">
+            <h1 className={styles.propertyTitle + " heading-h6"} itemProp="name">{post?.title}</h1>
+            <address className={styles.propertyAddress + " body-med"} itemProp="address">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.locationIcon}>
+                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
+              </svg>
               {post?.address}
             </address>
           </header>
 
           {/* Property Summary */}
           <section className={styles.briefProperty} aria-label="Property Summary">
-            <div>
-              <p className={styles.subHeading + " body-sm"}>Mức giá</p>
-              <p className="body-sm" itemProp="price">{formatPrice(post?.price)}</p>
+            <div className={styles.summaryCard}>
+              <div className={styles.summaryIcon}>
+                <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt="Price icon" />
+              </div>
+              <div className={styles.summaryContent}>
+                <p className={styles.summaryLabel + " body-sm"}>Mức giá</p>
+                <p className={styles.summaryValue + " heading-h8"} itemProp="price">{formatPrice(post?.price)}</p>
+              </div>
             </div>
-            <div>
-              <p className={styles.subHeading + " body-sm"}>Diện tích</p>
-              <p className="body-sm" itemProp="floorSize">{post?.acreage} m²</p>
+            <div className={styles.summaryCard}>
+              <div className={styles.summaryIcon}>
+                <Image src="/icons/rectangleIcon.svg" width={15} height={15} alt="Area icon" />
+              </div>
+              <div className={styles.summaryContent}>
+                <p className={styles.summaryLabel + " body-sm"}>Diện tích</p>
+                <p className={styles.summaryValue + " heading-h8"} itemProp="floorSize">{post?.acreage} m²</p>
+              </div>
             </div>
-            <div>
-              <p className={styles.subHeading + " body-sm"}>Phòng ngủ</p>
-              <p className="body-sm" itemProp="numberOfBedrooms">{post?.bedrooms} PN</p>
+            <div className={styles.summaryCard}>
+              <div className={styles.summaryIcon}>
+                <Image src="/icons/fileIcon.svg" width={15} height={15} alt="Legal document icon" />
+              </div>
+              <div className={styles.summaryContent}>
+                <p className={styles.summaryLabel + " body-sm"}>Pháp lý</p>
+                <p className={styles.summaryValue + " heading-h8"} itemProp="legal">{formatLegalStatus(post?.legal)}</p>
+              </div>
             </div>
           </section>
 
           {/* Property Description */}
-          <section className={styles.descrip}>
-            <h2 className="heading-h9">Thông tin mô tả</h2>
-            <div className="body-sm" itemProp="description">
-              {post?.description}
+          <section className={styles.descriptionSection}>
+            <h2 className={styles.descriptionTitle + " heading-h6"}>Thông tin mô tả</h2>
+            <div className={styles.descriptionContent + " body-lg"} itemProp="description">
+              {formatDescription(post?.description)}
             </div>
           </section>
 
           {/* Property Features */}
-          <section className={styles.descrip}>
-            <h2 className="heading-h9">Đặc điểm bất động sản</h2>
-            <div className={styles.featureProperty}>
+          <section className={styles.featuresSection}>
+            <h2 className={styles.sectionTitle + " heading-h8"}>Đặc điểm bất động sản</h2>
+            <div className={styles.featureGrid}>
               {post?.price && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/CurrencyCircleDollar.svg" width={15} height={15} alt="Price icon" />
+                    <Image src="/icons/CurrencyCircleDollar.svg" width={12} height={12} alt="Price icon" />
                     <p>Mức giá</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatPrice(post?.price)}</p></div>
@@ -300,7 +338,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.acreage && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/rectangleIcon.svg" width={15} height={15} alt="Area icon" />
+                    <Image src="/icons/rectangleIcon.svg" width={12} height={12} alt="Area icon" />
                     <p>Diện tích</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.acreage} m²</p></div>
@@ -309,7 +347,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.bedrooms && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/bedIcon.svg" width={15} height={15} alt="Bedroom icon" />
+                    <Image src="/icons/bedIcon.svg" width={12} height={12} alt="Bedroom icon" />
                     <p>Số phòng ngủ</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.bedrooms} PN</p></div>
@@ -318,7 +356,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.bathrooms && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/bathroomIcon.svg" width={15} height={15} alt="Bathroom icon" />
+                    <Image src="/icons/bathroomIcon.svg" width={12} height={12} alt="Bathroom icon" />
                     <p>Số phòng tắm, vệ sinh</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.bathrooms} Phòng</p></div>
@@ -327,7 +365,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.floors && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/floorIcon.svg" width={15} height={15} alt="Floor icon" />
+                    <Image src="/icons/floorIcon.svg" width={12} height={12} alt="Floor icon" />
                     <p>Số tầng</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.floors} Tầng</p></div>
@@ -336,7 +374,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.legal && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/fileIcon.svg" width={15} height={15} alt="Legal document icon" />
+                    <Image src="/icons/fileIcon.svg" width={12} height={12} alt="Legal document icon" />
                     <p>Pháp lý</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatLegalStatus(post?.legal)}</p></div>
@@ -345,7 +383,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.furniture && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/furnitureIcon.svg" width={15} height={15} alt="Furniture icon" />
+                    <Image src="/icons/furnitureIcon.svg" width={12} height={12} alt="Furniture icon" />
                     <p>Nội thất</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatFurnitureStatus(post?.furniture)}</p></div>
@@ -354,7 +392,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.direction && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/directionIcon.svg" width={15} height={15} alt="Direction icon" />
+                    <Image src="/icons/directionIcon.svg" width={12} height={12} alt="Direction icon" />
                     <p>Hướng</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatDirection(post?.direction)}</p></div>
@@ -363,7 +401,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.frontage && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/HouseLine.svg" width={15} height={15} alt="Frontage icon" />
+                    <Image src="/icons/HouseLine.svg" width={12} height={12} alt="Frontage icon" />
                     <p>Mặt tiền</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.frontage} m</p></div>
@@ -372,7 +410,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
             </div>
           </section>
         </article>
-
+        {/* Section for recommendations -- todo*/}
         <ExtraInfo />
         <DownloadApp />
         <MbFooter />
@@ -380,26 +418,40 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
 
       {/* Contact Footer */}
       <footer className={styles.footer}>
-        <img
-          className={styles.profileMenuAvatar}
-          width="60"
-          height="60"
-          alt={`${post?.user?.username || 'User profile picture'}`}
-          src={post?.user?.profilePicture || "/temp/avatar.jpg"}
-        />
-        <Image src="/icons/zaloIcon.svg" width={60} height={60} alt="Contact via Zalo" />
-        <button
-          className={styles.contactBtn}
-          onClick={handlePhoneClick}
-          aria-label={`Call ${post?.user?.contactPhoneNumber || post?.user?.phoneNumber}`}
-        >
-          <Image src="/icons/phoneIcon.svg" width={20} height={20} alt="" />
-          {showFullPhone
-            ? (post?.user?.contactPhoneNumber || post?.user?.phoneNumber)
-            : formatPhoneNumber(post?.user?.contactPhoneNumber || post?.user?.phoneNumber)
-          }
-          {!showFullPhone && <span className={styles.clickHint}>Nhấn để hiện số</span>}
-        </button>
+        <div className={styles.contactInfo}>
+          <div className={styles.userProfile}>
+            <img
+              className={styles.profileMenuAvatar}
+              width="48"
+              height="48"
+              alt={`${post?.user?.username || 'User profile picture'}`}
+              src={post?.user?.profilePicture || "/temp/avatar.jpg"}
+            />
+            <div className={styles.userDetails}>
+              <p className={styles.userName + " body-med-bold"}>{post?.user?.username || 'Người bán'}</p>
+              <p className={styles.userStatus + " body-sm"}>Đang hoạt động</p>
+            </div>
+          </div>
+        </div>
+        <div className={styles.contactActions}>
+          <button className={styles.zaloBtn} aria-label="Contact via Zalo">
+            <Image src="/icons/zaloIcon.svg" width={24} height={24} alt="" />
+          </button>
+          <button
+            className={styles.contactBtn}
+            onClick={handlePhoneClick}
+            aria-label={`Call ${post?.user?.contactPhoneNumber || post?.user?.phoneNumber}`}
+          >
+            <Image src="/icons/phoneIcon.svg" width={18} height={18} alt="" />
+            <span className={styles.phoneText}>
+              {showFullPhone
+                ? (post?.user?.contactPhoneNumber || post?.user?.phoneNumber)
+                : formatPhoneNumber(post?.user?.contactPhoneNumber || post?.user?.phoneNumber)
+              }
+              {!showFullPhone && <span className={styles.clickHint}>Nhấn để hiện</span>}
+            </span>
+          </button>
+        </div>
       </footer>
 
       {/* Fullscreen Image Modal */}
