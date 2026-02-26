@@ -10,7 +10,6 @@ import Form from 'next/form';
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Message } from "rsuite";
-import "rsuite/dist/rsuite.min.css";
 
 export default function Profile() {
     const screenSize = useScreenSize();
@@ -320,7 +319,6 @@ function MobileProfile({ session }: { session?: any }) {
                     <Message
                         type={message.type}
                         showIcon={true}
-                        closable
                     >
                         {message.content}
                     </Message>
@@ -328,144 +326,210 @@ function MobileProfile({ session }: { session?: any }) {
             )}
             <div className={`${styles.profileContainer} flex-1`}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.profileTitle}>
-                        <p className="heading-h8">Thông tin cá nhân</p>
+                    <div className={styles.profileTitleSection}>
+                        <div className={styles.profileIcon}>
+                            👤
+                        </div>
+                        <div>
+                            <h1 className={styles.profileTitle}>Thông tin cá nhân</h1>
+                            <p className={styles.profileSubtitle}>Quản lý thông tin và tài khoản của bạn</p>
+                        </div>
                     </div>
-                    <div className={styles.tab}>
-                        <button name="btnUpdateProfile" className={tabBtnState.btnUpdateProfile} onClick={() => selectTab('Profile')}>Chỉnh sửa thông tin</button>
-                        {session?.provider === "credentials" && <button name="btnChangePassword" className={tabBtnState.btnChangePassword} onClick={() => selectTab('Account')}>Cài đặt tài khoản</button>}
+                    <div className={styles.tabContainer}>
+                        <button name="btnUpdateProfile" className={tabBtnState.btnUpdateProfile} onClick={() => selectTab('Profile')}>
+                            <span className={styles.tabIcon}>📝</span>
+                            Chỉnh sửa thông tin
+                        </button>
+                        {session?.provider === "credentials" && (
+                            <button name="btnChangePassword" className={tabBtnState.btnChangePassword} onClick={() => selectTab('Account')}>
+                                <span className={styles.tabIcon}>🔒</span>
+                                Cài đặt tài khoản
+                            </button>
+                        )}
                     </div>
                 </div>
                 {tabBtnState.isProfileTab ? (
                     <div className={styles.profileBody}>
-                        <div className={styles.imageBlk}>
-                            <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
-                                {uploadedImage ? (
-                                    <img
-                                        src={uploadedImage}
-                                        alt="Profile"
-                                        className={styles.uploadedImage}
-                                    />
-                                ) : (
-                                    <div
-                                        className={styles.uploadImagePlaceholder}
-                                        style={{
-                                            backgroundImage: 'url(/icons/CameraIcon.svg)',
-                                            backgroundSize: '20px 20px',
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundPosition: 'center'
-                                        }}
-                                    >
-                                        <span className={styles.uploadText}>Tải ảnh lên</span>
+                        <div className={styles.profileCard}>
+                            <div className={styles.imageSection}>
+                                <div className={styles.imageBlk}>
+                                    <div className={styles.uploadImageContainer} onClick={handleUploadClick}>
+                                        {uploadedImage ? (
+                                            <img
+                                                src={uploadedImage}
+                                                alt="Profile"
+                                                className={styles.uploadedImage}
+                                            />
+                                        ) : (
+                                            <div className={styles.uploadImagePlaceholder}>
+                                                <div className={styles.cameraIcon}>📷</div>
+                                                <span className={styles.uploadText}>Tải ảnh lên</span>
+                                            </div>
+                                        )}
+                                        <div className={styles.uploadOverlay}>
+                                            <span className={styles.uploadOverlayText}>Thay đổi</span>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            id="imageUpload"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            style={{ display: 'none' }}
+                                        />
                                     </div>
-                                )}
-                                <input
-                                    type="file"
-                                    id="imageUpload"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    style={{ display: 'none' }}
-                                />
+                                </div>
+                                <div className={styles.imageHint}>
+                                    <p>Ảnh đại diện giúp mọi người nhận diện bạn dễ dàng hơn</p>
+                                </div>
                             </div>
+                            <Form action={handleSubmit} className={styles.formContainer}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="name" className={styles.formLabel}>
+                                        <span className={styles.labelIcon}>👤</span>
+                                        Họ tên <span className={styles.required}>*</span>
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            defaultValue={formData.name}
+                                            onChange={(e) => handleInputChange('name', e.target.value)}
+                                            placeholder="Nhập họ tên của bạn"
+                                        />
+                                    </div>
+                                    {nameError && <span className={styles.errorMessage}>{nameError}</span>}
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="address" className={styles.formLabel}>
+                                        <span className={styles.labelIcon}>📍</span>
+                                        Địa chỉ
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            className={styles.inputText}
+                                            type="text"
+                                            id="address"
+                                            name="address"
+                                            defaultValue={formData.address}
+                                            onChange={(e) => handleInputChange('address', e.target.value)}
+                                            placeholder="Nhập địa chỉ của bạn"
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="idCard" className={styles.formLabel}>
+                                        <span className={styles.labelIcon}>🪪</span>
+                                        Căn cước công dân
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            className={styles.inputText}
+                                            type="text"
+                                            id="idCard"
+                                            name="idCard"
+                                            defaultValue={formData.idCard}
+                                            onChange={(e) => handleInputChange('idCard', e.target.value)}
+                                            placeholder="Nhập số căn cước công dân"
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="taxId" className={styles.formLabel}>
+                                        <span className={styles.labelIcon}>📊</span>
+                                        Mã số thuế cá nhân
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            className={styles.inputText}
+                                            type="text"
+                                            id="taxId"
+                                            name="taxId"
+                                            defaultValue={formData.taxId}
+                                            onChange={(e) => handleInputChange('taxId', e.target.value)}
+                                            placeholder="Nhập mã số thuế cá nhân"
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
+                                    disabled={!isFormValid}
+                                >
+                                    <span className={styles.buttonIcon}>💾</span>
+                                    Lưu thay đổi
+                                </button>
+                            </Form>
                         </div>
-                        <Form action={handleSubmit} className={styles.formContainer}>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="name">Họ tên</label>
-                                <input
-                                    className={`${styles.inputText} ${nameError ? styles.inputError : ''}`}
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    defaultValue={formData.name}
-                                    onChange={(e) => handleInputChange('name', e.target.value)}
-                                />
-                                {nameError && <span className={styles.errorMessage}>{nameError}</span>}
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="address">Địa chỉ</label>
-                                <input
-                                    className={styles.inputText}
-                                    type="text"
-                                    id="address"
-                                    name="address"
-                                    defaultValue={formData.address}
-                                    onChange={(e) => handleInputChange('address', e.target.value)}
-                                />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="idCard">Căn cước công dân</label>
-                                <input
-                                    className={styles.inputText}
-                                    type="text"
-                                    id="idCard"
-                                    name="idCard"
-                                    defaultValue={formData.idCard}
-                                    onChange={(e) => handleInputChange('idCard', e.target.value)}
-                                />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="taxId">Mã số thuế cá nhân</label>
-                                <input
-                                    className={styles.inputText}
-                                    type="text"
-                                    id="taxId"
-                                    name="taxId"
-                                    defaultValue={formData.taxId}
-                                    onChange={(e) => handleInputChange('taxId', e.target.value)}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
-                                disabled={!isFormValid}
-                            >
-                                Lưu thay đổi
-                            </button>
-                        </Form>
                     </div>
                 ) : (
                     <div className={styles.profileBody}>
-                        <div className={styles.passwordTitle}>
-                            <p className="heading-h8">Đổi mật khẩu</p>
-                        </div>
+                        <div className={styles.profileCard}>
+                            <div className={styles.passwordHeader}>
+                                <h2 className={styles.passwordTitle}>
+                                    <span className={styles.passwordIcon}>🔐</span>
+                                    Đổi mật khẩu
+                                </h2>
+                                <p className={styles.passwordSubtitle}>Bảo mật tài khoản với mật khẩu mạnh</p>
+                            </div>
                         <form onSubmit={handlePasswordChange} className={styles.formContainer}>
                             <div className={styles.formGroup}>
-                                <label htmlFor="currentPassword">Mật khẩu hiện tại</label>
-                                <input
-                                    className={`${styles.inputText} ${passwordErrors.currentPassword ? styles.inputError : ''}`}
-                                    type="password"
-                                    id="currentPassword"
-                                    value={passwordFields.currentPassword}
-                                    onChange={e => handlePasswordFieldChange('currentPassword', e.target.value)}
-                                    required
-                                />
+                                <label htmlFor="currentPassword" className={styles.formLabel}>
+                                    <span className={styles.labelIcon}>🔓</span>
+                                    Mật khẩu hiện tại
+                                </label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        className={`${styles.inputText} ${passwordErrors.currentPassword ? styles.inputError : ''}`}
+                                        type="password"
+                                        id="currentPassword"
+                                        value={passwordFields.currentPassword}
+                                        onChange={e => handlePasswordFieldChange('currentPassword', e.target.value)}
+                                        placeholder="Nhập mật khẩu hiện tại"
+                                        required
+                                    />
+                                </div>
                                 {passwordErrors.currentPassword && <span className={styles.errorMessage}>{passwordErrors.currentPassword}</span>}
                             </div>
                             <div className={styles.formGroup}>
-                                <label htmlFor="newPassword">Mật khẩu mới</label>
-                                <input
-                                    className={`${styles.inputText} ${passwordErrors.newPassword ? styles.inputError : ''}`}
-                                    type="password"
-                                    id="newPassword"
-                                    value={passwordFields.newPassword}
-                                    onChange={e => handlePasswordFieldChange('newPassword', e.target.value)}
-                                    required
-                                />
+                                <label htmlFor="newPassword" className={styles.formLabel}>
+                                    <span className={styles.labelIcon}>🔒</span>
+                                    Mật khẩu mới
+                                </label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        className={`${styles.inputText} ${passwordErrors.newPassword ? styles.inputError : ''}`}
+                                        type="password"
+                                        id="newPassword"
+                                        value={passwordFields.newPassword}
+                                        onChange={e => handlePasswordFieldChange('newPassword', e.target.value)}
+                                        placeholder="Nhập mật khẩu mới"
+                                        required
+                                    />
+                                </div>
                                 {passwordErrors.newPassword && <span className={styles.errorMessage}>{passwordErrors.newPassword}</span>}
                             </div>
                             <div className={styles.formGroup}>
-                                <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
-                                <input
-                                    className={`${styles.inputText} ${passwordErrors.confirmPassword ? styles.inputError : ''}`}
-                                    type="password"
-                                    id="confirmPassword"
-                                    value={passwordFields.confirmPassword}
-                                    onChange={e => handlePasswordFieldChange('confirmPassword', e.target.value)}
-                                    required
-                                />
+                                <label htmlFor="confirmPassword" className={styles.formLabel}>
+                                    <span className={styles.labelIcon}>✅</span>
+                                    Xác nhận mật khẩu mới
+                                </label>
+                                <div className={styles.inputWrapper}>
+                                    <input
+                                        className={`${styles.inputText} ${passwordErrors.confirmPassword ? styles.inputError : ''}`}
+                                        type="password"
+                                        id="confirmPassword"
+                                        value={passwordFields.confirmPassword}
+                                        onChange={e => handlePasswordFieldChange('confirmPassword', e.target.value)}
+                                        placeholder="Nhập lại mật khẩu mới"
+                                        required
+                                    />
+                                </div>
                                 {passwordErrors.confirmPassword && <span className={styles.errorMessage}>{passwordErrors.confirmPassword}</span>}
                             </div>
-                            <div className={styles.formGroup}>
+                            <div className={styles.passwordHintBox}>
+                                <div className={styles.hintIcon}>💡</div>
                                 <p className={styles.passwordHint}>Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
                             </div>
                             <button
@@ -473,9 +537,11 @@ function MobileProfile({ session }: { session?: any }) {
                                 className={`${styles.submitBtn} ${(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword) ? styles.submitBtnDisabled : ''}`}
                                 disabled={Boolean(passwordErrors.currentPassword || passwordErrors.newPassword || passwordErrors.confirmPassword || !passwordFields.currentPassword || !passwordFields.newPassword || !passwordFields.confirmPassword)}
                             >
+                                <span className={styles.buttonIcon}>🔄</span>
                                 Đổi mật khẩu
                             </button>
                         </form>
+                        </div>
                     </div>
                 )}
 
@@ -488,9 +554,33 @@ function MobileProfile({ session }: { session?: any }) {
 
 function DesktopProfile({ session }: { session?: any }) {
     return (
-        <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="text-2xl font-bold">Desktop Profile</h1>
-            <p className="mt-4">This is the desktop profile page.</p>
+        <div className={styles.desktopContainer}>
+            <div className={styles.desktopHeader}>
+                <div className={styles.desktopCard}>
+                    <div className={styles.desktopIcon}>
+                        💻
+                    </div>
+                    <h1 className={styles.desktopTitle}>Desktop Profile</h1>
+                    <p className={styles.desktopSubtitle}>
+                        Trang hồ sơ cá nhân được tối ưu hóa cho thiết bị di động. 
+                        <br />Vui lòng sử dụng điện thoại để có trải nghiệm tốt nhất.
+                    </p>
+                    <div className={styles.desktopFeatures}>
+                        <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>📱</span>
+                            <span>Giao diện di động thân thiện</span>
+                        </div>
+                        <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>🔒</span>
+                            <span>Bảo mật cao</span>
+                        </div>
+                        <div className={styles.featureItem}>
+                            <span className={styles.featureIcon}>⚡</span>
+                            <span>Tải nhanh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
