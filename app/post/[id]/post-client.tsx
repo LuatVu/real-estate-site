@@ -14,6 +14,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/zoom';
 import { formatPrice } from '../../utils/price-formatter';
+import { formatLegalStatus, formatFurnitureStatus, formatDirection } from '../../utils/commons-utils';
 
 interface PostClientProps {
   post: any;
@@ -141,46 +142,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
         }
       }
     }
-  };
-
-  // Helper function to format legal status to readable Vietnamese labels
-  const formatLegalStatus = (legal: string) => {
-    if (!legal) return '';
-    
-    const legalMap: { [key: string]: string } = {
-      'SO_DO': 'Sổ đỏ',
-      'HOP_DONG_MUA_BAN': 'Hợp đồng mua bán',
-      'KHONG_SO': 'Không sổ'
-    };
-    
-    return legalMap[legal] || legal;
-  };
-
-  const formatFurnitureStatus = (furniture: string) => {
-    if (!furniture) return '';
-    
-    const furnitureMap: { [key: string]: string } = {
-      'DAY_DU': 'Đầy đủ',
-      'CO_BAN': 'Cơ bản',
-      'KHONG_NOI_THAT': 'Không nội thất'
-    };
-    return furnitureMap[furniture] || furniture;
-  };
-
-  const formatDirection = (direction: string) => {
-    if (!direction) return '';
-    const directionMap: { [key: string]: string } = {
-      'BAC': 'Bắc',
-      'NAM': 'Nam',
-      'DONG': 'Đông',
-      'TAY': 'Tây',
-      'DONG_BAC': 'Đông Bắc',
-      'TAY_BAC': 'Tây Bắc',
-      'DONG_NAM': 'Đông Nam',
-      'TAY_NAM': 'Tây Nam'
-    };
-    return directionMap[direction] || direction;
-  };
+  };  
 
   // Helper function to format description with line breaks
   const formatDescription = (description: string) => {
@@ -328,8 +290,8 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
             <div className={styles.featureGrid}>
               {post?.price && (
                 <div className={styles.featureItem}>
-                  <div className={styles.featureTitle}>
-                    <Image src="/icons/CurrencyCircleDollar.svg" width={12} height={12} alt="Price icon" />
+                  <div className={styles.featureTitle}>                    
+                    <span className={styles.previewFeatureIcon}>💰</span>
                     <p>Mức giá</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatPrice(post?.price)}</p></div>
@@ -338,7 +300,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.acreage && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/rectangleIcon.svg" width={12} height={12} alt="Area icon" />
+                    <span className={styles.previewFeatureIcon}>📐</span>
                     <p>Diện tích</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.acreage} m²</p></div>
@@ -347,7 +309,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.bedrooms && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/bedIcon.svg" width={12} height={12} alt="Bedroom icon" />
+                    <span className={styles.previewFeatureIcon}>🛏️</span>
                     <p>Số phòng ngủ</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.bedrooms} PN</p></div>
@@ -356,7 +318,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.bathrooms && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/bathroomIcon.svg" width={12} height={12} alt="Bathroom icon" />
+                    <span className={styles.previewFeatureIcon}>🛁</span>
                     <p>Số phòng tắm, vệ sinh</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.bathrooms} Phòng</p></div>
@@ -365,7 +327,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.floors && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/floorIcon.svg" width={12} height={12} alt="Floor icon" />
+                    <span className={styles.previewFeatureIcon}>🏢</span>
                     <p>Số tầng</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.floors} Tầng</p></div>
@@ -374,7 +336,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.legal && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/fileIcon.svg" width={12} height={12} alt="Legal document icon" />
+                    <span className={styles.previewFeatureIcon}>📄</span>
                     <p>Pháp lý</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatLegalStatus(post?.legal)}</p></div>
@@ -383,7 +345,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.furniture && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/furnitureIcon.svg" width={12} height={12} alt="Furniture icon" />
+                    <span className={styles.previewFeatureIcon}>🛋️</span>
                     <p>Nội thất</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatFurnitureStatus(post?.furniture)}</p></div>
@@ -392,7 +354,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               {post?.direction && (
                 <div className={styles.featureItem}>
                   <div className={styles.featureTitle}>
-                    <Image src="/icons/directionIcon.svg" width={12} height={12} alt="Direction icon" />
+                    <span className={styles.previewFeatureIcon}>🧭</span>
                     <p>Hướng</p>
                   </div>
                   <div className={styles.featureValue}><p>{formatDirection(post?.direction)}</p></div>
@@ -400,8 +362,8 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
               )}
               {post?.frontage && (
                 <div className={styles.featureItem}>
-                  <div className={styles.featureTitle}>
-                    <Image src="/icons/HouseLine.svg" width={12} height={12} alt="Frontage icon" />
+                  <div className={styles.featureTitle}>                    
+                    <span className={styles.previewFeatureIcon}>🏠</span>
                     <p>Mặt tiền</p>
                   </div>
                   <div className={styles.featureValue}><p>{post?.frontage} m</p></div>

@@ -12,6 +12,8 @@ import { useConfirmation } from '../../hook/useConfirmation';
 import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
 import VipPackagePopup, { PostChargeFeeData } from '../../ui/common/vip-package-popup';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from "@/app/utils/price-formatter";
+import { formatLegalStatus, formatFurnitureStatus, formatDirection } from "@/app/utils/commons-utils";
 
 // Function to convert property type codes to readable labels
 function getPropertyTypeLabel(type: string): string {
@@ -125,7 +127,37 @@ function MobileView({ session }: { session?: any }) {
         confirmButtonLoading: false
     });
     
-    const router = useRouter();
+    // Preview popup state
+    const [previewPopup, setPreviewPopup] = useState({
+        isVisible: false,
+        post: null as any
+    });
+    
+    const router = useRouter();    
+
+    const formatDescription = (description: string) => {
+        if (!description) return null;
+        const processedText = description
+            .replace(/\\\\n/g, '\n')
+            .replace(/\\n/g, '\n')
+            .replace(/\\\\/g, '')
+            .trim();
+        return processedText.split('\n').map((line, index) => (
+            <span key={index}>
+                {line}
+                {index < processedText.split('\n').length - 1 && <br />}
+            </span>
+        ));
+    };
+
+    // Handle preview popup
+    const handlePreviewPost = (post: any) => {
+        setPreviewPopup({ isVisible: true, post });
+    };
+
+    const closePreviewPopup = () => {
+        setPreviewPopup({ isVisible: false, post: null });
+    };
 
     // Handle search input events
     const handleSearchSubmit = async () => {
@@ -899,7 +931,10 @@ function MobileView({ session }: { session?: any }) {
                             </div>
 
                             <div className={styles.postActions}>
-                                <button className={styles.actionButton}>
+                                <button 
+                                    className={styles.actionButton}
+                                    onClick={() => handlePreviewPost(post)}
+                                >
                                     <Image src="/icons/EyeOpen.svg" alt="View" width={16} height={16} />
                                 </button>
                                 <div style={{ position: 'relative' }}>
@@ -1165,6 +1200,195 @@ function MobileView({ session }: { session?: any }) {
                 onCancel={hideVipPackagePopup}
                 confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
             />
+            
+            {/* Preview Popup */}
+            {previewPopup.isVisible && previewPopup.post && (
+                <div className={styles.previewOverlay} onClick={closePreviewPopup}>
+                    <div className={styles.previewContainer} onClick={(e) => e.stopPropagation()}>
+                        {/* Close button */}
+                        <button className={styles.previewCloseButton} onClick={closePreviewPopup}>
+                            ×
+                        </button>
+
+                        {/* Primary Image */}
+                        <div className={styles.previewImageContainer}>
+                            {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
+                                <Image
+                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    alt={previewPopup.post.title}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <div className={styles.previewImagePlaceholder}>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.5L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/>
+                                    </svg>
+                                    <span className={styles.previewImagePlaceholderText}>Không có hình ảnh</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Main Content */}
+                        <div className={styles.previewMainContent}>
+                            {/* Property Title and Address */}
+                            <div className={styles.previewHeader}>
+                                <h1 className={styles.previewTitle}>
+                                    {previewPopup.post.title}
+                                </h1>
+                                <div className={styles.previewAddress}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
+                                    </svg>
+                                    <span>{previewPopup.post.address || 'Chưa có địa chỉ'}</span>
+                                </div>
+                            </div>
+
+                            {/* Property Description */}
+                            {previewPopup.post.description && (
+                                <div className={styles.previewDescriptionSection}>
+                                    <h2 className={styles.previewDescriptionTitle}>
+                                        Thông tin mô tả
+                                    </h2>
+                                    <div className={styles.previewDescriptionContent}>
+                                        {formatDescription(previewPopup.post.description)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Property Features */}
+                            <div className={styles.previewFeaturesSection}>
+                                <h2 className={styles.previewFeaturesTitle}>
+                                    Đặc điểm bất động sản
+                                </h2>
+                                <div className={styles.previewFeaturesGrid}>
+                                    {previewPopup.post.price && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>💰</span>
+                                                <span className={styles.previewFeatureLabel}>Mức giá</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatPrice(previewPopup.post.price)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.acreage && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>📐</span>
+                                                <span className={styles.previewFeatureLabel}>Diện tích</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.acreage} m²
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.bedrooms && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🛏️</span>
+                                                <span className={styles.previewFeatureLabel}>Số phòng ngủ</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.bedrooms} PN
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.bathrooms && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🚿</span>
+                                                <span className={styles.previewFeatureLabel}>Số phòng tắm</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.bathrooms} Phòng
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.floors && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🏢</span>
+                                                <span className={styles.previewFeatureLabel}>Số tầng</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.floors} Tầng
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.legal && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>📄</span>
+                                                <span className={styles.previewFeatureLabel}>Pháp lý</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatLegalStatus(previewPopup.post.legal)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.furniture && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🪑</span>
+                                                <span className={styles.previewFeatureLabel}>Nội thất</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatFurnitureStatus(previewPopup.post.furniture)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.direction && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🧭</span>
+                                                <span className={styles.previewFeatureLabel}>Hướng</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatDirection(previewPopup.post.direction)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.frontage && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🏠</span>
+                                                <span className={styles.previewFeatureLabel}>Mặt tiền</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.frontage} m
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/*Footer */}
+                        <div className={styles.previewFooter}>
+                            <div className={styles.previewFooterContent}>
+                                <div className={styles.previewFooterProfile}>
+                                    <div className={styles.previewFooterAvatar}>
+                                        📝
+                                    </div>
+                                    <div>
+                                        <p className={styles.previewFooterUserName}>
+                                            Mã bài đăng
+                                        </p>
+                                        <p className={styles.previewFooterUserId}>
+                                            {previewPopup.post.postId}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button className={styles.previewDetailButton} onClick={() => router.push(`/post/${previewPopup.post.postId}`)}>
+                                Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
