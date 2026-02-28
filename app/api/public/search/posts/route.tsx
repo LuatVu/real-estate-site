@@ -1,11 +1,19 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const page = Number(req?.nextUrl?.searchParams.get('page')) - 1; // aim to start with zero    
-
+    let page = Number(req?.nextUrl?.searchParams.get('page'))    
+    if (!isNaN(page) && page > 0) {
+        page = page - 1; // Adjust for zero-based indexing
+    }else{
+        page = 0; // Default to page 0 if invalid
+    }
+    let size = Number(req?.nextUrl?.searchParams.get('size'))
+    if (isNaN(size) || size <= 0) {
+        size = 10; // Default to 10 if invalid
+    }
     try {
         const body = await req.json();
-        const response = await fetch(`${process.env.SPRING_API}/api/public/search-post?page=${page}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/public/search-post?page=${page}&size=${size}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)
