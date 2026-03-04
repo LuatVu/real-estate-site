@@ -14,6 +14,7 @@ import VipPackagePopup, { PostChargeFeeData } from '../../ui/common/vip-package-
 import { useRouter } from 'next/navigation';
 import { formatPrice } from "@/app/utils/price-formatter";
 import { formatLegalStatus, formatFurnitureStatus, formatDirection } from "@/app/utils/commons-utils";
+import { formatDescription } from "@/app/utils/markdown-utils";
 
 // Function to convert property type codes to readable labels
 function getPropertyTypeLabel(type: string): string {
@@ -134,21 +135,6 @@ function MobileView({ session }: { session?: any }) {
     });
     
     const router = useRouter();    
-
-    const formatDescription = (description: string) => {
-        if (!description) return null;
-        const processedText = description
-            .replace(/\\\\n/g, '\n')
-            .replace(/\\n/g, '\n')
-            .replace(/\\\\/g, '')
-            .trim();
-        return processedText.split('\n').map((line, index) => (
-            <span key={index}>
-                {line}
-                {index < processedText.split('\n').length - 1 && <br />}
-            </span>
-        ));
-    };
 
     // Handle preview popup
     const handlePreviewPost = (post: any) => {

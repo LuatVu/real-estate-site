@@ -10,6 +10,12 @@ import { useRouter } from 'next/navigation';
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import Loading from '../ui/common/loading';
 import { formatPrice } from '../utils/price-formatter';
+import dynamic from 'next/dynamic';
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
+
+// Dynamic import to avoid SSR issues
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 export default function UploadPost() {
     const screenSize = useScreenSize();
@@ -616,16 +622,20 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 </div>
                                 <div className={`${styles.inputItem} ${styles.fullWidthItem}`}>
                                     <label className="body-2-medium" htmlFor="description">Mô tả <span style={{ color: 'red' }}>*</span></label>
-                                    <textarea
-                                        className={styles.textAreaField}
-                                        id="description"
-                                        name="description"
-                                        placeholder="Nhập mô tả chi tiết về bất động sản của bạn..."
-                                        maxLength={1000}
-                                        value={formData.description}
-                                        onChange={(e) => handleInputChange('description', e.target.value)}
-                                        required
-                                    ></textarea>
+                                    <div style={{ minHeight: '300px' }}>
+                                        <MDEditor
+                                            value={formData.description}
+                                            onChange={(value) => handleInputChange('description', value || '')}
+                                            preview="edit"
+                                            height={250}
+                                            data-color-mode="light"
+                                            style={{
+                                                backgroundColor: 'white',
+                                                border: '1px solid #ddd',
+                                                borderRadius: '4px'
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className={styles.inputGroup}>

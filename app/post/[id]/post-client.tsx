@@ -15,6 +15,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/zoom';
 import { formatPrice } from '../../utils/price-formatter';
 import { formatLegalStatus, formatFurnitureStatus, formatDirection } from '../../utils/commons-utils';
+import { formatDescription } from '../../utils/markdown-utils';
 
 interface PostClientProps {
   post: any;
@@ -143,26 +144,6 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
       }
     }
   };  
-
-  // Helper function to format description with line breaks
-  const formatDescription = (description: string) => {
-    if (!description) return null;
-    
-    // Replace various escape sequences with line breaks
-    const processedText = description
-      .replace(/\\\\n/g, '\n')  // Replace \\\\n with newline
-      .replace(/\\n/g, '\n')    // Replace \\n with newline
-      .replace(/\\\\/g, '')     // Remove other backslashes
-      .trim();
-    
-    // Split by newlines and map to JSX elements
-    return processedText.split('\n').map((line, index) => (
-      <span key={index}>
-        {line}
-        {index < processedText.split('\n').length - 1 && <br />}
-      </span>
-    ));
-  };
 
   return (
     <main className="flex flex-col min-h-screen">
