@@ -74,6 +74,7 @@ function MobileUploadPost({ session }: { session?: any }) {
         frontage: '',
         contactName: '',
         phone: '',
+        transactionType: 'SELL',
         images: []
     });
 
@@ -96,6 +97,10 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     const handleTransactionTypeChange = (type: string) => {
         setTransactionType(type);
+        setFormData(prev => ({
+            ...prev,
+            transactionType: type.toUpperCase()
+        }));
         setIsTransactionTypeOpen(false);
         requestAnimationFrame(() => {
             window.scrollTo(0, originalScrollPosition);
