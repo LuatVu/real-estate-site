@@ -5,8 +5,8 @@ import useScreenSize from "../../lib/useScreenSize";
 import styles from './index.module.css';
 import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
 import MbFooter from "../../ui/mobile/footer/mb.footer";
-import DownloadApp from "../../ui/mobile/download-app/mb.download";
-import ExtraInfo from "../../ui/mobile/extra-info/mb.extra.info";
+// import DownloadApp from "../../ui/mobile/download-app/mb.download";
+// import ExtraInfo from "../../ui/mobile/extra-info/mb.extra.info";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Zoom } from "swiper/modules";
 import 'swiper/css';
@@ -354,8 +354,8 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
           </section>
         </article>
         {/* Section for recommendations -- todo*/}
-        <ExtraInfo />
-        <DownloadApp />
+        {/* <ExtraInfo /> */}
+        {/* <DownloadApp /> */}
         <MbFooter />
       </div>
 

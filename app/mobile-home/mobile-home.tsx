@@ -7,8 +7,8 @@ import NavBarMobile from '../ui/mobile/navigation/nav-bar-mobile';
 import Link from "next/link";
 import FilterPopup from '../ui/common/popup-filter/filter-popup';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
-import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
-import DownloadApp from '../ui/mobile/download-app/mb.download';
+// import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
+// import DownloadApp from '../ui/mobile/download-app/mb.download';
 import { useSession } from 'next-auth/react';
 import { countParamNum } from '../utils/search-utils';
 import { formatPrice } from '../utils/price-formatter';
@@ -181,8 +181,8 @@ export default function MobileHome() {
                             })}
                         </div>
                     </div>
-                    <ExtraInfo />
-                    <DownloadApp />
+                    {/* <ExtraInfo /> */}
+                    {/* <DownloadApp /> */}
                     <MbFooter />
                 </div>
             )}

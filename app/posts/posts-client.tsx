@@ -9,8 +9,8 @@ import Link from 'next/link';
 import MbFooter from '../ui/mobile/footer/mb.footer';
 import { useSearchParams, useRouter } from 'next/navigation';
 import SearchingSector from '../ui/mobile/searching-sector/searching.sector';
-import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
-import DownloadApp from '../ui/mobile/download-app/mb.download';
+// import ExtraInfo from '../ui/mobile/extra-info/mb.extra.info';
+// import DownloadApp from '../ui/mobile/download-app/mb.download';
 import { Suspense } from 'react';
 import Pagination from '../ui/mobile/pagination/pagination';
 import { calculatePagination } from '../utils/pagination';
@@ -316,8 +316,8 @@ function PostsOnMobile({
               className='mt-8'
             />
           </Suspense>
-          <ExtraInfo />
-          <DownloadApp />
+          {/* <ExtraInfo /> */}
+          {/* <DownloadApp /> */}
           <MbFooter />
         </div>
       )}
