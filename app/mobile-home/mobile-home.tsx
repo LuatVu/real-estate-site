@@ -112,15 +112,15 @@ export default function MobileHome() {
 
                     <div className={styles.optionFilter}>
                         <div className={styles.buttonParent}>
-                            <Link href="/Du-An" className={styles.button2}>
+                            <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.button2}>
                                 <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/BuildingOffice.svg" />
                                 <div className={styles.filter}>Dự án</div>
                             </Link>
-                            <Link href="/Mua-Ban" className={styles.button4}>
+                            <Link href="/posts?query=&transactionType=SELL&page=1" className={styles.button4}>
                                 <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/HouseLine.svg" />
                                 <div className={styles.filter}>Mua bán</div>
                             </Link>
-                            <Link href="/Cho-Thue" className={styles.button6}>
+                            <Link href="/posts?query=&transactionType=RENT&page=1" className={styles.button6}>
                                 <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/SealPercent.svg" />
                                 <div className={styles.filter}>Cho thuê</div>
                             </Link>
