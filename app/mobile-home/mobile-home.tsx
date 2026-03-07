@@ -53,7 +53,7 @@ export default function MobileHome() {
 
     const fetchRealEstate = async () => {
         try {
-            const response = await fetch(`/api/public/search/posts?page=1&size=6`, {
+            const response = await fetch(`/api/public/search/posts?page=1&size=12`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -95,7 +95,7 @@ export default function MobileHome() {
 
     useEffect(() => {
         fetchRealEstate();
-        fetchProject();
+        // fetchProject();
     }, []);
 
     return (
@@ -151,7 +151,7 @@ export default function MobileHome() {
                             )}
                         </div>
                     </div>
-                    <div className={styles.secondMainContent}>
+                    {/* <div className={styles.secondMainContent}>
                         <div className={styles.headingTitleParent}>
                             <div className={styles.headingTitle2}>
                                 <div className={styles.headingTitle1}>Dự án bất động sản nổi bật</div>
@@ -180,7 +180,7 @@ export default function MobileHome() {
                                 )
                             })}
                         </div>
-                    </div>
+                    </div> */}
                     {/* <ExtraInfo /> */}
                     {/* <DownloadApp /> */}
                     <MbFooter />
