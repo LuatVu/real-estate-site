@@ -8,6 +8,9 @@ import ReactMarkdown from 'react-markdown';
 export const formatDescription = (description: string) => {
   if (!description) return null;
   
+  // Convert \n characters to proper markdown line breaks
+  const processedDescription = description.replace(/\n/g, '  \n');
+  
   return (
     <ReactMarkdown
       components={{
@@ -38,7 +41,7 @@ export const formatDescription = (description: string) => {
         ),
       }}
     >
-      {description}
+      {processedDescription}
     </ReactMarkdown>
   );
 };
