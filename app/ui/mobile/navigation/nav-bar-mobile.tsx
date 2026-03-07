@@ -126,23 +126,32 @@ export default function NavBarMobile({displayNav, session}: any){
 								</Link>
 
 								<Link href={`/account/${session.user?.id}`} className={styles.profileMenuItem} onClick={handleCloseMenu}>
-									<Image width={20} height={20} alt="Profile" src="/icons/account.svg" />
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<path d="M16 14h1.5a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<circle cx="19" cy="8" r="1" fill="currentColor"/>
+										<path d="m15 14 2-2 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+									</svg>
 									<span>Quản lý tài khoản</span>
 								</Link>
 								
 								<Link href="/manage/posts" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-									<Image width={20} height={20} alt="Posts" src="/icons/Building.svg" />
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										<line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									</svg>
 									<span>Tin đăng của tôi</span>
 								</Link>
 								
 								<Link href="/favorites" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-									<Image width={20} height={20} alt="Favorites" src="/icons/BaseSquare.svg" />
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									</svg>
 									<span>Tin đã lưu</span>
-								</Link>
-								
-								<Link href="/settings" className={styles.profileMenuItem} onClick={handleCloseMenu}>
-									<Image width={20} height={20} alt="Settings" src="/icons/Funnel.svg" />
-									<span>Cài đặt</span>
 								</Link>
 							</div>
 							
