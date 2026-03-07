@@ -107,7 +107,7 @@ export default function MobileHome() {
                     <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
 
                     <div >
-                        <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/icons/Header_Image.png" />
+                        <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/img/wallpaper.jpg" />
                     </div>
 
                     <div className={styles.optionFilter}>

@@ -337,7 +337,7 @@ input.inputText:focus {
 	left: 0%; */
 	max-width: 100%;
 	overflow: hidden;
-	height: 141px;
+	height: 281px;
 	object-fit: cover;
 }
 
