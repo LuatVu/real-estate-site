@@ -588,7 +588,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
     const fetchProvince = async () => {
         try {
-            const response = await fetch('/api/province', {
+            const response = await fetch('/api/public/province', {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -606,7 +606,7 @@ function MobileEditPostPage({ session }: { session?: any }) {
 
     const fetchWards = async (cityCode: string) => {
         try {
-            const response = await fetch(`/api/province?cityCode=${cityCode}`, {
+            const response = await fetch(`/api/public/province?cityCode=${cityCode}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

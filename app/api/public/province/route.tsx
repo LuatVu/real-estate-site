@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
     try {
         if (!cityCode) {
-            const response = await fetch(`${process.env.SPRING_API}/api/provinces/fetch-all`, {
+            const response = await fetch(`${process.env.SPRING_API}/api/public/provinces/fetch-all`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(data, { status: response.status });
         }
         
-        const response = await fetch(`${process.env.SPRING_API}/api/provinces/fetch-wards?cityCode=${cityCode}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/public/provinces/fetch-wards?cityCode=${cityCode}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

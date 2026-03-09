@@ -387,7 +387,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     ];
 
     const fetchProvince = async () => {
-        const response = await fetch('/api/province', {
+        const response = await fetch('/api/public/province', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -401,7 +401,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     }
 
     const fetchWards = async (cityCode: string) => {
-        const response = await fetch(`/api/province?cityCode=${cityCode}`, {
+        const response = await fetch(`/api/public/province?cityCode=${cityCode}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

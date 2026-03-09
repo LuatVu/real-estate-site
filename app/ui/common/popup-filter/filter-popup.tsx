@@ -41,7 +41,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
         // Fetch city data from API if needed
         try{
             setIsLoading(true);
-            const response = await fetch('/api/province', { method: 'GET' });
+            const response = await fetch('/api/public/province', { method: 'GET' });
             const data = await response.json();
             setCities(data);
         }catch(error){
@@ -54,7 +54,7 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
     const fetchWards = async (cityCode: string) => {
         // Fetch wards data based on selected city from API if needed
         try{
-            const response = await fetch(`/api/province?cityCode=${cityCode}`, { method: 'GET' });
+            const response = await fetch(`/api/public/province?cityCode=${cityCode}`, { method: 'GET' });
             const data = await response.json();
             setWards(data.map((ward: any) => ({ ...ward, checked: false })));
             
