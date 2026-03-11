@@ -44,8 +44,7 @@ export const config = {
   matcher: [
     "/profile/:path*", // Protect /profile and all sub-routes
     "/api/users/:path*", // Protect all API routes    
-    "/api/((?!auth|public).)*", // Protect all API routes except auth and public
-    "/api/province/:path*",
+    "/api/((?!auth|public).)*", // Protect all API routes except auth and public    
     "/api/posts/upload/:path*",
     "/api/posts/:path*",
     "/api/media/draft/:path*",
@@ -55,5 +54,11 @@ export const config = {
     "/api/manage/posts/:path*",
     "/api/manage/post-status/:path*",
     "/api/packages/:path*",
+    "/upload-post/:path*",
+    "/edit-post/:path*",
+    "/deposit/:path*",
+    "/manage/:path*",
+    "/packages/:path*",
+    "/profile/:path*"
   ]
 };
