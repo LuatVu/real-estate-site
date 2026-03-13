@@ -1,0 +1,275 @@
+/* Desktop Navigation Styles */
+.desktopNav {
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navContainer {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+@media (min-width: 640px) {
+  .navContainer {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .navContainer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Logo Section */
+.logoSection {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+/* Navigation Links */
+.navLinks {
+  display: none;
+  align-items: center;
+  /* margin-left: 2rem; */
+  margin-right: 2rem;
+  gap: 2rem;
+}
+
+.navLink {
+  color: #374151;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.navLink:hover {
+  color: #2563eb;
+  background-color: #f9fafb;
+}
+
+/* Right Section */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Guest Section */
+.guestSection {
+  display: flex;
+  align-items: center;
+}
+
+.loginBtn {
+  min-width: 100px;
+}
+
+/* User Section */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.uploadBtn {
+  min-width: 100px;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.userProfile:hover {
+  background-color: #f9fafb;
+}
+
+.userAvatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-weight: 500;
+  color: #374151;
+  display: none;
+}
+
+.dropdownIcon {
+  transition: transform 0.2s ease;
+}
+
+.dropdownIcon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Profile Dropdown */
+.dropdownOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 20rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  z-index: 20;
+}
+
+.dropdownHeader {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.dropdownUser {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownUserName {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dropdownUserEmail {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.dropdownDivider {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dropdownItems {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.dropdownItem:hover {
+  color: #2563eb;
+  background-color: #f9fafb;
+}
+
+.dropdownSignOut {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  color: #dc2626;
+  transition: all 0.15s ease;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdownSignOut:hover {
+  background-color: #fef2f2;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .navLinks {
+    display: flex;
+  }
+  
+  .userName {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .navLinks {
+    display: none;
+  }
+  
+  .userName {
+    display: none;
+  }
+  
+  .profileDropdown {
+    width: 16rem;
+  }
+  
+  .rightSection {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .guestSection {
+    gap: 0.5rem;
+  }
+  
+  .userSection {
+    gap: 0.5rem;
+  }
+}
