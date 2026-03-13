@@ -25,14 +25,14 @@ function MobileSignIn() {
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
         setError("");
-        
+
         try {
             const result = await signIn("google", {
                 redirect: false, // Don't redirect immediately to handle errors
                 callbackUrl: '/'
             });
-            
-            if(result?.error){
+
+            if (result?.error) {
                 console.log("Google sign-in error:", result.error);
                 if (result.error.includes("ENOTFOUND") || result.error.includes("network")) {
                     setError("Không thể kết nối đến Google. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.");
@@ -54,14 +54,14 @@ function MobileSignIn() {
     const handleFacebookSignIn = async () => {
         setIsLoading(true);
         setError("");
-        
+
         try {
             const result = await signIn("facebook", {
                 redirect: false, // Don't redirect immediately to handle errors
                 callbackUrl: '/'
             });
-            
-            if(result?.error){
+
+            if (result?.error) {
                 console.log("Facebook sign-in error:", result.error);
                 if (result.error.includes("ENOTFOUND") || result.error.includes("network")) {
                     setError("Không thể kết nối đến Facebook. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.");
@@ -94,24 +94,24 @@ function MobileSignIn() {
                         <h1>Đăng nhập để tiếp tục</h1>
                         <p className={styles.subtitle}>Chào mừng bạn quay trở lại!</p>
                     </div>
-                
+
                     {error && (
                         <div className={styles.errorAlert}>
                             <Image width={20} height={20} alt="error" src="/icons/error.svg" />
                             <span>{error}</span>
                         </div>
                     )}
-                    
+
                     <div className={styles.socialLoginContainer}>
-                        <button 
-                            className={styles.btnSubmit} 
+                        <button
+                            className={styles.btnSubmit}
                             onClick={handleGoogleSignIn}
                             disabled={isLoading}
                         >
                             <Image className={styles.searchIcon} width={24} height={24} alt="google" src="/icons/googleIcon.svg" />
                             {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
                         </button>
-                        <button 
+                        <button
                             className={styles.btnSubmit}
                             onClick={handleFacebookSignIn}
                             disabled={isLoading}
@@ -121,8 +121,11 @@ function MobileSignIn() {
                         </button>
                     </div>
                 </div>
+                <div className={styles.footer}>
+                    <div className={styles.footerChild} />
+                    <div className={styles.copyright2025}>Copyright © 2025 - nhadepqua.com.vn</div>
+                </div>
             </div>
-            <MbFooter />
         </div>
 
     );
@@ -135,14 +138,14 @@ function DesktopSignIn() {
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
         setError("");
-        
+
         try {
             const result = await signIn("google", {
                 redirect: false,
                 callbackUrl: '/'
             });
-            
-            if(result?.error){
+
+            if (result?.error) {
                 console.log("Google sign-in error:", result.error);
                 if (result.error.includes("ENOTFOUND") || result.error.includes("network")) {
                     setError("Không thể kết nối đến Google. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.");
@@ -163,14 +166,14 @@ function DesktopSignIn() {
     const handleFacebookSignIn = async () => {
         setIsLoading(true);
         setError("");
-        
+
         try {
             const result = await signIn("facebook", {
                 redirect: false,
                 callbackUrl: '/'
             });
-            
-            if(result?.error){
+
+            if (result?.error) {
                 console.log("Facebook sign-in error:", result.error);
                 if (result.error.includes("ENOTFOUND") || result.error.includes("network")) {
                     setError("Không thể kết nối đến Facebook. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.");
@@ -194,12 +197,12 @@ function DesktopSignIn() {
         <div className={styles.desktopContainer}>
             <div className={styles.desktopLeft}>
                 <div className={styles.brandSection}>
-                    <Image 
-                        className={styles.brandLogo} 
-                        width={300} 
-                        height={100} 
-                        alt="Logo" 
-                        src="/icons/nhadepqua_logo_white.svg" 
+                    <Image
+                        className={styles.brandLogo}
+                        width={300}
+                        height={100}
+                        alt="Logo"
+                        src="/icons/nhadepqua_logo_white.svg"
                     />
                     <h2 className={styles.brandTitle}>Chào mừng trở lại!</h2>
                     <p className={styles.brandSubtitle}>Đăng nhập để khám phá hàng ngàn bất động sản chất lượng</p>
@@ -219,7 +222,7 @@ function DesktopSignIn() {
                     </div>
                 </div>
             </div>
-            
+
             <div className={styles.desktopRight}>
                 <div className={styles.desktopFormContainer}>
                     <div className={styles.desktopLoginForm}>
@@ -227,25 +230,25 @@ function DesktopSignIn() {
                             <h1>Đăng nhập</h1>
                             <p>Chọn phương thức đăng nhập</p>
                         </div>
-                        
+
                         {error && (
                             <div className={styles.errorAlert}>
                                 <Image width={20} height={20} alt="error" src="/icons/error.svg" />
                                 <span>{error}</span>
                             </div>
                         )}
-                        
+
                         <div className={styles.desktopSocialLogin}>
-                            <button 
+                            <button
                                 type="button"
-                                className={styles.desktopBtnSubmit} 
+                                className={styles.desktopBtnSubmit}
                                 onClick={handleGoogleSignIn}
                                 disabled={isLoading}
                             >
                                 <Image className={styles.searchIcon} width={20} height={20} alt="google" src="/icons/googleIcon.svg" />
                                 {isLoading ? "Đang kết nối..." : "Tiếp tục với Google"}
                             </button>
-                            <button 
+                            <button
                                 type="button"
                                 className={styles.desktopBtnSubmit}
                                 onClick={handleFacebookSignIn}

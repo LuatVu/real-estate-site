@@ -259,21 +259,6 @@ input.inputText::placeholder {
     color: #0f1114;
     padding: 0px 32px;
 }
-.container{
-    width: 100%;
-    height: 100%;
-    position: relative;
-    background-color: #fff;
-    height: auto;
-    text-align: left;
-    font-size: 15px;
-    color: #000;
-    font-family: Roboto;
-    display: flex;
-    flex-direction: column;
-    display: flex;
-    flex-direction: column;
-}
 
 .btnSubmit{
     width: 100%;
@@ -704,8 +689,7 @@ input.inputText::placeholder {
     color: #000;
     font-family: Roboto;
     display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    flex-direction: column;    
 }
 
 .loginFormContainer {
@@ -873,5 +857,62 @@ input.inputText::placeholder {
     
     .feature {
         font-size: 14px;
+    }
+}
+
+/* Footer Styles */
+.footer {
+    width: 100%;    
+    background: linear-gradient(180deg, rgba(246, 248, 255, 0) 0%, rgba(246, 248, 255, 0.5) 100%);
+    border-top: 1px solid var(--color-secondary-s300);
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.footerChild {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(135deg, var(--color-primary-p400), var(--color-primary-p300));
+    border-radius: 1px;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+.copyright2025 {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-text-t200);
+    text-align: center;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
+/* Desktop footer styles */
+@media (min-width: 769px) {
+    .desktopContainer .footer {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        right: 0;
+        background: transparent;
+        border: none;
+        padding: 16px 40px;
+        margin-top: 0;
+    }
+    
+    .desktopContainer .footerChild {
+        width: 40px;
+        height: 1px;
+        margin-bottom: 8px;
+    }
+    
+    .desktopContainer .copyright2025 {
+        font-size: 12px;
+        opacity: 0.6;
     }
 }
