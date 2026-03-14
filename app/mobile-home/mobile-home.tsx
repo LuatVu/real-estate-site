@@ -151,23 +151,36 @@ export default function MobileHome() {
                         </div>
                     </div>
                     <div className={styles.firstMainContent}>
-                        <div className={styles.headingTitle}>
-                            <div className={styles.headingTitle1}>Bất động sản nổi bật</div>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>Bất động sản nổi bật</h2>
+                            <Link href="/posts?query=&transactionType=SELL&page=1" className={styles.viewAllLink}>
+                                Xem tất cả
+                                <Image width={14} height={14} alt="Arrow" src="/icons/ArrowRight.svg" />
+                            </Link>
                         </div>
-                        <div className={styles.postParent}>
+                        <div className={styles.propertyGrid}>
                             {realEstateData.map((item: any, index: number) => {
                                 return (
-                                    <Link href={`/post/${item.postId}`} className={styles.post} key={index}>
-                                        <Image className={styles.postChild} width={174} height={178} alt="" src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`} />
-                                        <div className={styles.bnNh2TngWrapper}>
-                                            <div className={styles.filter}>{item.title}</div>
+                                    <Link href={`/post/${item.postId}`} className={styles.propertyCard} key={index}>
+                                        <div className={styles.propertyImageWrapper}>
+                                            <Image 
+                                                className={styles.propertyImage} 
+                                                width={174} 
+                                                height={140} 
+                                                alt={item.title} 
+                                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                                style={{ objectFit: 'cover' }}
+                                            />
                                         </div>
-                                        <div className={styles.t130m2Wrapper}>
-                                            <div className={styles.filter}>{formatPrice(item.price)} - {item.acreage} m²</div>
-                                        </div>
-                                        <div className={styles.vectorParent}>
-                                            <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />
-                                            <div className={styles.filter}>{item.address}</div>
+                                        <div className={styles.propertyContent}>
+                                            <h3 className={styles.propertyTitle}>{item.title}</h3>
+                                            <div className={styles.propertyPrice}>
+                                                {formatPrice(item.price)} - {item.acreage} m²
+                                            </div>
+                                            <div className={styles.propertyLocation}>
+                                                <Image width={12} height={12} alt="Location" src="/icons/location.svg" />
+                                                <span>{item.address}</span>
+                                            </div>
                                         </div>
                                     </Link>
                                 )
@@ -176,29 +189,34 @@ export default function MobileHome() {
                         </div>
                     </div>
                     <div className={styles.secondMainContent}>
-                        <div className={styles.headingTitleParent}>
-                            <div className={styles.headingTitle2}>
-                                <div className={styles.headingTitle1}>Dự án bất động sản nổi bật</div>
-                            </div>
-                            <Link href={"xem-them-du-an"} className={styles.xemThmParent}>
-                                <div className={styles.xemThm}>Xem thêm</div>
-                                <Image className={styles.arrowrightIcon} width={10} height={10} alt="" src="/icons/ArrowRight.svg" />
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>Dự án bất động sản nổi bật</h2>
+                            <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.viewAllLink}>
+                                Xem tất cả
+                                <Image width={14} height={14} alt="Arrow" src="/icons/ArrowRight.svg" />
                             </Link>
                         </div>
-                        <div className={styles.postGroup}>
+                        <div className={styles.projectGrid}>
                             {projectData.map((item: any, index: number) => {
                                 return (
-                                    <Link href={`/post/${item.postId}`} className={styles.post6} key={index}>
-                                        <Image className={styles.projectPost} width={174} height={178} alt="" src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`} />
-                                        <div className={styles.bnNh2TngWrapper}>
-                                            <div className={styles.filter}>{item.title}</div>
+                                    <Link href={`/post/${item.postId}`} className={styles.projectCard} key={index}>
+                                        <div className={styles.projectImageWrapper}>
+                                            <Image 
+                                                className={styles.projectImage} 
+                                                width={174} 
+                                                height={140} 
+                                                alt={item.title} 
+                                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                                style={{ objectFit: 'cover' }}
+                                            />
                                         </div>
-                                        <div className={styles.t130m2Wrapper}>
-                                            <div className={styles.filter}>{formatPrice(item.price)}</div>
-                                        </div>
-                                        <div className={styles.vectorParent}>
-                                            <Image className={styles.vectorIcon} width={11} height={13} alt="" src="/icons/location.svg" />
-                                            <div className={styles.filter}>{item.address}</div>
+                                        <div className={styles.projectContent}>
+                                            <h3 className={styles.projectTitle}>{item.title}</h3>
+                                            <div className={styles.projectPrice}>{formatPrice(item.price)}</div>
+                                            <div className={styles.projectLocation}>
+                                                <Image width={12} height={12} alt="Location" src="/icons/location.svg" />
+                                                <span>{item.address}</span>
+                                            </div>
                                         </div>
                                     </Link>
                                 )
