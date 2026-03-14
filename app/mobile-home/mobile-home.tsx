@@ -104,10 +104,34 @@ export default function MobileHome() {
             {homePageVisible && (
                 <div className={styles.homePage}>
                     <NavBarMobile displayNav={false} session={session} />
-                    <SearchingSector searchRequest={searchRequest} openFilterPopup={openFilterPopup} filterNum={filterNum} />
-
-                    <div >
-                        <Image className={styles.imagesIcon} width={393} height={141} alt="" src="/img/wallpaper.jpg" />
+                    
+                    {/* Hero Section with Search */}
+                    <div className={styles.heroSection}>
+                        <div className={styles.heroBackground}>
+                            <Image 
+                                className={styles.heroImage} 
+                                width={393} 
+                                height={300} 
+                                alt="Real Estate Hero" 
+                                src="/img/wallpaper.jpg"
+                                style={{ objectFit: 'cover' }}
+                            />
+                            <div className={styles.heroOverlay}>
+                                <div className={styles.heroContent}>
+                                    <h1 className={styles.heroTitle}>
+                                        Khám phá bất động sản tốt nhất
+                                    </h1>
+                                    <p className={styles.heroSubtitle}>
+                                        Tìm ngôi nhà mơ ước của bạn
+                                    </p>
+                                    <SearchingSector 
+                                        searchRequest={searchRequest} 
+                                        openFilterPopup={openFilterPopup} 
+                                        filterNum={filterNum} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className={styles.optionFilter}>
