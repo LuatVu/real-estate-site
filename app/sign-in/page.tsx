@@ -2,12 +2,9 @@
 import useScreenSize from "../lib/useScreenSize";
 import Image from "next/image";
 import styles from './index.module.css';
-import MbFooter from "../ui/mobile/footer/mb.footer";
-import Link from 'next/link';
-
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import CommonFooter from "../ui/common/footer/mb.footer";
 
 export default function SignIn() {
     const screenSize = useScreenSize();
@@ -121,10 +118,7 @@ function MobileSignIn() {
                         </button>
                     </div>
                 </div>
-                <div className={styles.footer}>
-                    <div className={styles.footerChild} />
-                    <div className={styles.copyright2025}>Copyright © 2025 - nhadepqua.com.vn</div>
-                </div>
+                <CommonFooter />
             </div>
         </div>
 

@@ -680,10 +680,9 @@ input.inputText::placeholder {
 /* Mobile responsive improvements */
 .container {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     position: relative;
     background-color: #fff;
-    height: auto;
     text-align: left;
     font-size: 15px;
     color: #000;
@@ -871,15 +870,6 @@ input.inputText::placeholder {
     align-items: center;
     justify-content: center;
     position: relative;
-}
-
-.footerChild {
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(135deg, var(--color-primary-p400), var(--color-primary-p300));
-    border-radius: 1px;
-    margin-bottom: 12px;
-    opacity: 0.8;
 }
 
 .copyright2025 {
