@@ -10,7 +10,7 @@ import PropertyTypePopup from "../pop-up-property-type/property-type-popup";
 import PricePopup from "../popup-price/price-popup";
 import AcreagePopup from "../acreage-popup/acreage-popup";
 
-export default function FilterPopup({ onClose, setFilterParam, filterParam }: any) {
+export default function FilterPopup({ onClose, setFilterParam, filterParam, isMobile = true }: any) {
     const router = useRouter();
     const [searchRequest, setSearchRequest] = useState(filterParam);
     const [tabBtnState, setTabBtnState] = useState({
@@ -273,44 +273,52 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
         return count;
     };
 
+    // Handle overlay click for desktop
+    const handleOverlayClick = (e: any) => {
+        if (e.target === e.currentTarget && !isMobile) {
+            onClose();
+        }
+    };
+
     return (
-        <div className='h-full'>
-            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} />)}
-            {wardPopup && (<WardPopup onClose={closeWard} city={city} wardList={wards} selectWard={setSelectedWards} selectedWards={selectedWards} back2Address={backToAddress} />)}
-            {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} selectedPropertyTypes={propertyTypes} />)}
-            {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod} currentMinPrice={minPrice} currentMaxPrice={maxPrice} />)}
-            {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod} currentMinAcreage={minAcreage} currentMaxAcreage={maxAcreage} />)}
+        <div className={isMobile ? 'h-full' : ''}>
+            {addressPopup && (<AddressFilterPopup onClose={closePopupAddressClick} cities={cities} selectCity={selectCity} isMobile={isMobile} />)}
+            {wardPopup && (<WardPopup onClose={closeWard} city={city} wardList={wards} selectWard={setSelectedWards} selectedWards={selectedWards} back2Address={backToAddress} isMobile={isMobile} />)}
+            {properTypePopup && (<PropertyTypePopup onClose={closeProperType} selectProperType={selectProperType} selectedPropertyTypes={propertyTypes} isMobile={isMobile} />)}
+            {pricePopup && (<PricePopup onClose={closePricePopup} setRangeMethod={setPriceRangeMethod} currentMinPrice={minPrice} currentMaxPrice={maxPrice} isMobile={isMobile} />)}
+            {acreagePopup && (<AcreagePopup onClose={closeAcreagePopup} setRangeMethod={setAcreageRangeMethod} currentMinAcreage={minAcreage} currentMaxAcreage={maxAcreage} isMobile={isMobile} />)}
             {filterPopup && (
-                <div role="dialog" aria-modal="true" aria-labelledby="filter-title">
-                    <div className={styles.filterContainer}>
-                        <div className={styles.headerFilter}>
-                            <div className={styles.khuVcParent}>
-                                <div className={styles.khuVc} id="filter-title">
-                                    Bộ lọc
-                                    {getActiveFiltersCount() > 0 && (
-                                        <span style={{
-                                            marginLeft: '8px',
-                                            backgroundColor: 'var(--color-primary-p300)',
-                                            color: 'white',
-                                            borderRadius: '12px',
-                                            padding: '2px 8px',
-                                            fontSize: '12px',
-                                            fontWeight: '500'
-                                        }}>
-                                            {getActiveFiltersCount()}
-                                        </span>
-                                    )}
+                isMobile ? (
+                    <div role="dialog" aria-modal="true" aria-labelledby="filter-title">
+                        <div className={styles.filterContainer}>
+                                <div className={styles.headerFilter}>
+                                <div className={styles.khuVcParent}>
+                                    <div className={styles.khuVc} id="filter-title">
+                                        Bộ lọc
+                                        {getActiveFiltersCount() > 0 && (
+                                            <span style={{
+                                                marginLeft: '8px',
+                                                backgroundColor: 'var(--color-primary-p300)',
+                                                color: 'white',
+                                                borderRadius: '12px',
+                                                padding: '2px 8px',
+                                                fontSize: '12px',
+                                                fontWeight: '500'
+                                            }}>
+                                                {getActiveFiltersCount()}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button 
+                                        onClick={onClose} 
+                                        aria-label="Đóng bộ lọc"
+                                        disabled={isApplying}
+                                    >
+                                        <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
+                                    </button>
                                 </div>
-                                <button 
-                                    onClick={onClose} 
-                                    aria-label="Đóng bộ lọc"
-                                    disabled={isApplying}
-                                >
-                                    <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
-                                </button>
                             </div>
-                        </div>
-                        <div className={styles.filterBody}>
+                            <div className={styles.filterBody}>
                             <div className={styles.btnTab} role="tablist" aria-label="Loại giao dịch">
                                 <button 
                                     name="btnBuy" 
@@ -527,9 +535,264 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam }: an
                                     )}
                                 </button>
                             </div>
+                        </div>                        </div>                    </div>
+                ) : (
+                    <div 
+                        className={styles.desktopOverlay} 
+                        onClick={handleOverlayClick}
+                        role="dialog" 
+                        aria-modal="true" 
+                        aria-labelledby="filter-title"
+                    >
+                        <div className={styles.desktopFilterContainer}>
+                            <div className={styles.desktopHeaderFilter}>
+                                <div className={styles.khuVcParent}>
+                                    <div className={styles.khuVc} id="filter-title">
+                                        Bộ lọc
+                                        {getActiveFiltersCount() > 0 && (
+                                            <span style={{
+                                                marginLeft: '8px',
+                                                backgroundColor: 'var(--color-primary-p300)',
+                                                color: 'white',
+                                                borderRadius: '12px',
+                                                padding: '2px 8px',
+                                                fontSize: '12px',
+                                                fontWeight: '500'
+                                            }}>
+                                                {getActiveFiltersCount()}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button 
+                                        onClick={onClose} 
+                                        aria-label="Đóng bộ lọc"
+                                        disabled={isApplying}
+                                    >
+                                        <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className={styles.desktopFilterBody}>
+                                <div className={styles.btnTab} role="tablist" aria-label="Loại giao dịch">
+                                    <button 
+                                        name="btnBuy" 
+                                        className={tabBtnState.btnBuy} 
+                                        onClick={() => selectTab("SELL")}
+                                        role="tab"
+                                        aria-selected={searchRequest.transactionType === "SELL"}
+                                        disabled={isApplying}
+                                    >
+                                        Mua bán
+                                    </button>
+                                    <button 
+                                        name="btnRent" 
+                                        className={tabBtnState.btnRent} 
+                                        onClick={() => selectTab("RENT")}
+                                        role="tab"
+                                        aria-selected={searchRequest.transactionType === "RENT"}
+                                        disabled={isApplying}
+                                    >
+                                        Cho thuê
+                                    </button>
+                                    <button 
+                                        name="btnProject" 
+                                        className={tabBtnState.btnProj} 
+                                        onClick={() => selectTab("PROJECT")}
+                                        role="tab"
+                                        aria-selected={searchRequest.transactionType === "PROJECT"}
+                                        disabled={isApplying}
+                                    >
+                                        Dự án
+                                    </button>
+                                </div>
+                                <div className={styles.areaBlock}>
+                                    <div className={styles.itemTitle}>
+                                        <p>Khu vực</p>
+                                        {selectedWards.length > 0 && (
+                                            <div className={styles.titleActions}>
+                                                <span className={styles.itemCount}>({selectedWards.length} vùng)</span>
+                                                {selectedWards.length > 1 && (
+                                                    <button 
+                                                        className={styles.clearAllBtn}
+                                                        onClick={() => setSelectedWards([])}
+                                                        aria-label="Xóa tất cả khu vực"
+                                                    >
+                                                        Xóa tất cả
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className={styles.criteriaBlk}>
+                                        {selectedWards.slice(0, 3).map((element: any) => (
+                                            <div className={styles.criteria} key={element.code}>
+                                                <p className={styles.criTitle}>{element.name}</p>
+                                                <button 
+                                                    onClick={() => removeSelectedWard(element)}
+                                                    aria-label={`Xóa ${element.name}`}
+                                                    disabled={isApplying}
+                                                >
+                                                    <Image className={styles.xIcon} width={16} height={16} alt="Xóa" src="/icons/X.svg" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {selectedWards.length > 3 && (
+                                            <div className={styles.moreIndicator}>
+                                                <button 
+                                                    className={styles.moreBtn}
+                                                    onClick={onBtnAddressClick}
+                                                    aria-label={`Xem thêm ${selectedWards.length - 3} khu vực`}
+                                                >
+                                                    +{selectedWards.length - 3} thêm
+                                                </button>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <button 
+                                                className={styles.addBtn} 
+                                                onClick={onBtnAddressClick}
+                                                aria-label="Thêm khu vực"
+                                                disabled={isApplying}
+                                            >
+                                                {isLoading ? (
+                                                    <div className={styles.loadingSpinner}></div>
+                                                ) : (
+                                                    <Image width={12} height={12} alt="Thêm" src="/icons/Plus.svg" />
+                                                )}
+                                                <p className={styles.addTitle}>Thêm</p>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={styles.proTypeBlock}>
+                                    <div className={styles.itemTitle}>
+                                        <p>Loại bất động sản</p>
+                                        {propertyTypes.length > 0 && (
+                                            <div className={styles.titleActions}>
+                                                <span className={styles.itemCount}>({propertyTypes.length} loại)</span>
+                                                {propertyTypes.length > 1 && (
+                                                    <button 
+                                                        className={styles.clearAllBtn}
+                                                        onClick={() => setPropertyType([])}
+                                                        aria-label="Xóa tất cả loại bất động sản"
+                                                    >
+                                                        Xóa tất cả
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className={styles.criteriaBlk}>
+                                        {propertyTypes.slice(0, 2).map((element: any) => (
+                                            <div className={styles.criteria} key={element.value}>
+                                                <p className={styles.criTitle}>{element.name}</p>
+                                                <button 
+                                                    onClick={() => removeProperType(element)}
+                                                    aria-label={`Xóa ${element.name}`}
+                                                    disabled={isApplying}
+                                                >
+                                                    <Image className={styles.xIcon} width={16} height={16} alt="Xóa" src="/icons/X.svg" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {propertyTypes.length > 2 && (
+                                            <div className={styles.moreIndicator}>
+                                                <button 
+                                                    className={styles.moreBtn}
+                                                    onClick={onBtnProTypeClick}
+                                                    aria-label={`Xem thêm ${propertyTypes.length - 2} loại bất động sản`}
+                                                >
+                                                    +{propertyTypes.length - 2} thêm
+                                                </button>
+                                            </div>
+                                        )}                                   
+                                        <div>
+                                            <button 
+                                                className={styles.addBtn} 
+                                                onClick={() => {
+                                                    console.log('Current propertyTypes before opening popup:', propertyTypes);
+                                                    onBtnProTypeClick();
+                                                }}
+                                                aria-label="Thêm loại bất động sản"
+                                                disabled={isApplying}
+                                            >
+                                                <Image width={12} height={12} alt="Thêm" src="/icons/Plus.svg" />
+                                                <p className={styles.addTitle}>Thêm</p>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={styles.priceBlock}>
+                                    <div className={styles.itemTitle}>
+                                        <p>Mức giá</p>
+                                    </div>
+                                    <button 
+                                        className={styles.itemBody} 
+                                        onClick={openPricePopup}
+                                        aria-label="Chọn mức giá"
+                                        disabled={isApplying}
+                                    >
+                                        <Image width={16} height={16} alt="Giá" src="/icons/CurrencyCircleDollar.svg" />
+                                        {(minPrice === null || minPrice === undefined) && (maxPrice === null || maxPrice === undefined) ? (
+                                            <p>Tất cả</p>
+                                        ) : (
+                                            <p>{(minPrice ?? 0)/1000000000} - {(maxPrice ?? 0)/1000000000} tỷ</p>
+                                        )}
+                                        <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
+                                    </button>
+                                </div>
+                                <div className={styles.acreageBlock}>
+                                    <div className={styles.itemTitle}>
+                                        <p>Diện tích</p>
+                                    </div>
+                                    <button 
+                                        className={styles.itemBody} 
+                                        onClick={openAcreagePopup}
+                                        aria-label="Chọn diện tích"
+                                        disabled={isApplying}
+                                    >
+                                        <Image width={16} height={16} alt="Diện tích" src="/icons/CurrencyCircleDollar.svg" />
+                                        {(minAcreage === null || minAcreage === undefined) && (maxAcreage === null || maxAcreage === undefined) ? (
+                                            <p>Tất cả</p>
+                                        ) : (
+                                            <p>{minAcreage ?? 0} - {maxAcreage ?? 0} m²</p>
+                                        )}
+                                        <Image className={styles.caretRightIcon} width={16} height={16} alt="Mở rộng" src="/icons/CaretRight.svg" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className={styles.desktopFooter}>
+                                <div className={styles.resetBlock}>
+                                    <button 
+                                        className={styles.btnReset} 
+                                        onClick={resetFilters}
+                                        disabled={isApplying}
+                                        aria-label="Đặt lại tất cả bộ lọc"
+                                    >
+                                        Đặt lại
+                                    </button>
+                                </div>
+                                <div className={styles.applyBlock}>
+                                    <button 
+                                        className={`${styles.btnApply} ${isApplying ? styles.loading : ''}`} 
+                                        onClick={applyFilter}
+                                        disabled={isApplying}
+                                        aria-label="Áp dụng bộ lọc"
+                                    >
+                                        {isApplying ? (
+                                            <>
+                                                <div className={styles.loadingSpinner}></div>
+                                                Đang áp dụng...
+                                            </>
+                                        ) : (
+                                            'Áp dụng'
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )
             )}
 
         </div>

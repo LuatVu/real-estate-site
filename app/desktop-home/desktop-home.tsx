@@ -98,68 +98,105 @@ export default function DesktopHome() {
 
     return (
         <div className='h-full'>
-            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} />)}
-            {homePageVisible && (
-                <div className={styles.desktopHomePage}>
-                    <NavBarDesktop session={session} />
-                    
-                    {/* Hero Section with Search */}
-                    <div className={styles.heroSection}>
-                        <div className={styles.heroBackground}>
-                            <Image 
-                                className={styles.heroImage} 
-                                width={1920} 
-                                height={600} 
-                                alt="Real Estate Hero" 
-                                src="/img/wallpaper.jpg"
-                                style={{ objectFit: 'cover' }}
-                            />
-                            <div className={styles.heroOverlay}>
-                                <div className={styles.heroContent}>
-                                    <h1 className={styles.heroTitle}>
-                                        Khám phá bất động sản tốt nhất
-                                    </h1>
-                                    <p className={styles.heroSubtitle}>
-                                        Tìm kiếm ngôi nhà mơ ước của bạn với hàng ngàn lựa chọn
-                                    </p>
-                                    <SearchingSectorDesktop 
-                                        searchRequest={searchRequest} 
-                                        openFilterPopup={openFilterPopup} 
-                                        filterNum={filterNum} 
-                                    />
-                                </div>
+            {filterPopup && (<FilterPopup onClose={closeFilterPopup} setFilterParam={setFilterParam} filterParam={searchRequest} isMobile={false} />)}
+            <div className={styles.desktopHomePage}>
+                <NavBarDesktop session={session} />
+
+                {/* Hero Section with Search */}
+                <div className={styles.heroSection}>
+                    <div className={styles.heroBackground}>
+                        <Image
+                            className={styles.heroImage}
+                            width={1920}
+                            height={600}
+                            alt="Real Estate Hero"
+                            src="/img/wallpaper.jpg"
+                            style={{ objectFit: 'cover' }}
+                        />
+                        <div className={styles.heroOverlay}>
+                            <div className={styles.heroContent}>
+                                <h1 className={styles.heroTitle}>
+                                    Khám phá bất động sản tốt nhất
+                                </h1>
+                                <p className={styles.heroSubtitle}>
+                                    Tìm kiếm ngôi nhà mơ ước của bạn với hàng ngàn lựa chọn
+                                </p>
+                                <SearchingSectorDesktop
+                                    searchRequest={searchRequest}
+                                    openFilterPopup={openFilterPopup}
+                                    filterNum={filterNum}
+                                />
                             </div>
                         </div>
                     </div>
-                    {/* Featured Real Estate */}
-                    <div className={styles.featuredSection}>
+                </div>
+                {/* Featured Real Estate */}
+                <div className={styles.featuredSection}>
+                    <div className={styles.container}>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>Bất động sản nổi bật</h2>
+                            <Link href="/posts?query=&transactionType=SELL&page=1" className={styles.viewAllLink}>
+                                Xem tất cả
+                                <Image width={16} height={16} alt="Arrow" src="/icons/ArrowRight.svg" />
+                            </Link>
+                        </div>
+                        <div className={styles.propertyGrid}>
+                            {realEstateData.map((item: any, index: number) => (
+                                <Link href={`/post/${item.postId}`} className={styles.propertyCard} key={index}>
+                                    <div className={styles.propertyImageWrapper}>
+                                        <Image
+                                            className={styles.propertyImage}
+                                            width={300}
+                                            height={200}
+                                            alt={item.title}
+                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                    <div className={styles.propertyContent}>
+                                        <h3 className={styles.propertyTitle}>{item.title}</h3>
+                                        <div className={styles.propertyPrice}>
+                                            {formatPrice(item.price)} - {item.acreage} m²
+                                        </div>
+                                        <div className={styles.propertyLocation}>
+                                            <Image width={16} height={16} alt="Location" src="/icons/location.svg" />
+                                            <span>{item.address}</span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Featured Projects */}
+                {projectData.length > 0 && (
+                    <div className={styles.projectSection}>
                         <div className={styles.container}>
                             <div className={styles.sectionHeader}>
-                                <h2 className={styles.sectionTitle}>Bất động sản nổi bật</h2>
-                                <Link href="/posts?query=&transactionType=SELL&page=1" className={styles.viewAllLink}>
+                                <h2 className={styles.sectionTitle}>Dự án bất động sản nổi bật</h2>
+                                <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.viewAllLink}>
                                     Xem tất cả
                                     <Image width={16} height={16} alt="Arrow" src="/icons/ArrowRight.svg" />
                                 </Link>
                             </div>
-                            <div className={styles.propertyGrid}>
-                                {realEstateData.map((item: any, index: number) => (
-                                    <Link href={`/post/${item.postId}`} className={styles.propertyCard} key={index}>
-                                        <div className={styles.propertyImageWrapper}>
-                                            <Image 
-                                                className={styles.propertyImage} 
-                                                width={300} 
-                                                height={200} 
-                                                alt={item.title} 
+                            <div className={styles.projectGrid}>
+                                {projectData.map((item: any, index: number) => (
+                                    <Link href={`/post/${item.postId}`} className={styles.projectCard} key={index}>
+                                        <div className={styles.projectImageWrapper}>
+                                            <Image
+                                                className={styles.projectImage}
+                                                width={400}
+                                                height={250}
+                                                alt={item.title}
                                                 src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
                                                 style={{ objectFit: 'cover' }}
                                             />
                                         </div>
-                                        <div className={styles.propertyContent}>
-                                            <h3 className={styles.propertyTitle}>{item.title}</h3>
-                                            <div className={styles.propertyPrice}>
-                                                {formatPrice(item.price)} - {item.acreage} m²
-                                            </div>
-                                            <div className={styles.propertyLocation}>
+                                        <div className={styles.projectContent}>
+                                            <h3 className={styles.projectTitle}>{item.title}</h3>
+                                            <div className={styles.projectPrice}>{formatPrice(item.price)}</div>
+                                            <div className={styles.projectLocation}>
                                                 <Image width={16} height={16} alt="Location" src="/icons/location.svg" />
                                                 <span>{item.address}</span>
                                             </div>
@@ -169,49 +206,11 @@ export default function DesktopHome() {
                             </div>
                         </div>
                     </div>
+                )}
 
-                    {/* Featured Projects */}
-                    {projectData.length > 0 && (
-                        <div className={styles.projectSection}>
-                            <div className={styles.container}>
-                                <div className={styles.sectionHeader}>
-                                    <h2 className={styles.sectionTitle}>Dự án bất động sản nổi bật</h2>
-                                    <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.viewAllLink}>
-                                        Xem tất cả
-                                        <Image width={16} height={16} alt="Arrow" src="/icons/ArrowRight.svg" />
-                                    </Link>
-                                </div>
-                                <div className={styles.projectGrid}>
-                                    {projectData.map((item: any, index: number) => (
-                                        <Link href={`/post/${item.postId}`} className={styles.projectCard} key={index}>
-                                            <div className={styles.projectImageWrapper}>
-                                                <Image 
-                                                    className={styles.projectImage} 
-                                                    width={400} 
-                                                    height={250} 
-                                                    alt={item.title} 
-                                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
-                                                    style={{ objectFit: 'cover' }}
-                                                />
-                                            </div>
-                                            <div className={styles.projectContent}>
-                                                <h3 className={styles.projectTitle}>{item.title}</h3>
-                                                <div className={styles.projectPrice}>{formatPrice(item.price)}</div>
-                                                <div className={styles.projectLocation}>
-                                                    <Image width={16} height={16} alt="Location" src="/icons/location.svg" />
-                                                    <span>{item.address}</span>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                <DesktopFooter />
+            </div>
 
-                    <DesktopFooter />
-                </div>
-            )}
         </div>
     );
 }

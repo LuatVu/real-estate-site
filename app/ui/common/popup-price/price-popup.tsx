@@ -6,7 +6,7 @@ import { useState } from "react";
 import RangeSlider from "../range-slider/range-slider";
 
 
-export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, currentMaxPrice }: any) {
+export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, currentMaxPrice, isMobile = true }: any) {
     // Initialize with current values if they exist, otherwise use default [3, 100]
     const initializePriceRange = () => {
         if (currentMinPrice !== undefined && currentMaxPrice !== undefined) {
@@ -43,6 +43,133 @@ export default function PricePopup({ onClose, setRangeMethod, currentMinPrice, c
     const resetPriceRange = () => {
         setPriceRange([3, 100]);
     };
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget && !isMobile) {
+            onClose();
+        }
+    };
+
+    if (!isMobile) {
+        return (
+            <div 
+                className={styles.desktopOverlay}
+                onClick={handleOverlayClick}
+                onKeyDown={handleKeyDown}
+                role="dialog"
+                aria-labelledby="price-popup-title"
+                aria-modal="true"
+            >
+                <Form 
+                    action={submit} 
+                    className={styles.desktopContainer}
+                >
+                    <div className={styles.desktopHeader}>
+                        <h2 id="price-popup-title" className={styles.title}>Mức giá</h2>
+                        <button 
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Đóng popup"
+                            title="Đóng popup"
+                            className={styles.closeButton}
+                        >
+                            <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
+                        </button>
+                    </div>
+                    
+                    <div className={styles.desktopBody}>
+                        {/* Price Range Display */}
+                        <div className={styles.priceDisplay}>
+                            <div className={styles.priceInfo}>
+                                <span className={styles.priceLabel}>Khoảng giá đã chọn:</span>
+                                <span className={styles.priceValue}>
+                                    {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+                                </span>
+                            </div>
+                            <button 
+                                type="button"
+                                onClick={resetPriceRange}
+                                className={styles.resetButton}
+                                title="Đặt lại về mặc định"
+                            >
+                                Đặt lại
+                            </button>
+                        </div>
+
+                        {/* Range Slider */}
+                        <div className={styles.sliderSection}>
+                            <RangeSlider
+                                key={`${priceRange[0]}-${priceRange[1]}`}
+                                label="Giá (Tỷ)"
+                                min={0}
+                                max={500}
+                                step={1}
+                                defaultMin={priceRange[0]}
+                                defaultMax={priceRange[1]}
+                                onChange={setPriceRange}
+                                prefix=""
+                                suffix="Tỷ"
+                                minLabel="Giá tối thiểu"
+                                maxLabel="Giá tối đa"
+                            />
+                        </div>
+
+                        {/* Quick Price Options */}
+                        <div className={styles.quickOptions}>
+                            <div className={styles.quickOptionsTitle}>Lựa chọn nhanh:</div>
+                            <div className={styles.quickButtons}>
+                                <button 
+                                    type="button"
+                                    onClick={() => setPriceRange([0, 5])}
+                                    className={styles.quickButton}
+                                >
+                                    Dưới 5 tỷ
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setPriceRange([5, 10])}
+                                    className={styles.quickButton}
+                                >
+                                    5 - 10 tỷ
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setPriceRange([10, 20])}
+                                    className={styles.quickButton}
+                                >
+                                    10 - 20 tỷ
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setPriceRange([20, 50])}
+                                    className={styles.quickButton}
+                                >
+                                    20 - 50 tỷ
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setPriceRange([50, 500])}
+                                    className={styles.quickButton}
+                                >
+                                    Trên 50 tỷ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className={styles.desktopFooter}>
+                        <button 
+                            type="submit" 
+                            className={styles.btnApply}
+                            aria-label={`Áp dụng khoảng giá từ ${formatPrice(priceRange[0])} đến ${formatPrice(priceRange[1])}`}
+                        >
+                            Áp dụng ({formatPrice(priceRange[0])} - {formatPrice(priceRange[1])})
+                        </button>
+                    </div>
+                </Form>
+            </div>
+        );
+    }
 
     return (
         <Form 

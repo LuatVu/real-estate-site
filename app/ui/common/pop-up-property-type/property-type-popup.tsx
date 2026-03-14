@@ -14,12 +14,14 @@ interface PropertyTypePopupProps {
     onClose: () => void;
     selectProperType: (types: PropertyType[]) => void;
     selectedPropertyTypes?: PropertyType[];
+    isMobile?: boolean;
 }
 
 export default function PropertyTypePopup({ 
     onClose, 
     selectProperType, 
-    selectedPropertyTypes = [] 
+    selectedPropertyTypes = [],
+    isMobile = true
 }: PropertyTypePopupProps) {
     // Initialize property types with checked state based on selectedPropertyTypes
     const initializePropertyTypes = (): PropertyType[] => {
@@ -59,6 +61,125 @@ export default function PropertyTypePopup({
             onClose();
         }
     };
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget && !isMobile) {
+            onClose();
+        }
+    };
+
+    if (!isMobile) {
+        return (
+            <div 
+                className={styles.desktopOverlay}
+                onClick={handleOverlayClick}
+                onKeyDown={handleKeyDown}
+                role="dialog"
+                aria-labelledby="property-type-title"
+                aria-modal="true"
+            >
+                <Form 
+                    action={submit} 
+                    className={styles.desktopContainer}
+                >
+                    <div className={styles.desktopHeader}>
+                        <h2 id="property-type-title" className={styles.loiBtNg}>Loại bất động sản</h2>
+                        <button 
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Đóng popup"
+                            title="Đóng popup"
+                        >
+                            <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
+                        </button>
+                    </div>
+                    
+                    <div className={styles.desktopBody}>
+                        {properTypes.map((element: PropertyType) => (
+                            <label 
+                                className={styles.frameParent} 
+                                key={element.value}
+                                htmlFor={`property-${element.value}`}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        const checkbox = document.getElementById(`property-${element.value}`) as HTMLInputElement;
+                                        checkbox?.click();
+                                    }
+                                }}
+                            >
+                                <div className={styles.buildingapartmentParent}>
+                                    {element.image && (
+                                        <Image 
+                                            className={styles.buildingapartmentIcon} 
+                                            width={20} 
+                                            height={20} 
+                                            alt={`${element.name} icon`} 
+                                            src={element.image} 
+                                        />
+                                    )}
+                                    <p>{element.name}</p>
+                                </div>
+                                <div className={styles.checkboxBlock}>
+                                    <input 
+                                        type="checkbox" 
+                                        id={`property-${element.value}`}
+                                        name={element.value} 
+                                        value={element.value} 
+                                        className={styles.checkbox} 
+                                        checked={element.checked}
+                                        aria-describedby={`desc-${element.value}`}
+                                        onChange={() => {
+                                            if (element.value === "ALL") {
+                                                // If ALL is clicked, check/uncheck all other checkboxes
+                                                const newCheckedState = !element.checked;
+                                                setProperTypes(prev => prev.map(type => ({
+                                                    ...type,
+                                                    checked: newCheckedState
+                                                })));
+                                            } else {
+                                                // If individual item is clicked
+                                                setProperTypes(prev => {
+                                                    const newTypes = prev.map(type => 
+                                                        type.value === element.value 
+                                                            ? { ...type, checked: !type.checked }
+                                                            : type
+                                                    );
+                                                    
+                                                    // Check if all non-ALL items are selected
+                                                    const nonAllTypes = newTypes.filter(type => type.value !== "ALL");
+                                                    const allSelected = nonAllTypes.every(type => type.checked);
+                                                    
+                                                    // Update ALL checkbox based on whether all items are selected
+                                                    return newTypes.map(type =>
+                                                        type.value === "ALL"
+                                                            ? { ...type, checked: allSelected }
+                                                            : type
+                                                    );
+                                                });
+                                            }
+                                        }}
+                                    />
+                                </div>                                                
+                            </label>
+                        ))}
+                    </div>
+                    
+                    <div className={styles.desktopFooter}>
+                        <button 
+                            type="submit" 
+                            className={styles.btnApply}
+                            aria-label="Áp dụng các loại bất động sản đã chọn"
+                        >
+                            Áp dụng
+                        </button>
+                    </div>
+                </Form>
+            </div>
+        );
+    }
     return (
         <Form 
             action={submit} 

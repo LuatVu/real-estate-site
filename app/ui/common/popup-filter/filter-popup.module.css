@@ -9,6 +9,56 @@
     animation: slideUp 0.3s ease-out;
 }
 
+/* Desktop popup overlay */
+.desktopOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Desktop filter container */
+.desktopFilterContainer {
+    display: flex;
+    flex-direction: column;
+    font-family: Roboto;
+    background-color: #ffffff;
+    width: 480px;
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.3s ease-out;
+    position: relative;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(100%);
@@ -38,6 +88,21 @@
     z-index: 10;
 }
 
+.desktopHeaderFilter {
+    position: relative;
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid var(--color-secondary-s300);
+    box-sizing: border-box;
+    height: 60px;
+    overflow: hidden;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-t300);
+    border-radius: 12px 12px 0 0;
+    flex-shrink: 0;
+}
+
 .filterBody{
     position: absolute;
     flex: 1;
@@ -53,6 +118,20 @@
     flex-direction: column;
     gap: 32px;
     scroll-behavior: smooth;
+}
+
+.desktopFilterBody {
+    flex: 1;
+    width: 100%;
+    background-color: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    scroll-behavior: smooth;
+    max-height: calc(80vh - 140px);
 }
 
 .areaBlock{
@@ -135,6 +214,20 @@
     gap: 16px;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     z-index: 10;
+}
+
+.desktopFooter {
+    width: 100%;
+    height: 80px;
+    background-color: #fff;
+    border-top: 1px solid var(--color-secondary-s300);
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 12px 12px;
+    flex-shrink: 0;
 }
 
 .btnApply{
@@ -595,4 +688,51 @@
 
 .filterBody::-webkit-scrollbar-thumb:hover {
     background: var(--color-secondary-s500);
+}
+
+/* Desktop scrollbar styles */
+.desktopFilterBody::-webkit-scrollbar {
+    width: 6px;
+}
+
+.desktopFilterBody::-webkit-scrollbar-track {
+    background: var(--color-secondary-s100);
+    border-radius: 3px;
+}
+
+.desktopFilterBody::-webkit-scrollbar-thumb {
+    background: var(--color-secondary-s400);
+    border-radius: 3px;
+}
+
+.desktopFilterBody::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary-s500);
+}
+
+/* Desktop-specific improvements */
+.desktopFilterContainer .itemBody:hover {
+    border-color: var(--color-primary-p200);
+    background-color: var(--color-primary-p50);
+    transform: translateY(-1px);
+}
+
+.desktopFilterContainer .addBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 101, 255, 0.15);
+}
+
+/* Ensure sub-popups appear above desktop overlay */
+.desktopOverlay {
+    z-index: 1000;
+}
+
+/* Global z-index for any popup components that should appear above desktop overlay */
+:global(.popup-overlay),
+:global([role="dialog"]) {
+    z-index: 1001 !important;
+}
+
+/* Specific z-index for common popup patterns */
+:global(.popup-container) {
+    z-index: 1001 !important;
 }

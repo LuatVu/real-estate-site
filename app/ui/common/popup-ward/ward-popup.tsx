@@ -10,7 +10,7 @@ interface Ward {
     checked: boolean;
 }
 
-export default function WardPopup({ onClose, city, wardList, selectWard, selectedWards = [], back2Address }: any) {
+export default function WardPopup({ onClose, city, wardList, selectWard, selectedWards = [], back2Address, isMobile = true }: any) {
     // Function to remove Vietnamese accents for search matching
     const removeVietnameseAccents = (str: string): string => {
         return str
@@ -99,6 +99,202 @@ export default function WardPopup({ onClose, city, wardList, selectWard, selecte
             }
         }
     };
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget && !isMobile) {
+            onClose();
+        }
+    };
+
+    if (!isMobile) {
+        return (
+            <div 
+                className={styles.desktopOverlay}
+                onClick={handleOverlayClick}
+                onKeyDown={handleKeyDown}
+                role="dialog"
+                aria-labelledby="ward-popup-title"
+                aria-modal="true"
+            >
+                <Form 
+                    action={submit} 
+                    className={styles.desktopDistrictContainer}
+                >
+                    <div className={styles.desktopHeader}>
+                        <h2 id="ward-popup-title" className={styles.khuVc}>Địa phương</h2>
+                        <button 
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Đóng popup"
+                            title="Đóng popup"
+                        >
+                            <Image className={styles.xIcon} width={24} height={24} alt="Đóng" src="/icons/X.svg" />
+                        </button>
+                    </div>
+                    
+                    <div className={styles.desktopBody}>
+                        <div className={styles.titleBlock}>
+                            <button 
+                                className={styles.cityButton} 
+                                onClick={back2Address}
+                                aria-label={`Quay lại chọn địa phương khác, hiện tại: ${city.name}`}
+                                title="Nhấn để chọn tỉnh/thành phố khác"
+                            >
+                                <div className={styles.cityButtonContent}>
+                                    <div className={styles.locationSection}>
+                                        <Image 
+                                            className={styles.locationIcon} 
+                                            width={16} 
+                                            height={16} 
+                                            alt="" 
+                                            src="/icons/location.svg" 
+                                        />
+                                        <div className={styles.locationText}>
+                                            <span className={styles.locationLabel}>Địa điểm:</span>
+                                            <span className={styles.locationName}>{city.name}</span>
+                                        </div>
+                                    </div>
+                                    <div className={styles.actionSection}>
+                                        <span className={styles.changeText}>Thay đổi</span>
+                                        <Image 
+                                            className={styles.chevronIcon} 
+                                            width={14} 
+                                            height={14} 
+                                            alt="" 
+                                            src="/icons/CaretRight.svg" 
+                                        />
+                                    </div>
+                                </div>
+                            </button>                        
+                        </div>
+                        
+                        {/* Search Section */}
+                        <div className={styles.searchSection}>
+                            <div className={styles.searchInputWrapper}>
+                                <Image 
+                                    className={styles.searchIcon} 
+                                    width={16} 
+                                    height={16} 
+                                    alt="Search" 
+                                    src="/icons/searchBIcon.svg" 
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm phường/xã..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className={`${styles.searchInput} ward-search-input`}
+                                    aria-label="Tìm kiếm phường xã"
+                                    autoFocus
+                                />
+                                {searchTerm && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchTerm("")}
+                                        className={styles.clearSearch}
+                                        aria-label="Xóa tìm kiếm"
+                                    >
+                                        <Image 
+                                            width={14} 
+                                            height={14} 
+                                            alt="Clear" 
+                                            src="/icons/X.svg" 
+                                        />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {/* Check All Section */}
+                        {filteredWards && filteredWards.length > 0 && (
+                            <div className={styles.checkAllSection}>
+                                <label className={styles.checkAllItem} htmlFor="check-all-wards">
+                                    <div className={styles.textBlock}>
+                                        <Image className={styles.locationIcon} width={16} height={16} alt="" src="/icons/location.svg" />
+                                        <p>Chọn tất cả ({filteredWards.length} phường/xã{searchTerm ? ` - "${searchTerm}"` : ""})</p>
+                                    </div>
+                                    <div className={styles.checkboxBlock}>
+                                        <input 
+                                            type="checkbox" 
+                                            id="check-all-wards"
+                                            name="check-all" 
+                                            className={styles.checkbox} 
+                                            checked={allWardsSelected}
+                                            ref={(input) => {
+                                                if (input) input.indeterminate = someWardsSelected && !allWardsSelected;
+                                            }}
+                                            onChange={handleCheckAll}
+                                        />
+                                    </div>
+                                </label>
+                            </div>
+                        )}
+
+                        <div className={styles.itemBlock}>
+                            {filteredWards && filteredWards.length > 0 ? (
+                                filteredWards.map((element:any) => (                        
+                                    <label 
+                                        className={styles.items} 
+                                        key={element.code}
+                                        htmlFor={`ward-${element.code}`}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                handleWardChange(element.code);
+                                            }
+                                        }}
+                                    >
+                                        <div className={styles.textBlock}>
+                                            <Image 
+                                                className={styles.locationIcon} 
+                                                width={16} 
+                                                height={16} 
+                                                alt={`${element.name} location`} 
+                                                src="/icons/location.svg" 
+                                            />
+                                            <p>{element.name}</p>
+                                        </div>
+                                        <div className={styles.checkboxBlock}>
+                                            <input 
+                                                type="checkbox"
+                                                id={`ward-${element.code}`}
+                                                name={element.name} 
+                                                value={element.code} 
+                                                className={styles.checkbox} 
+                                                checked={element.checked}
+                                                onChange={() => handleWardChange(element.code)}
+                                                aria-describedby={`ward-desc-${element.code}`}
+                                            />
+                                        </div>
+                                    </label>
+                                ))
+                            ) : searchTerm ? (
+                                <div className={styles.noResults}>
+                                    <p>Không tìm thấy phường/xã nào phù hợp với "{searchTerm}"</p>
+                                </div>
+                            ) : wards.length === 0 ? (
+                                <div className={styles.items}>
+                                    <p>Đang tải danh sách phường/xã...</p>
+                                </div>
+                            ) : null}            
+                        </div>
+                    </div>
+                    
+                    <div className={styles.desktopFooter}>
+                        <button 
+                            type="submit" 
+                            className={styles.btnApply}
+                            aria-label={`Áp dụng ${wards.filter(w => w.checked).length} phường/xã đã chọn`}
+                        >
+                            Áp dụng ({wards.filter(w => w.checked).length})
+                        </button>
+                    </div>
+                </Form>
+            </div>
+        );
+    }
 
     return (
         <Form 
