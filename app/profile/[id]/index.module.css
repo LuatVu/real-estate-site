@@ -475,84 +475,516 @@
 
 /* Desktop Profile Styles */
 .desktopContainer {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    flex: 1;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
     padding: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.desktopProfileContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .desktopHeader {
-    text-align: center;
+    background: var(--color-primary-p300);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
 }
 
-.desktopCard {
-    background: white;
-    border-radius: 24px;
-    padding: 48px 40px;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.desktopIcon {
-    font-size: 64px;
-    margin-bottom: 20px;
-    display: inline-block;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-.desktopTitle {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 16px 0;
-    font-family: 'Roboto', sans-serif;
-}
-
-.desktopSubtitle {
-    font-size: 16px;
-    color: #6b7280;
-    margin: 0 0 32px 0;
-    line-height: 1.6;
-    font-family: 'Roboto', sans-serif;
-}
-
-.desktopFeatures {
+.desktopProfileTitleSection{
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 16px;
 }
 
-.featureItem {
+.desktopProfileIcon{
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.desktopProfileTitle{
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.desktopProfileSubtitle{
+    margin: 0;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+}
+
+.desktopContent {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.desktopSidebar {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.desktopTabContainer {
+    background: white;
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.desktopTabButton {
+    padding: 16px 20px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 12px;
+    text-align: left;
+    background: transparent;
+    color: #6b7280;
+    position: relative;
+    overflow: hidden;
+}
+
+.desktopTabButton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.desktopTabButton:hover::before {
+    opacity: 1;
+}
+
+.desktopTabIcon {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.desktopTabButton:hover .desktopTabIcon {
+    transform: scale(1.1);
+}
+
+.desktopSecondaryBtn {
+    background: transparent;
+    color: #6b7280;
+}
+
+.desktopSecondaryBtn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.desktopPrimaryBtn {
+    background: var(--color-primary-p300);
+    color: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.desktopPrimaryBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.desktopMainContent {
+    flex: 1;
+}
+
+.desktopProfileBody {
+    display: flex;
+    flex-direction: column;
+}
+
+.desktopProfileCard {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.desktopProfileCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-primary-p300);
+}
+
+.desktopCardTitle {
+    margin: 0 0 32px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.desktopCardIcon {
+    font-size: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.desktopFormLayout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.desktopImageSection {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.desktopImageBlk {
+    margin-bottom: 16px;
+}
+
+.desktopUploadImageContainer {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 3px dashed #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.desktopUploadImageContainer:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    transform: scale(1.02);
+}
+
+.desktopUploadImagePlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.desktopCameraIcon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.desktopUploadImagePlaceholder:hover .desktopCameraIcon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.desktopUploadText {
     font-size: 14px;
+    color: #6b7280;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
     font-weight: 500;
+}
+
+.desktopUploadedImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.desktopUploadOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.desktopUploadImageContainer:hover .desktopUploadOverlay {
+    opacity: 1;
+}
+
+.desktopUploadOverlayText {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Roboto', sans-serif;
+}
+
+.desktopImageHint {
+    text-align: center;
+}
+
+.desktopImageHint p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.4;
+}
+
+.desktopFormSection {
+    flex: 1;
+}
+
+.desktopFormContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.desktopFormRow {
+    display: flex;
+    gap: 24px;
+}
+
+.desktopFormGroup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.desktopFormLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
     color: #374151;
     font-family: 'Roboto', sans-serif;
 }
 
-.featureIcon {
+.desktopLabelIcon {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.desktopRequired {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.desktopInputWrapper {
+    position: relative;
+}
+
+.desktopInputText {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.desktopInputText:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
+.desktopInputError {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
+.desktopErrorMessage {
+    color: #ef4444;
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.desktopErrorMessage::before {
+    content: '⚠️';
+    font-size: 12px;
+}
+
+.desktopSubmitBtn {
+    padding: 16px 32px;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-primary-p300);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.desktopSubmitBtn:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.desktopSubmitBtnDisabled {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%) !important;
+    color: #6b7280 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+    box-shadow: none !important;
+}
+
+.desktopSubmitBtnDisabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.desktopButtonIcon {
+    font-size: 16px;
+}
+
+.desktopPasswordHeader {
+    margin-bottom: 32px;
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.desktopPasswordTitle {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.desktopPasswordIcon {
+    font-size: 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.desktopPasswordSubtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+    font-family: 'Roboto', sans-serif;
+}
+
+.desktopPasswordFormRow {
+    display: flex;
+    gap: 24px;
+}
+
+.desktopPasswordHintBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-radius: 12px;
+    border: 1px solid #f59e0b;
+    margin: 16px 0;
+}
+
+.desktopHintIcon {
     font-size: 20px;
+    margin-top: 2px;
+}
+
+.desktopPasswordHint {
+    font-size: 14px;
+    font-weight: 500;
+    color: #92400e;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.desktopMessageContainer {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    max-width: 90%;
+    width: auto;
+    min-width: 400px;
+    animation: slideInDown 0.4s ease-out;
 }
 
 /* Message Component Enhancement */
