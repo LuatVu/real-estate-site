@@ -204,7 +204,8 @@ export const options: NextAuthOptions = {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer google-${account.id_token}`
                     },
-                    body: JSON.stringify({                        
+                    body: JSON.stringify({
+                        userId: user.id,
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
@@ -221,6 +222,7 @@ export const options: NextAuthOptions = {
                         'Authorization': `Bearer facebook-${account.access_token}`
                     },
                     body: JSON.stringify({
+                        userId: user.id,
                         username: user.name,
                         email: user.email,
                         authProvider: account.provider,
