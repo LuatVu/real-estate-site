@@ -1,7 +1,7 @@
 .packagesContainer {
     padding: 20px;
     background: #f9f9f9;
-    min-height: 100vh;
+    /* min-height: 100vh; */
 }
 
 .title {
@@ -160,7 +160,7 @@
 .desktopPackagesContainer {
     padding: 40px;
     background: #f9f9f9;
-    min-height: 100vh;
+    /* min-height: 100vh; */
 }
 
 .desktopTitle {

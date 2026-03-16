@@ -8,6 +8,9 @@ import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
 import { useParams } from 'next/navigation';
 import PackagePurchasePopup from '../../ui/common/package-purchase-popup/package-purchase-popup';
 import PackagePurchaseDesktopPopup from '../../ui/common/package-purchase-desktop-popup/package-purchase-desktop-popup';
+import MbFooter from '@/app/ui/mobile/footer/mb.footer';
+import NavBarDesktop from '@/app/ui/desktop/navigation/nav-bar-desktop';
+import DesktopFooter from '@/app/ui/desktop/footer/desktop-footer';
 
 export default function PackagesPage() {
     const screenSize = useScreenSize();
@@ -180,6 +183,7 @@ function MobilePackages({ session }: { session?: any }){
                     session={session}
                 />
             )}
+            <MbFooter />
         </div>
     );
 }
@@ -261,6 +265,7 @@ function DesktopPackages({ session }: { session?: any }){
 
     return(
         <div className="flex flex-col min-h-screen">
+            <NavBarDesktop displayNav={true} session={session} />
             <div className={styles.desktopPackagesContainer}>
                 <h1 className={styles.desktopTitle}>Mua gói hội viên</h1>
                 <div className={styles.desktopPackagesList}>
@@ -326,6 +331,7 @@ function DesktopPackages({ session }: { session?: any }){
                     session={session}
                 />
             )}
+            <DesktopFooter />
         </div>
     );
 }
