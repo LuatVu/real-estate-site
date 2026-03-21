@@ -3,6 +3,7 @@ import useScreenSize from "../../lib/useScreenSize";
 import styles from './index.module.css';
 import { useSession } from 'next-auth/react';
 import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
+import NavBarDesktop from '../../ui/desktop/navigation/nav-bar-desktop';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Alert from '../../ui/common/alert';
@@ -110,7 +111,7 @@ function MobileView({ session }: { session?: any }) {
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage] = useState(10); // Number of posts per page
-    
+
     // Charge fee popup state
     const [chargeFeePopup, setChargeFeePopup] = useState({
         isVisible: false,
@@ -119,7 +120,7 @@ function MobileView({ session }: { session?: any }) {
         postTitle: '',
         confirmButtonLoading: false
     });
-    
+
     // VIP package popup state
     const [vipPackagePopup, setVipPackagePopup] = useState({
         isVisible: false,
@@ -127,14 +128,14 @@ function MobileView({ session }: { session?: any }) {
         postTitle: '',
         confirmButtonLoading: false
     });
-    
+
     // Preview popup state
     const [previewPopup, setPreviewPopup] = useState({
         isVisible: false,
         post: null as any
     });
-    
-    const router = useRouter();    
+
+    const router = useRouter();
 
     // Handle preview popup
     const handlePreviewPost = (post: any) => {
@@ -146,20 +147,17 @@ function MobileView({ session }: { session?: any }) {
     };
 
     // Handle search input events
-    const handleSearchSubmit = async () => {
+    const handleSearchSubmit = () => {
         const newParams = {
             ...searchParams,
             title: searchTerm
         };
         setSearchParams(newParams);
         setCurrentPage(1); // Reset to first page when searching
-        await fetchPosts(newParams);
     };
 
-    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSearchSubmit();
-        }
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {        
+        handleSearchSubmit();        
     };
 
     const handleSearchBlur = () => {
@@ -222,27 +220,27 @@ function MobileView({ session }: { session?: any }) {
 
     const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
         setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-        
-        try {                  
-            if(chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew'){
+
+        try {
+            if (chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew') {
                 const response = await renewPost(chargeFeePopup.postId);
                 const data = await response.json();
-                if(!response.ok){
+                if (!response.ok) {
                     setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                    showError(`Thanh toán thất bại. ${data.message || ''}`);                    
+                    showError(`Thanh toán thất bại. ${data.message || ''}`);
                     return;
                 }
 
-            } else if(chargeFeePopup.type === 'up'){
+            } else if (chargeFeePopup.type === 'up') {
                 const response = await reupPost(chargeFeePopup.postId);
                 const data = await response.json();
-                if(!response.ok){
+                if (!response.ok) {
                     setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
                     showError(`Thanh toán thất bại. ${data.message || ''}`);
                     return;
                 }
             }
-            
+
             hideChargeFeePopup();
             showSuccess(`Thanh toán thành công!`);
             // Refresh posts data
@@ -255,7 +253,7 @@ function MobileView({ session }: { session?: any }) {
 
     const handleVipPackageConfirm = async (selectedPackage: PostChargeFeeData) => {
         setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-        
+
         try {
             const response = await fetch('/api/posts/update-priority', {
                 method: 'POST',
@@ -267,14 +265,14 @@ function MobileView({ session }: { session?: any }) {
                     priorityLevel: selectedPackage.priorityLevel
                 })
             });
-            
+
             const data = await response.json();
             if (!response.ok) {
                 setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
                 showError(`Cập nhật gói VIP thất bại. ${data.message || ''}`);
                 return;
             }
-            
+
             hideVipPackagePopup();
             showSuccess('Cập nhật gói VIP thành công!');
             // Refresh posts data
@@ -296,11 +294,35 @@ function MobileView({ session }: { session?: any }) {
     // Pagination calculations
     const getFilteredPosts = () => {
         return posts?.filter((post) => {
-            if (activeTab === 'all') return true;
-            if (activeTab === 'active') return post.status === 'PUBLISHED';
-            if (activeTab === 'expired') return post.status === 'EXPIRED';
-            if (activeTab === 'pending') return post.status === 'DRAFT';
-            return true;
+            // Filter by tab status
+            let matchesTab = true;
+            if (activeTab === 'active') matchesTab = post.status === 'PUBLISHED';
+            else if (activeTab === 'expired') matchesTab = post.status === 'EXPIRED';
+            else if (activeTab === 'pending') matchesTab = post.status === 'DRAFT';
+            // 'all' tab shows everything
+
+            // Filter by search term
+            let matchesSearch = true;
+            if (searchParams.title && searchParams.title.trim() !== '') {
+                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
+            }
+
+            // Filter by transaction type
+            let matchesTransaction = true;
+            if (searchParams.transactionType && searchParams.transactionType !== '') {
+                matchesTransaction = post.transactionType === searchParams.transactionType;
+            }
+
+            // Filter by date (lastDate is in days)
+            let matchesDate = true;
+            if (searchParams.lastDate !== 180) {
+                const postDate = new Date(post.createdDate);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
+                matchesDate = postDate >= cutoffDate;
+            }
+
+            return matchesTab && matchesSearch && matchesTransaction && matchesDate;
         }) || [];
     };
 
@@ -354,13 +376,13 @@ function MobileView({ session }: { session?: any }) {
             case 'renew': // status = 'Expired'
                 showChargeFeePopup(post.postId, 'renew', post.title);
                 break;
-            case 'edit':                             
+            case 'edit':
                 router.push(`/edit-post/${post.postId}`);
                 break;
             case 'upgrade':
                 showVipPackagePopup(post.postId, post.title);
                 break;
-            case 'delete':                
+            case 'delete':
                 // Show confirmation dialog for delete
                 showConfirmation({
                     title: 'Xác nhận xóa tin',
@@ -373,7 +395,7 @@ function MobileView({ session }: { session?: any }) {
                         try {
                             await updatePostStatus(post.postId, 'DELETED');
                             hideConfirmation();
-                            showSuccess(`Đã xóa tin "${post.title}" thành công`); 
+                            showSuccess(`Đã xóa tin "${post.title}" thành công`);
                             await fetchPosts(searchParams);
                         } catch (error) {
                             setConfirmButtonLoading(false);
@@ -381,7 +403,7 @@ function MobileView({ session }: { session?: any }) {
                         }
                     },
                     onCancel: () => {
-                        hideConfirmation();                        
+                        hideConfirmation();
                     }
                 });
                 break;
@@ -432,7 +454,7 @@ function MobileView({ session }: { session?: any }) {
     // Handle filter popup actions
     const handleFilterReset = () => {
         const currentFilterCount = getActiveFilterCount();
-        
+
         if (currentFilterCount > 0) {
             showConfirmation({
                 title: 'Xác nhận đặt lại bộ lọc',
@@ -471,10 +493,10 @@ function MobileView({ session }: { session?: any }) {
         setSearchParams(newParams);
         setOpenDropdownId(null);
         setCurrentPage(1); // Reset to first page when applying filters
-        
+
         // Re-fetch posts with new filters
         await fetchPosts(newParams);
-        
+
         // Show filter applied success message
         const filterCount = getActiveFilterCount();
         if (filterCount > 0) {
@@ -513,7 +535,7 @@ function MobileView({ session }: { session?: any }) {
         };
     }, [openDropdownId]);
 
-    
+
     const tabs = [
         { id: 'all', label: 'Tất cả', count: tabData.all },
         { id: 'active', label: 'Đang hiển thị', count: tabData.active },
@@ -522,38 +544,38 @@ function MobileView({ session }: { session?: any }) {
     ];
 
     const fetchChargeFee = async (postId: string) => {
-        try{
+        try {
             const response = await fetch(`/api/manage/posts/charge-fee/${postId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }                
+                }
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            const data = await response.json();        
-        }catch(error){
+            const data = await response.json();
+        } catch (error) {
             console.error("Error charging fee:", error);
-            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");            
+            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");
         }
     }
 
     // Fetch posts from API
     const fetchPosts = async (params = searchParams) => {
-        try{
+        try {
             const response = await fetch('/api/manage/posts', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',                   
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(params)
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
             setPosts(data.response);
             setTabData({
@@ -562,25 +584,25 @@ function MobileView({ session }: { session?: any }) {
                 expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
                 pending: data.response.filter((post: any) => post.status === 'DRAFT').length
             });
-            
+
             // Show success message when posts are loaded (optional, can be removed if too frequent)
             // showSuccess(`Đã tải ${data.response.length} tin đăng thành công`);
-        }catch(error){
+        } catch (error) {
             console.error("Error fetching posts:", error);
             showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
         }
     }
 
-    const updatePostStatus = async (postId: string, status: string) => {        
+    const updatePostStatus = async (postId: string, status: string) => {
         await fetch(`/api/manage/post-status?postId=${postId}&status=${status}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-        });                     
+        });
     };
 
-    const reupPost = async (postId: string): Promise<Response> => {        
+    const reupPost = async (postId: string): Promise<Response> => {
         const response = await fetch(`/api/manage/posts/reup/${postId}`, {
             method: 'POST',
             headers: {
@@ -590,9 +612,9 @@ function MobileView({ session }: { session?: any }) {
         return response;
     };
 
-    const renewPost = async (postId: string): Promise<Response> => {        
+    const renewPost = async (postId: string): Promise<Response> => {
         const response = await fetch(`/api/manage/posts/renew/${postId}`, {
-            method: 'POST', 
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -641,7 +663,7 @@ function MobileView({ session }: { session?: any }) {
                         />
                     </div>
                     <div style={{ position: 'relative' }}>
-                        <button 
+                        <button
                             className={styles.filterButton}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -700,17 +722,17 @@ function MobileView({ session }: { session?: any }) {
                                     marginBottom: dropdownPosition === 'above' ? '4px' : '0'
                                 }}
                             >
-                                <div style={{ 
-                                    display: 'flex', 
-                                    justifyContent: 'space-between', 
-                                    alignItems: 'center', 
-                                    marginBottom: '16px' 
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '16px'
                                 }}>
-                                    <h3 style={{ 
-                                        margin: 0, 
-                                        fontSize: '16px', 
-                                        fontWeight: 'bold', 
-                                        color: '#374151' 
+                                    <h3 style={{
+                                        margin: 0,
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        color: '#374151'
                                     }}>
                                         Bộ lọc
                                     </h3>
@@ -730,10 +752,10 @@ function MobileView({ session }: { session?: any }) {
 
                                 {/* Transaction Type Filter */}
                                 <div style={{ marginBottom: '16px' }}>
-                                    <label style={{ 
-                                        display: 'block', 
-                                        marginBottom: '6px', 
-                                        fontSize: '14px', 
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '6px',
+                                        fontSize: '14px',
                                         fontWeight: '500',
                                         color: '#374151'
                                     }}>
@@ -762,10 +784,10 @@ function MobileView({ session }: { session?: any }) {
 
                                 {/* Last Date Filter */}
                                 <div style={{ marginBottom: '16px' }}>
-                                    <label style={{ 
-                                        display: 'block', 
-                                        marginBottom: '6px', 
-                                        fontSize: '14px', 
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '6px',
+                                        fontSize: '14px',
                                         fontWeight: '500',
                                         color: '#374151'
                                     }}>
@@ -795,10 +817,10 @@ function MobileView({ session }: { session?: any }) {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div style={{ 
-                                    display: 'flex', 
-                                    gap: '8px', 
-                                    justifyContent: 'flex-end' 
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '8px',
+                                    justifyContent: 'flex-end'
                                 }}>
                                     <button
                                         onClick={handleFilterReset}
@@ -901,7 +923,7 @@ function MobileView({ session }: { session?: any }) {
 
                                     <div className={styles.postDates}>
                                         <div className={styles.dateItem}>
-                                            <span className={styles.dateLabel}>Ngày đăng:</span>
+                                            <span className={styles.dateLabel}>Ngày tạo:</span>
                                             <span className={styles.dateValue}>
                                                 {new Date(post.createdDate).toLocaleDateString('vi-VN')}
                                             </span>
@@ -917,7 +939,7 @@ function MobileView({ session }: { session?: any }) {
                             </div>
 
                             <div className={styles.postActions}>
-                                <button 
+                                <button
                                     className={styles.actionButton}
                                     onClick={() => handlePreviewPost(post)}
                                 >
@@ -955,21 +977,8 @@ function MobileView({ session }: { session?: any }) {
                                             }}
                                         >
                                             <button
-                                                onClick={() => handleDropdownAction (getRepostAction(post.status), post)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '8px 16px',
-                                                    textAlign: 'left',
-                                                    border: 'none',
-                                                    backgroundColor: 'transparent',
-                                                    fontSize: '14px',
-                                                    color: '#374151',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid #f3f4f6',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}
+                                                onClick={() => handleDropdownAction(getRepostAction(post.status), post)}
+                                                className={styles.btnFacility}
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
@@ -978,20 +987,7 @@ function MobileView({ session }: { session?: any }) {
                                             </button>
                                             <button
                                                 onClick={() => handleDropdownAction('edit', post)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '8px 16px',
-                                                    textAlign: 'left',
-                                                    border: 'none',
-                                                    backgroundColor: 'transparent',
-                                                    fontSize: '14px',
-                                                    color: '#374151',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid #f3f4f6',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}
+                                                className={styles.btnFacility}
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
@@ -1000,20 +996,7 @@ function MobileView({ session }: { session?: any }) {
                                             </button>
                                             <button
                                                 onClick={() => handleDropdownAction('upgrade', post)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '8px 16px',
-                                                    textAlign: 'left',
-                                                    border: 'none',
-                                                    backgroundColor: 'transparent',
-                                                    fontSize: '14px',
-                                                    color: '#374151',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid #f3f4f6',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}
+                                                className={styles.btnFacility}
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
@@ -1022,20 +1005,7 @@ function MobileView({ session }: { session?: any }) {
                                             </button>
                                             <button
                                                 onClick={() => handleDropdownAction('delete', post)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '8px 16px',
-                                                    textAlign: 'left',
-                                                    border: 'none',
-                                                    backgroundColor: 'transparent',
-                                                    fontSize: '14px',
-                                                    color: '#ef4444',
-                                                    cursor: 'pointer',
-                                                    borderRadius: '0 0 8px 8px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}
+                                                className={styles.btnFacility}
                                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
                                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
@@ -1049,7 +1019,7 @@ function MobileView({ session }: { session?: any }) {
                         </div>
                     ))}
                 </div>
-                
+
                 {/* Pagination Controls */}
                 {getTotalPages() > 1 && (
                     <div style={{
@@ -1076,18 +1046,18 @@ function MobileView({ session }: { session?: any }) {
                         >
                             ← Trước
                         </button>
-                        
+
                         {Array.from({ length: getTotalPages() }, (_, index) => {
                             const page = index + 1;
                             const isCurrentPage = page === currentPage;
-                            const showPage = page === 1 || page === getTotalPages() || 
-                                            Math.abs(page - currentPage) <= 2;
-                            
+                            const showPage = page === 1 || page === getTotalPages() ||
+                                Math.abs(page - currentPage) <= 2;
+
                             if (!showPage && page !== currentPage - 3 && page !== currentPage + 3) {
                                 return null;
                             }
-                            
-                            if ((page === currentPage - 3 || page === currentPage + 3) && 
+
+                            if ((page === currentPage - 3 || page === currentPage + 3) &&
                                 page !== 1 && page !== getTotalPages()) {
                                 return (
                                     <span key={`ellipsis-${page}`} style={{ color: '#9ca3af', fontSize: '14px' }}>
@@ -1095,7 +1065,7 @@ function MobileView({ session }: { session?: any }) {
                                     </span>
                                 );
                             }
-                            
+
                             return (
                                 <button
                                     key={page}
@@ -1116,7 +1086,7 @@ function MobileView({ session }: { session?: any }) {
                                 </button>
                             );
                         })}
-                        
+
                         <button
                             onClick={handleNextPage}
                             disabled={currentPage === getTotalPages()}
@@ -1133,7 +1103,7 @@ function MobileView({ session }: { session?: any }) {
                         >
                             Tiếp →
                         </button>
-                        
+
                         <div style={{
                             marginLeft: '16px',
                             fontSize: '14px',
@@ -1144,7 +1114,7 @@ function MobileView({ session }: { session?: any }) {
                     </div>
                 )}
             </div>
-            
+
             {/* Alert Component */}
             <Alert
                 type={alert.type}
@@ -1152,7 +1122,7 @@ function MobileView({ session }: { session?: any }) {
                 isVisible={alert.isVisible}
                 onClose={hideAlert}
             />
-            
+
             {/* Confirmation Component */}
             <Confirmation
                 isVisible={confirmation.isVisible}
@@ -1165,7 +1135,7 @@ function MobileView({ session }: { session?: any }) {
                 onCancel={confirmation.onCancel}
                 confirmButtonLoading={confirmation.confirmButtonLoading}
             />
-            
+
             {/* Charge Fee Popup */}
             <ChargeFeePopup
                 isVisible={chargeFeePopup.isVisible}
@@ -1176,7 +1146,7 @@ function MobileView({ session }: { session?: any }) {
                 onCancel={hideChargeFeePopup}
                 confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
             />
-            
+
             {/* VIP Package Popup */}
             <VipPackagePopup
                 isVisible={vipPackagePopup.isVisible}
@@ -1186,7 +1156,7 @@ function MobileView({ session }: { session?: any }) {
                 onCancel={hideVipPackagePopup}
                 confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
             />
-            
+
             {/* Preview Popup */}
             {previewPopup.isVisible && previewPopup.post && (
                 <div className={styles.previewOverlay} onClick={closePreviewPopup}>
@@ -1208,7 +1178,7 @@ function MobileView({ session }: { session?: any }) {
                             ) : (
                                 <div className={styles.previewImagePlaceholder}>
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.5L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/>
+                                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.5L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor" />
                                     </svg>
                                     <span className={styles.previewImagePlaceholderText}>Không có hình ảnh</span>
                                 </div>
@@ -1224,7 +1194,7 @@ function MobileView({ session }: { session?: any }) {
                                 </h1>
                                 <div className={styles.previewAddress}>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
+                                        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor" />
                                     </svg>
                                     <span>{previewPopup.post.address || 'Chưa có địa chỉ'}</span>
                                 </div>
@@ -1380,10 +1350,1180 @@ function MobileView({ session }: { session?: any }) {
 }
 
 function DesktopView({ session }: { session?: any }) {
+    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
+    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('all');
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const [dropdownPosition, setDropdownPosition] = useState<'below' | 'above'>('below');
+    const [dropdownCoordinates, setDropdownCoordinates] = useState<{x: number, y: number}>({x: 0, y: 0});
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [posts, setPosts] = useState<any[]>([]);
+    const [tabData, setTabData] = useState({
+        all: 0,
+        active: 0,
+        expired: 0,
+        pending: 0
+    });
+    const [searchParams, setSearchParams] = useState({
+        title: '',
+        transactionType: '',
+        lastDate: 180
+    });
+    const [tempFilterParams, setTempFilterParams] = useState({
+        transactionType: '',
+        lastDate: 180
+    });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(10); // More posts per page for desktop
+
+    // Charge fee popup state
+    const [chargeFeePopup, setChargeFeePopup] = useState({
+        isVisible: false,
+        postId: '',
+        type: 'new' as 'new' | 'up' | 'renew',
+        postTitle: '',
+        confirmButtonLoading: false
+    });
+
+    // VIP package popup state
+    const [vipPackagePopup, setVipPackagePopup] = useState({
+        isVisible: false,
+        postId: '',
+        postTitle: '',
+        confirmButtonLoading: false
+    });
+
+    // Preview popup state
+    const [previewPopup, setPreviewPopup] = useState({
+        isVisible: false,
+        post: null as any
+    });
+
+    const router = useRouter();
+
+    // Handle preview popup
+    const handlePreviewPost = (post: any) => {
+        setPreviewPopup({ isVisible: true, post });
+    };
+
+    const closePreviewPopup = () => {
+        setPreviewPopup({ isVisible: false, post: null });
+    };
+
+    // Handle search input events
+    const handleSearchSubmit = () => {
+        const newParams = {
+            ...searchParams,
+            title: searchTerm
+        };
+        setSearchParams(newParams);
+        setCurrentPage(1);
+    };
+
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {        
+        handleSearchSubmit();        
+    };
+
+    const handleSearchBlur = () => {
+        handleSearchSubmit();
+    };
+
+    // Pagination handlers
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < getTotalPages()) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    // Charge fee popup handlers
+    const showChargeFeePopup = (postId: string, type: 'new' | 'up' | 'renew', postTitle: string) => {
+        setChargeFeePopup({
+            isVisible: true,
+            postId,
+            type,
+            postTitle,
+            confirmButtonLoading: false
+        });
+    };
+
+    const hideChargeFeePopup = () => {
+        setChargeFeePopup(prev => ({
+            ...prev,
+            isVisible: false,
+            confirmButtonLoading: false
+        }));
+    };
+
+    // VIP package popup handlers
+    const showVipPackagePopup = (postId: string, postTitle: string) => {
+        setVipPackagePopup({
+            isVisible: true,
+            postId,
+            postTitle,
+            confirmButtonLoading: false
+        });
+    };
+
+    const hideVipPackagePopup = () => {
+        setVipPackagePopup(prev => ({
+            ...prev,
+            isVisible: false,
+            confirmButtonLoading: false
+        }));
+    };
+
+    const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
+        setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
+
+        try {
+            if (chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew') {
+                const response = await renewPost(chargeFeePopup.postId);
+                const data = await response.json();
+                if (!response.ok) {
+                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                    showError(`Thanh toán thất bại. ${data.message || ''}`);
+                    return;
+                }
+
+            } else if (chargeFeePopup.type === 'up') {
+                const response = await reupPost(chargeFeePopup.postId);
+                const data = await response.json();
+                if (!response.ok) {
+                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                    showError(`Thanh toán thất bại. ${data.message || ''}`);
+                    return;
+                }
+            }
+
+            hideChargeFeePopup();
+            showSuccess(`Thanh toán thành công!`);
+            await fetchPosts(searchParams);
+        } catch (error) {
+            setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+            showError('Thanh toán thất bại. Vui lòng thử lại sau.');
+        }
+    };
+
+    const handleVipPackageConfirm = async (selectedPackage: PostChargeFeeData) => {
+        setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: true }));
+
+        try {
+            const response = await fetch('/api/posts/update-priority', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    postId: vipPackagePopup.postId,
+                    priorityLevel: selectedPackage.priorityLevel
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+                showError(`Cập nhật gói VIP thất bại. ${data.message || ''}`);
+                return;
+            }
+
+            hideVipPackagePopup();
+            showSuccess('Cập nhật gói VIP thành công!');
+            await fetchPosts(searchParams);
+        } catch (error) {
+            setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
+            showError('Cập nhật gói VIP thất bại. Vui lòng thử lại sau.');
+        }
+    };
+
+    // Calculate active filter count
+    const getActiveFilterCount = () => {
+        let count = 0;
+        if (searchParams.transactionType) count++;
+        if (searchParams.lastDate !== 180) count++;
+        return count;
+    };
+
+    // Pagination calculations
+    const getFilteredPosts = () => {
+        return posts?.filter((post) => {
+            // Filter by tab status
+            let matchesTab = true;
+            if (activeTab === 'active') matchesTab = post.status === 'PUBLISHED';
+            else if (activeTab === 'expired') matchesTab = post.status === 'EXPIRED';
+            else if (activeTab === 'pending') matchesTab = post.status === 'DRAFT';
+            // 'all' tab shows everything
+
+            // Filter by search term
+            let matchesSearch = true;
+            if (searchParams.title && searchParams.title.trim() !== '') {
+                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
+            }
+
+            // Filter by transaction type
+            let matchesTransaction = true;
+            if (searchParams.transactionType && searchParams.transactionType !== '') {
+                matchesTransaction = post.transactionType === searchParams.transactionType;
+            }
+
+            // Filter by date (lastDate is in days)
+            let matchesDate = true;
+            if (searchParams.lastDate !== 180) {
+                const postDate = new Date(post.createdDate);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
+                matchesDate = postDate >= cutoffDate;
+            }
+
+            return matchesTab && matchesSearch && matchesTransaction && matchesDate;
+        }) || [];
+    };
+
+    const getPaginatedPosts = () => {
+        const filteredPosts = getFilteredPosts();
+        const startIndex = (currentPage - 1) * postsPerPage;
+        const endIndex = startIndex + postsPerPage;
+        return filteredPosts.slice(startIndex, endIndex);
+    };
+
+    const getTotalPages = () => {
+        const filteredPosts = getFilteredPosts();
+        return Math.ceil(filteredPosts.length / postsPerPage);
+    };
+
+    // Toggle dropdown for specific post
+    const toggleDropdown = (postId: string, buttonElement: HTMLButtonElement) => {
+        if (openDropdownId === postId) {
+            setOpenDropdownId(null);
+            return;
+        }
+
+        const buttonRect = buttonElement.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const dropdownHeight = 180;
+        const spaceBelow = windowHeight - buttonRect.bottom;
+        const spaceAbove = buttonRect.top;
+
+        // Determine if dropdown should appear above or below
+        const positionBelow = spaceBelow >= dropdownHeight || spaceAbove < dropdownHeight;
+        setDropdownPosition(positionBelow ? 'below' : 'above');
+
+        // Calculate fixed position coordinates
+        const x = buttonRect.right - 192; // 192px = w-48 (12rem)
+        const y = positionBelow 
+            ? buttonRect.bottom + 8 
+            : buttonRect.top - dropdownHeight - 8;
+
+        setDropdownCoordinates({ x, y });
+        setOpenDropdownId(postId);
+    };
+
+    // Handle dropdown actions
+    const handleDropdownAction = (action: string, post: any) => {
+        setOpenDropdownId(null);
+
+        switch (action) {
+            case 'upload-new':
+                showChargeFeePopup(post.postId, 'new', post.title);
+                break;
+            case 'reup':
+                showChargeFeePopup(post.postId, 'up', post.title);
+                break;
+            case 'renew':
+                showChargeFeePopup(post.postId, 'renew', post.title);
+                break;
+            case 'edit':
+                router.push(`/edit-post/${post.postId}`);
+                break;
+            case 'upgrade':
+                showVipPackagePopup(post.postId, post.title);
+                break;
+            case 'delete':
+                showConfirmation({
+                    title: 'Xác nhận xóa tin',
+                    message: `Bạn có chắc chắn muốn xóa tin "${post.title}"? Hành động này không thể hoàn tác.`,
+                    type: 'danger',
+                    confirmText: 'Xóa tin',
+                    cancelText: 'Hủy',
+                    onConfirm: async () => {
+                        setConfirmButtonLoading(true);
+                        try {
+                            await updatePostStatus(post.postId, 'DELETED');
+                            hideConfirmation();
+                            showSuccess(`Đã xóa tin "${post.title}" thành công`);
+                            await fetchPosts(searchParams);
+                        } catch (error) {
+                            setConfirmButtonLoading(false);
+                            showError('Không thể xóa tin đăng. Vui lòng thử lại sau.');
+                        }
+                    },
+                    onCancel: () => {
+                        hideConfirmation();
+                    }
+                });
+                break;
+        }
+    };
+
+    // Get the correct repost/reup label based on post status
+    const getRepostLabel = (status: string) => {
+        switch (status) {
+            case 'PUBLISHED':
+                return 'Đẩy tin';
+            case 'EXPIRED':
+                return 'Gia hạn';
+            case 'DRAFT':
+                return 'Đăng tin';
+            default:
+                return 'Gia hạn';
+        };
+    };
+
+    // Get the correct repost/reup icon based on post status
+    const getRepostIcon = (status: string) => {
+        switch (status) {
+            case 'DRAFT':
+                return '/icons/Plus.svg';
+            case 'EXPIRED':
+                return '/icons/rotateIcon.svg';
+            case 'PUBLISHED':
+                return '/icons/upIcon.svg';
+            default:
+                return '/icons/rotateIcon.svg';
+        };
+    };
+
+    const getRepostAction = (status: string) => {
+        switch (status) {
+            case 'DRAFT':
+                return 'upload-new';
+            case 'EXPIRED':
+                return 'renew';
+            case 'PUBLISHED':
+                return 'reup';
+            default:
+                return 'renew';
+        }
+    }
+
+    // Handle filter popup actions
+    const handleFilterReset = () => {
+        const currentFilterCount = getActiveFilterCount();
+
+        if (currentFilterCount > 0) {
+            showConfirmation({
+                title: 'Xác nhận đặt lại bộ lọc',
+                message: `Bạn có muốn xóa tất cả ${currentFilterCount} bộ lọc đang áp dụng không?`,
+                type: 'warning',
+                confirmText: 'Đặt lại',
+                cancelText: 'Hủy',
+                onConfirm: () => {
+                    setTempFilterParams({
+                        transactionType: '',
+                        lastDate: 180
+                    });
+                    hideConfirmation();
+                    showInfo('Đã đặt lại tất cả bộ lọc');
+                },
+                onCancel: () => {
+                    hideConfirmation();
+                }
+            });
+        } else {
+            setTempFilterParams({
+                transactionType: '',
+                lastDate: 180
+            });
+            showInfo('Bộ lọc đã được đặt lại');
+        }
+    };
+
+    const handleFilterApply = async () => {
+        const newParams = {
+            ...searchParams,
+            transactionType: tempFilterParams.transactionType,
+            lastDate: tempFilterParams.lastDate
+        };
+
+        setSearchParams(newParams);
+        setOpenDropdownId(null);
+        setCurrentPage(1);
+
+        // Re-fetch posts with new filters
+        await fetchPosts(newParams);
+
+        const filterCount = getActiveFilterCount();
+        if (filterCount > 0) {
+            showSuccess(`Đã áp dụng ${filterCount} bộ lọc thành công`);
+        } else {
+            showInfo('Đã xóa tất cả bộ lọc');
+        }
+    };
+
+    const handleFilterClose = () => {
+        setTempFilterParams({
+            transactionType: searchParams.transactionType,
+            lastDate: searchParams.lastDate
+        });
+        setOpenDropdownId(null);
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (target.closest('[data-dropdown-content]')) {
+                return;
+            }
+            setOpenDropdownId(null);
+        };
+
+        const handleScroll = () => {
+            setOpenDropdownId(null);
+        };
+
+        if (openDropdownId) {
+            document.addEventListener('click', handleClickOutside);
+            window.addEventListener('scroll', handleScroll, true); // true for capture phase
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+            window.removeEventListener('scroll', handleScroll, true);
+        };
+    }, [openDropdownId]);
+
+    const tabs = [
+        { id: 'all', label: 'Tất cả', count: tabData.all },
+        { id: 'active', label: 'Đang hiển thị', count: tabData.active },
+        { id: 'expired', label: 'Hết hạn', count: tabData.expired },
+        { id: 'pending', label: 'Chờ xuất bản', count: tabData.pending }
+    ];
+
+    const fetchChargeFee = async (postId: string) => {
+        try {
+            const response = await fetch(`/api/manage/posts/charge-fee/${postId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+        } catch (error) {
+            console.error("Error charging fee:", error);
+            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");
+        }
+    }
+
+    // Fetch posts from API
+    const fetchPosts = async (params = searchParams) => {
+        try {
+            const response = await fetch('/api/manage/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setPosts(data.response);
+            setTabData({
+                all: data.response.length,
+                active: data.response.filter((post: any) => post.status === 'PUBLISHED').length,
+                expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
+                pending: data.response.filter((post: any) => post.status === 'DRAFT').length
+            });
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
+        }
+    }
+
+    const updatePostStatus = async (postId: string, status: string) => {
+        await fetch(`/api/manage/post-status?postId=${postId}&status=${status}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    };
+
+    const reupPost = async (postId: string): Promise<Response> => {
+        const response = await fetch(`/api/manage/posts/reup/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
+    };
+
+    const renewPost = async (postId: string): Promise<Response> => {
+        const response = await fetch(`/api/manage/posts/renew/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
+    }
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
+
+    // Initialize temp filter params when filter dropdown opens
+    useEffect(() => {
+        if (openDropdownId === 'filter') {
+            setTempFilterParams({
+                transactionType: searchParams.transactionType,
+                lastDate: searchParams.lastDate
+            });
+        }
+    }, [openDropdownId, searchParams]);
+
+    const POST_STATUSES = {
+        PUBLISHED: 'PUBLISHED',
+        DRAFT: 'DRAFT',
+        EXPIRED: 'EXPIRED',
+        DELETED: 'DELETED'
+    };
+
     return (
-        <div className={styles.desktopContainer}>
-            <h1 className="text-3xl font-bold mb-6">Desktop View</h1>
-            {/* Desktop-specific content goes here */}
+        <div className="flex flex-col min-h-screen">
+            <NavBarDesktop displayNav={true} session={session} />
+            <div className="container mx-auto px-4 py-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    {/* Header Section */}
+                    <div className="p-6 border-b border-gray-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-2xl font-bold text-gray-900">Quản lý tin đăng</h1>
+                        </div>
+
+                        {/* Search and Filter Section */}
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="flex-1 max-w-md">
+                                <input
+                                    type="text"
+                                    placeholder="Nhập tiêu đề tin"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleSearchKeyDown}
+                                    onBlur={handleSearchBlur}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleDropdown('filter', e.currentTarget);
+                                    }}
+                                >
+                                    <Image
+                                        src="/icons/Funnel.svg"
+                                        alt="Filter"
+                                        width={20}
+                                        height={20}
+                                        className="mr-2"
+                                    />
+                                    Lọc
+                                    {getActiveFilterCount() > 0 && (
+                                        <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                            {getActiveFilterCount()}
+                                        </span>
+                                    )}
+                                </button>
+
+                                {/* Filter Dropdown */}
+                                {openDropdownId === 'filter' && (
+                                    <div
+                                        ref={dropdownRef}
+                                        data-dropdown-content="true"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                                        style={{
+                                            [dropdownPosition === 'above' ? 'bottom' : 'top']: '100%',
+                                        }}
+                                    >
+                                        <div className="p-4">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h3 className="text-lg font-semibold text-gray-900">Bộ lọc</h3>
+                                                <button
+                                                    onClick={handleFilterClose}
+                                                    className="text-gray-400 hover:text-gray-600"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+
+                                            {/* Transaction Type Filter */}
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Loại giao dịch
+                                                </label>
+                                                <select
+                                                    value={tempFilterParams.transactionType}
+                                                    onChange={(e) => setTempFilterParams(prev => ({
+                                                        ...prev,
+                                                        transactionType: e.target.value
+                                                    }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="">Tất cả</option>
+                                                    <option value="SELL">Bán</option>
+                                                    <option value="RENT">Cho thuê</option>
+                                                    <option value="PROJECT">Dự án</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Last Date Filter */}
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Ngày đăng tin
+                                                </label>
+                                                <select
+                                                    value={tempFilterParams.lastDate}
+                                                    onChange={(e) => setTempFilterParams(prev => ({
+                                                        ...prev,
+                                                        lastDate: parseInt(e.target.value)
+                                                    }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >                                                    
+                                                    <option value={7}>7 ngày qua</option>
+                                                    <option value={30}>30 ngày qua</option>
+                                                    <option value={90}>90 ngày qua</option>
+                                                    <option value={180}>180 ngày qua</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex gap-2 justify-end">
+                                                <button
+                                                    onClick={handleFilterReset}
+                                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                                >
+                                                    Đặt lại
+                                                </button>
+                                                <button
+                                                    onClick={handleFilterApply}
+                                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                                                >
+                                                    Áp dụng
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Tabs Section */}
+                        <div className="flex space-x-1 border-b border-gray-200">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        setActiveTab(tab.id);
+                                        setCurrentPage(1);
+                                    }}
+                                    className={`px-4 py-2 text-sm font-medium rounded-t-md ${activeTab === tab.id
+                                        ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
+                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    {tab.label}
+                                    <span className={`ml-2 px-2 py-1 text-xs rounded-full ${activeTab === tab.id
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'bg-gray-100 text-gray-500'
+                                        }`}>
+                                        {tab.count}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Table Section */}
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Tin đăng
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Địa chỉ
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Trạng thái
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Ngày tạo/Hết hạn
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Thao tác
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {getPaginatedPosts().map((post) => (
+                                    <tr key={post.postId} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+                                                <div className="flex-shrink-0 w-16 h-16">
+                                                    <Image
+                                                        src="/temp/11.jpg"
+                                                        alt={post.title}
+                                                        width={64}
+                                                        height={64}
+                                                        className="rounded-md object-cover"
+                                                    />
+                                                </div>
+                                                <div className="ml-4 flex-1 min-w-0">
+                                                    <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                                        {post.title}
+                                                    </div>
+                                                    <span className={`${styles.transactionType} ${styles[getTransactionTypeClass(post.transactionType)]}`}>
+                                                        {getTransactionTypeLabel(post.transactionType)}
+                                                    </span>
+                                                    <span className={styles.propertyType}>
+                                                        {getPropertyTypeLabel(post.type)}
+                                                    </span>
+                                                    {post.rankingDto?.priorityLevel && (
+                                                        <span className={`${styles.priorityLevel} ${styles[getPriorityLevelClass(post.rankingDto.priorityLevel)]}`}>
+                                                            {getPriorityLevelLabel(post.rankingDto.priorityLevel)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-500 mt-1 flex items-center">
+                                                <Image src="/icons/location.svg" alt="Location" width={12} height={12} className="mr-1" />
+                                                {post.address ? `${post.address.split(',').slice(-2).join(',').trim()}` : 'Chưa cập nhật'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${post.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' :
+                                                post.status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
+                                                    post.status === 'EXPIRED' ? 'bg-red-100 text-red-800' :
+                                                        'bg-gray-100 text-gray-800'
+                                                }`}>
+                                                {post.status === 'PUBLISHED' && 'Đã xuất bản'}
+                                                {post.status === 'DRAFT' && 'Nháp'}
+                                                {post.status === 'EXPIRED' && 'Hết hạn'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-500">
+                                                Ngày tạo: {new Date(post.createdDate).toLocaleDateString('vi-VN')}
+                                            </div>
+                                            <div className="text-sm text-gray-500">
+                                                Hết hạn: {post.expiredAt ? new Date(post.expiredAt).toLocaleDateString('vi-VN') : 'Chưa xác định'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center space-x-2">
+                                                <button
+                                                    onClick={() => handlePreviewPost(post)}
+                                                    className={styles.actionButton}
+                                                    title="Xem trước"
+                                                >
+                                                    <Image src="/icons/EyeOpen.svg" alt="View" width={18} height={18} />
+                                                </button>
+                                                <div style={{ position: 'relative' }}>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleDropdown(post.postId, e.currentTarget);
+                                                        }}
+                                                        className={styles.actionButton}
+                                                        title="Thêm thao tác"
+                                                    >
+                                                        <Image src="/icons/threeDots.svg" alt="More actions" width={18} height={18} />
+                                                    </button>
+
+                                                    {/* Dropdown menu */}
+                                                    {openDropdownId === post.postId && (
+                                                        <div
+                                                            ref={dropdownRef}
+                                                            data-dropdown-content="true"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="fixed w-48 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
+                                                            style={{
+                                                                left: `${dropdownCoordinates.x}px`,
+                                                                top: `${dropdownCoordinates.y}px`,
+                                                            }}
+                                                        >
+                                                            <div className="py-1">
+                                                                <button
+                                                                    onClick={() => handleDropdownAction(getRepostAction(post.status), post)}                                                                    
+                                                                    className={styles.btnFacility}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                                                >
+                                                                    <Image src={getRepostIcon(post.status)} alt={getRepostLabel(post.status)} width={18} height={18} />
+                                                                    {getRepostLabel(post.status)}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDropdownAction('edit', post)}                                                                    
+                                                                    className={styles.btnFacility}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                                                >
+                                                                    <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} className="mr-2" />
+                                                                    Sửa tin
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDropdownAction('upgrade', post)}
+                                                                    className={styles.btnFacility}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                                                >
+                                                                    <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} className="mr-2" />
+                                                                    Nâng/Hạ Vip
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDropdownAction('delete', post)}
+                                                                    className={styles.btnFacility}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                                                >
+                                                                    <Image src="/icons/X.svg" alt="Delete" width={16} height={16} className="mr-2" style={{ filter: 'invert(18%) sepia(94%) saturate(7496%) hue-rotate(354deg) brightness(101%) contrast(109%)' }} />
+                                                                    Xoá tin
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Empty State */}
+                        {getPaginatedPosts().length === 0 && (
+                            <div className="text-center py-12">
+                                <div className="text-gray-500 text-lg">Không có tin đăng nào</div>
+                                <div className="text-gray-400 text-sm mt-2">Hãy thử thay đổi bộ lọc hoặc tạo tin đăng mới</div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Pagination */}
+                    {getTotalPages() > 1 && (
+                        <div className="px-6 py-4 border-t border-gray-200">
+                            <div className="flex items-center justify-center gap-2">
+                                <button
+                                    onClick={handlePreviousPage}
+                                    disabled={currentPage === 1}
+                                    className={`px-3 py-2 text-sm font-medium rounded-md ${currentPage === 1
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                        }`}
+                                >
+                                    ← Trước
+                                </button>
+
+                                {Array.from({ length: getTotalPages() }, (_, index) => {
+                                    const page = index + 1;
+                                    const isCurrentPage = page === currentPage;
+                                    const showPage = page === 1 || page === getTotalPages() ||
+                                        Math.abs(page - currentPage) <= 2;
+
+                                    if (!showPage && page !== currentPage - 3 && page !== currentPage + 3) {
+                                        return null;
+                                    }
+
+                                    if ((page === currentPage - 3 || page === currentPage + 3) &&
+                                        page !== 1 && page !== getTotalPages()) {
+                                        return (
+                                            <span key={`ellipsis-${page}`} className="text-gray-400 text-sm px-2">
+                                                ...
+                                            </span>
+                                        );
+                                    }
+
+                                    return (
+                                        <button
+                                            key={page}
+                                            onClick={() => handlePageChange(page)}
+                                            className={`px-3 py-2 text-sm font-medium rounded-md min-w-[40px] ${isCurrentPage
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                                }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    onClick={handleNextPage}
+                                    disabled={currentPage === getTotalPages()}
+                                    className={`px-3 py-2 text-sm font-medium rounded-md ${currentPage === getTotalPages()
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                        }`}
+                                >
+                                    Tiếp →
+                                </button>
+
+                                <div className="ml-4 text-sm text-gray-500">
+                                    Trang {currentPage} / {getTotalPages()} ({getFilteredPosts().length} tin)
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Alert Component */}
+            <Alert
+                type={alert.type}
+                message={alert.message}
+                isVisible={alert.isVisible}
+                onClose={hideAlert}
+            />
+
+            {/* Confirmation Component */}
+            <Confirmation
+                isVisible={confirmation.isVisible}
+                title={confirmation.title}
+                message={confirmation.message}
+                type={confirmation.type}
+                confirmText={confirmation.confirmText}
+                cancelText={confirmation.cancelText}
+                onConfirm={confirmation.onConfirm}
+                onCancel={confirmation.onCancel}
+                confirmButtonLoading={confirmation.confirmButtonLoading}
+            />
+
+            {/* Charge Fee Popup */}
+            <ChargeFeePopup
+                isVisible={chargeFeePopup.isVisible}
+                postId={chargeFeePopup.postId}
+                type={chargeFeePopup.type}
+                postTitle={chargeFeePopup.postTitle}
+                onConfirm={handleChargeFeeConfirm}
+                onCancel={hideChargeFeePopup}
+                confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
+            />
+
+            {/* VIP Package Popup */}
+            <VipPackagePopup
+                isVisible={vipPackagePopup.isVisible}
+                postId={vipPackagePopup.postId}
+                postTitle={vipPackagePopup.postTitle}
+                onConfirm={handleVipPackageConfirm}
+                onCancel={hideVipPackagePopup}
+                confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
+            />
+
+            {/* Preview Popup */}
+            {previewPopup.isVisible && previewPopup.post && (
+                <div className={styles.previewOverlay} onClick={closePreviewPopup}>
+                    <div className={styles.previewContainer} onClick={(e) => e.stopPropagation()}>
+                        <button className={styles.previewCloseButton} onClick={closePreviewPopup}>
+                            ×
+                        </button>
+
+                        <div className={styles.previewImageContainer}>
+                            {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
+                                <Image
+                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    alt={previewPopup.post.title}
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <div className={styles.previewImagePlaceholder}>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.5L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor" />
+                                    </svg>
+                                    <span className={styles.previewImagePlaceholderText}>Không có hình ảnh</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={styles.previewMainContent}>
+                            <div className={styles.previewHeader}>
+                                <h1 className={styles.previewTitle}>
+                                    {previewPopup.post.title}
+                                </h1>
+                                <div className={styles.previewAddress}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor" />
+                                    </svg>
+                                    <span>{previewPopup.post.address || 'Chưa có địa chỉ'}</span>
+                                </div>
+                            </div>
+
+                            {previewPopup.post.description && (
+                                <div className={styles.previewDescriptionSection}>
+                                    <h2 className={styles.previewDescriptionTitle}>
+                                        Thông tin mô tả
+                                    </h2>
+                                    <div className={styles.previewDescriptionContent}>
+                                        {formatDescription(previewPopup.post.description)}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className={styles.previewFeaturesSection}>
+                                <h2 className={styles.previewFeaturesTitle}>
+                                    Đặc điểm bất động sản
+                                </h2>
+                                <div className={styles.previewFeaturesGrid}>
+                                    {previewPopup.post.price && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>💰</span>
+                                                <span className={styles.previewFeatureLabel}>Mức giá</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatPrice(previewPopup.post.price)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.acreage && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>📐</span>
+                                                <span className={styles.previewFeatureLabel}>Diện tích</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.acreage} m²
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.bedrooms && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🛏️</span>
+                                                <span className={styles.previewFeatureLabel}>Số phòng ngủ</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.bedrooms} PN
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.bathrooms && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🚿</span>
+                                                <span className={styles.previewFeatureLabel}>Số phòng tắm</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.bathrooms} Phòng
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.floors && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🏢</span>
+                                                <span className={styles.previewFeatureLabel}>Số tầng</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.floors} Tầng
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.legal && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>📄</span>
+                                                <span className={styles.previewFeatureLabel}>Pháp lý</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatLegalStatus(previewPopup.post.legal)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.furniture && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🪑</span>
+                                                <span className={styles.previewFeatureLabel}>Nội thất</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatFurnitureStatus(previewPopup.post.furniture)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.direction && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🧭</span>
+                                                <span className={styles.previewFeatureLabel}>Hướng</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {formatDirection(previewPopup.post.direction)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {previewPopup.post.frontage && (
+                                        <div className={styles.previewFeatureItem}>
+                                            <div className={styles.previewFeatureTitle}>
+                                                <span className={styles.previewFeatureIcon}>🏠</span>
+                                                <span className={styles.previewFeatureLabel}>Mặt tiền</span>
+                                            </div>
+                                            <div className={styles.previewFeatureValue}>
+                                                {previewPopup.post.frontage} m
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.previewFooter}>
+                            <div className={styles.previewFooterContent}>
+                                <div className={styles.previewFooterProfile}>
+                                    <div className={styles.previewFooterAvatar}>
+                                        📝
+                                    </div>
+                                    <div>
+                                        <p className={styles.previewFooterUserName}>
+                                            Mã bài đăng
+                                        </p>
+                                        <p className={styles.previewFooterUserId}>
+                                            {previewPopup.post.postId}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button className={styles.previewDetailButton} onClick={() => router.push(`/post/${previewPopup.post.postId}`)}>
+                                Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 } 
