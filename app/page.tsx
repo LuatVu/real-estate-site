@@ -7,7 +7,7 @@ export default function Home() {
   const screenSize = useScreenSize();
   return (
     <div className="h-full">
-        {screenSize === 'sm' ? (<MobileHome />) : (<DesktopHome />)}
+        {(screenSize === 'sm' || screenSize === 'md') ? (<MobileHome />) : (<DesktopHome />)}
     </div>
   )
 }

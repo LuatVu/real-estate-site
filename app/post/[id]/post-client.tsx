@@ -50,7 +50,7 @@ export default function PostClient({ post, session }: PostClientProps) {
   
   return (
     <div>
-      {screenSize === 'sm' ? (
+      {(screenSize === 'sm' || screenSize === 'md') ? (
         <MobilePosts post={post} session={session} />
       ) : (
         <DesktopPosts post={post} session={session} />
@@ -63,6 +63,43 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showFavoriteToast, setShowFavoriteToast] = useState(false);
+  const [favoriteToastMessage, setFavoriteToastMessage] = useState('');
+  const [isToastError, setIsToastError] = useState(false);
+
+  // Fetch initial favorite status
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!session?.user?.id || !post?.postId) return;
+      
+      try {
+        const response = await fetch(`/api/users/favorites/${session.user.id}/${post.postId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.response?.userId != undefined && data?.response?.postId != undefined) {
+            setIsFavorited(true);
+          }else {
+            setIsFavorited(false);
+          }          
+        } else {
+          // If API returns error, default to false
+          setIsFavorited(false);
+        }
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+        setIsFavorited(false);
+      }
+    };
+    
+    checkFavoriteStatus();
+  }, [session?.user?.id, post?.postId]);
 
   // Handle keyboard events for fullscreen modal
   useEffect(() => {
@@ -145,7 +182,65 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
         }
       }
     }
-  };  
+  };
+
+  // Handle favorite button click
+  const handleFavoriteClick = async () => {
+    try {
+      const newFavoriteState = !isFavorited;
+      const endpoint = newFavoriteState ? '/api/users/favorites/add' : '/api/users/favorites/remove';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          postId: post?.postId
+        })
+      });
+      
+      if (response.ok) {
+        // Only update state and show toast if API call succeeds
+        setIsFavorited(newFavoriteState);
+        
+        // Show toast notification
+        const message = newFavoriteState ? 'Đã lưu tin' : 'Đã bỏ lưu tin';
+        setFavoriteToastMessage(message);
+        setIsToastError(false);
+        setShowFavoriteToast(true);
+        
+        // Auto hide after 2 seconds
+        setTimeout(() => {
+          setShowFavoriteToast(false);
+        }, 2000);
+      } else {
+        // Show error message
+        const errorData = await response.json();
+        const errorMessage = errorData.error || 'Có lỗi xảy ra. Vui lòng thử lại.';
+        setFavoriteToastMessage(errorMessage);
+        setIsToastError(true);
+        setShowFavoriteToast(true);
+        
+        // Auto hide error after 3 seconds
+        setTimeout(() => {
+          setShowFavoriteToast(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error updating favorite status:', error);
+      // Show error toast
+      setFavoriteToastMessage('Không thể kết nối. Vui lòng kiểm tra kết nối internet.');
+      setIsToastError(true);
+      setShowFavoriteToast(true);
+      
+      // Auto hide error after 3 seconds
+      setTimeout(() => {
+        setShowFavoriteToast(false);
+      }, 3000);
+    }
+  };
 
   return (
     <main className="flex flex-col min-h-screen">
@@ -219,13 +314,48 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
         <article className={styles.postContainer} itemScope itemType="https://schema.org/RealEstateListing">
           {/* Property Title and Address */}
           <header className={styles.headingBlock}>
-            <h1 className={styles.propertyTitle + " heading-h6"} itemProp="name">{post?.title}</h1>
-            <address className={styles.propertyAddress + " body-med"} itemProp="address">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.locationIcon}>
-                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
-              </svg>
-              {post?.address}
-            </address>
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h1 className={styles.propertyTitle + " heading-h6"} itemProp="name">{post?.title}</h1>
+                <address className={styles.propertyAddress + " body-med"} itemProp="address">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.locationIcon}>
+                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
+                  </svg>
+                  {post?.address}
+                </address>
+              </div>
+              {session && (
+                <div className="relative">
+                  <button 
+                    className={`p-2 rounded-full transition-all duration-200 ${
+                      isFavorited 
+                        ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                        : 'text-gray-400 bg-gray-50 hover:bg-gray-100 hover:text-red-400'
+                    }`}
+                    onClick={handleFavoriteClick}
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
+                  
+                  {/* Toast Notification */}
+                  {showFavoriteToast && (
+                    <div className={`absolute top-full right-0 mt-2 px-3 py-2 text-white text-sm rounded-lg shadow-lg z-50 whitespace-nowrap transform transition-all duration-300 ${
+                      showFavoriteToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+                    } ${
+                      isToastError ? 'bg-red-600' : 'bg-gray-800'
+                    }`}>
+                      {favoriteToastMessage}
+                      <div className={`absolute -top-1 right-3 w-2 h-2 transform rotate-45 ${
+                        isToastError ? 'bg-red-600' : 'bg-gray-800'
+                      }`}></div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </header>
 
           {/* Property Summary */}
@@ -456,7 +586,44 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showFavoriteToast, setShowFavoriteToast] = useState(false);
+  const [favoriteToastMessage, setFavoriteToastMessage] = useState('');
+  const [isToastError, setIsToastError] = useState(false);
   const swiperRef = useRef<any>(null);
+
+  // Fetch initial favorite status
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (!session?.user?.id || !post?.postId) return;
+      
+      try {
+        const response = await fetch(`/api/users/favorites/${session.user.id}/${post.postId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.response?.userId != undefined && data?.response?.postId != undefined) {
+            setIsFavorited(true);
+          }else {
+            setIsFavorited(false);
+          }          
+        } else {
+          // If API returns error, default to false
+          setIsFavorited(false);
+        }
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+        setIsFavorited(false);
+      }
+    };
+    
+    checkFavoriteStatus();
+  }, [session?.user?.id, post?.postId]);
 
   // Handle keyboard events for fullscreen modal
   useEffect(() => {
@@ -536,6 +703,64 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
           window.location.href = `tel:${phoneNumber}`;
         }
       }
+    }
+  };
+
+  // Handle favorite button click
+  const handleFavoriteClick = async () => {
+    try {
+      const newFavoriteState = !isFavorited;
+      const endpoint = newFavoriteState ? '/api/users/favorites/add' : '/api/users/favorites/remove';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          postId: post?.postId
+        })
+      });
+      
+      if (response.ok) {
+        // Only update state and show toast if API call succeeds
+        setIsFavorited(newFavoriteState);
+        
+        // Show toast notification
+        const message = newFavoriteState ? 'Đã lưu tin' : 'Đã bỏ lưu tin';
+        setFavoriteToastMessage(message);
+        setIsToastError(false);
+        setShowFavoriteToast(true);
+        
+        // Auto hide after 2 seconds
+        setTimeout(() => {
+          setShowFavoriteToast(false);
+        }, 2000);
+      } else {
+        // Show error message
+        const errorData = await response.json();
+        const errorMessage = errorData.error || 'Có lỗi xảy ra. Vui lòng thử lại.';
+        setFavoriteToastMessage(errorMessage);
+        setIsToastError(true);
+        setShowFavoriteToast(true);
+        
+        // Auto hide error after 3 seconds
+        setTimeout(() => {
+          setShowFavoriteToast(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error updating favorite status:', error);
+      // Show error toast
+      setFavoriteToastMessage('Không thể kết nối. Vui lòng kiểm tra kết nối internet.');
+      setIsToastError(true);
+      setShowFavoriteToast(true);
+      
+      // Auto hide error after 3 seconds
+      setTimeout(() => {
+        setShowFavoriteToast(false);
+      }, 3000);
     }
   };
 
@@ -661,7 +886,40 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
             
             {/* Title and Address */}
             <header className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-3" itemProp="name">{post?.title}</h1>
+              <div className="flex items-start justify-between mb-3">
+                <h1 className="text-3xl font-bold text-gray-900 flex-1" itemProp="name">{post?.title}</h1>
+                {session && (
+                  <div className="relative">
+                    <button 
+                      className={`ml-4 p-3 rounded-full transition-all duration-200 ${
+                        isFavorited 
+                          ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                          : 'text-gray-400 bg-gray-50 hover:bg-gray-100 hover:text-red-400'
+                      }`}
+                      onClick={handleFavoriteClick}
+                      aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      </svg>
+                    </button>
+                    
+                    {/* Toast Notification */}
+                    {showFavoriteToast && (
+                      <div className={`absolute top-full right-0 mt-2 px-4 py-2 text-white text-sm rounded-lg shadow-lg z-50 whitespace-nowrap transform transition-all duration-300 ${
+                        showFavoriteToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+                      } ${
+                        isToastError ? 'bg-red-600' : 'bg-gray-800'
+                      }`}>
+                        {favoriteToastMessage}
+                        <div className={`absolute -top-1 right-4 w-2 h-2 transform rotate-45 ${
+                          isToastError ? 'bg-red-600' : 'bg-gray-800'
+                        }`}></div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <address className="flex items-center gap-2 text-gray-600 not-italic" itemProp="address">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-gray-500">
                   <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor"/>
