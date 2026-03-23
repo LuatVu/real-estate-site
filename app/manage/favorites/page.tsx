@@ -1,21 +1,21 @@
 "use client";
-import useScreenSize from "../../lib/useScreenSize";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import useScreenSize from "@/app/lib/useScreenSize";
+import { useSession } from "next-auth/react";
+import NavBarMobile from "@/app/ui/mobile/navigation/nav-bar-mobile";
 import styles from './index.module.css';
-import { useSession } from 'next-auth/react';
-import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
-import NavBarDesktop from '../../ui/desktop/navigation/nav-bar-desktop';
-import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Alert from '../../ui/common/alert';
-import { useAlert } from '../../hook/useAlert';
-import Confirmation from '../../ui/common/confirmation';
-import { useConfirmation } from '../../hook/useConfirmation';
-import ChargeFeePopup, { ChargeFeeData } from '../../ui/common/charge-fee-popup';
-import VipPackagePopup, { PostChargeFeeData } from '../../ui/common/vip-package-popup';
-import { useRouter } from 'next/navigation';
-import { formatPrice } from "@/app/utils/price-formatter";
-import { formatLegalStatus, formatFurnitureStatus, formatDirection, getPropertyTypeLabel, getTransactionTypeLabel } from "@/app/utils/commons-utils";
+import { useConfirmation } from "@/app/hook/useConfirmation";
+import { useAlert } from "@/app/hook/useAlert";
+import Alert from "@/app/ui/common/alert";
 import { formatDescription } from "@/app/utils/markdown-utils";
+import { formatPrice } from "@/app/utils/price-formatter";
+import { formatDirection, formatFurnitureStatus, formatLegalStatus, getPropertyTypeLabel, getTransactionTypeLabel } from "@/app/utils/commons-utils";
+import NavBarDesktop from "@/app/ui/desktop/navigation/nav-bar-desktop";
+import MbFooter from "@/app/ui/mobile/footer/mb.footer";
+import Confirmation from "@/app/ui/common/confirmation";
+import DesktopFooter from "@/app/ui/desktop/footer/desktop-footer";
 
 // Function to get CSS class for transaction type
 function getTransactionTypeClass(transactionType: string): string {
@@ -27,90 +27,73 @@ function getTransactionTypeClass(transactionType: string): string {
     return transactionClasses[transactionType] || 'sellType';
 }
 
-// Function to convert priority level codes to readable labels
-function getPriorityLevelLabel(priorityLevel: string): string {
-    const priorityLabels: { [key: string]: string } = {
-        'DIAMOND': 'Kim cương',
-        'GOLD': 'Vàng',
-        'SILVER': 'Bạc',
-        'NORMAL': 'Thường'
-    };
-    return priorityLabels[priorityLevel] || priorityLevel;
-}
-
-// Function to get CSS class for priority level
-function getPriorityLevelClass(priorityLevel: string): string {
-    const priorityClasses: { [key: string]: string } = {
-        'DIAMOND': 'priorityDiamond',
-        'GOLD': 'priorityGold',
-        'SILVER': 'prioritySilver',
-        'NORMAL': 'priorityNormal'
-    };
-    return priorityClasses[priorityLevel] || 'priorityNormal';
-}
-
 export default function Page() {
     const screenSize = useScreenSize();
     const { data: session } = useSession();
 
     return (
         <div className="flex flex-col min-h-screen">
-            {(screenSize === "sm" || screenSize === "md") ? (<MobileView session={session} />) : (<DesktopView session={session} />)}
+            {(screenSize === "sm" || screenSize === "md") ? (
+                <MobileFavorites session={session} />
+            ) : (
+                <DesktopFavorites session={session} />
+            )}
         </div>
     );
 }
 
-function MobileView({ session }: { session?: any }) {
-    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
-    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
+function MobileFavorites({ session }: { session?: any }) {
+    const [favorites, setFavorites] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('all');
-    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-    const [dropdownPosition, setDropdownPosition] = useState<'below' | 'above'>('below');
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [posts, setPosts] = useState<any[]>([]);
-    const [tabData, setTabData] = useState({
-        all: 0,
-        active: 0,
-        expired: 0,
-        pending: 0
-    });
     const [searchParams, setSearchParams] = useState({
         title: '',
         transactionType: '',
+        propertyType: '',
         lastDate: 180
     });
+    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const [dropdownPosition, setDropdownPosition] = useState<'above' | 'below'>('below');
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(10);
     const [tempFilterParams, setTempFilterParams] = useState({
         transactionType: '',
+        propertyType: '',
         lastDate: 180
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage] = useState(10); // Number of posts per page
-
-    // Charge fee popup state
-    const [chargeFeePopup, setChargeFeePopup] = useState({
-        isVisible: false,
-        postId: '',
-        type: 'new' as 'new' | 'up' | 'renew',
-        postTitle: '',
-        confirmButtonLoading: false
-    });
-
-    // VIP package popup state
-    const [vipPackagePopup, setVipPackagePopup] = useState({
-        isVisible: false,
-        postId: '',
-        postTitle: '',
-        confirmButtonLoading: false
-    });
-
+    // Favorite button state
+    const [showFavoriteToast, setShowFavoriteToast] = useState(false);
+    const [favoriteToastMessage, setFavoriteToastMessage] = useState('');
+    const [isToastError, setIsToastError] = useState(false);
+    const [removingFavoriteId, setRemovingFavoriteId] = useState<string | null>(null);
     // Preview popup state
     const [previewPopup, setPreviewPopup] = useState({
         isVisible: false,
         post: null as any
     });
-
     const router = useRouter();
+    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
+
+    const fetchFavorites = async (params = searchParams) => {
+        if (!session?.user?.id) return; // Ensure user ID is available before fetching favorites
+        try {
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/favorites/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch favorites");
+            }
+            const data = await response.json();
+            setFavorites(data.response);
+        } catch (error) {
+            console.error("Error fetching favorites:", error);
+        }
+    }
 
     // Handle preview popup
     const handlePreviewPost = (post: any) => {
@@ -121,196 +104,56 @@ function MobileView({ session }: { session?: any }) {
         setPreviewPopup({ isVisible: false, post: null });
     };
 
-    // Handle search input events
-    const handleSearchSubmit = () => {
-        const newParams = {
-            ...searchParams,
-            title: searchTerm
-        };
-        setSearchParams(newParams);
-        setCurrentPage(1); // Reset to first page when searching
-    };
-
-    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {        
-        handleSearchSubmit();        
-    };
-
-    const handleSearchBlur = () => {
-        handleSearchSubmit();
-    };
-
-    // Pagination handlers
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
-
-    const handleNextPage = () => {
-        if (currentPage < getTotalPages()) {
-            setCurrentPage(currentPage + 1);
-        }
-    };
-
-    const handlePreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
-
-    // Charge fee popup handlers
-    const showChargeFeePopup = (postId: string, type: 'new' | 'up' | 'renew', postTitle: string) => {
-        setChargeFeePopup({
-            isVisible: true,
-            postId,
-            type,
-            postTitle,
-            confirmButtonLoading: false
-        });
-    };
-
-    const hideChargeFeePopup = () => {
-        setChargeFeePopup(prev => ({
-            ...prev,
-            isVisible: false,
-            confirmButtonLoading: false
-        }));
-    };
-
-    // VIP package popup handlers
-    const showVipPackagePopup = (postId: string, postTitle: string) => {
-        setVipPackagePopup({
-            isVisible: true,
-            postId,
-            postTitle,
-            confirmButtonLoading: false
-        });
-    };
-
-    const hideVipPackagePopup = () => {
-        setVipPackagePopup(prev => ({
-            ...prev,
-            isVisible: false,
-            confirmButtonLoading: false
-        }));
-    };
-
-    const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
-        setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-
+    const handleRemoveFavorite = async (postId: string) => {
         try {
-            if (chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew') {
-                const response = await renewPost(chargeFeePopup.postId);
-                const data = await response.json();
-                if (!response.ok) {
-                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                    showError(`Thanh toán thất bại. ${data.message || ''}`);
-                    return;
-                }
-
-            } else if (chargeFeePopup.type === 'up') {
-                const response = await reupPost(chargeFeePopup.postId);
-                const data = await response.json();
-                if (!response.ok) {
-                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                    showError(`Thanh toán thất bại. ${data.message || ''}`);
-                    return;
-                }
-            }
-
-            hideChargeFeePopup();
-            showSuccess(`Thanh toán thành công!`);
-            // Refresh posts data
-            await fetchPosts(searchParams);
-        } catch (error) {
-            setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-            showError('Thanh toán thất bại. Vui lòng thử lại sau.');
-        }
-    };
-
-    const handleVipPackageConfirm = async (selectedPackage: PostChargeFeeData) => {
-        setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-
-        try {
-            const response = await fetch('/api/posts/update-priority', {
-                method: 'POST',
+            setRemovingFavoriteId(postId);
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/favorites/remove/`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    postId: vipPackagePopup.postId,
-                    priorityLevel: selectedPackage.priorityLevel
+                    userId: userId,
+                    postId: postId
                 })
             });
-
-            const data = await response.json();
             if (!response.ok) {
-                setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                showError(`Cập nhật gói VIP thất bại. ${data.message || ''}`);
-                return;
+                throw new Error("Failed to remove favorite");
             }
 
-            hideVipPackagePopup();
-            showSuccess('Cập nhật gói VIP thành công!');
-            // Refresh posts data
-            await fetchPosts(searchParams);
+            // Remove post from local state instead of refetching
+            setFavorites(prev => prev.filter(fav => fav.postId !== postId));
+
+            // Show success toast
+            setFavoriteToastMessage('Đã xóa khỏi danh sách yêu thích');
+            setIsToastError(false);
+            setShowFavoriteToast(true);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                setShowFavoriteToast(false);
+            }, 3000);
+
         } catch (error) {
-            setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-            showError('Cập nhật gói VIP thất bại. Vui lòng thử lại sau.');
+            console.error("Error removing favorite:", error);
+            // Show error toast
+            setFavoriteToastMessage('Không thể xóa khỏi danh sách yêu thích');
+            setIsToastError(true);
+            setShowFavoriteToast(true);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                setShowFavoriteToast(false);
+            }, 3000);
+        } finally {
+            setRemovingFavoriteId(null);
         }
     };
 
-    // Calculate active filter count
-    const getActiveFilterCount = () => {
-        let count = 0;
-        if (searchParams.transactionType) count++;
-        if (searchParams.lastDate !== 0) count++; // 0 is the default value
-        return count;
-    };
-
-    // Pagination calculations
-    const getFilteredPosts = () => {
-        return posts?.filter((post) => {
-            // Filter by tab status
-            let matchesTab = true;
-            if (activeTab === 'active') matchesTab = post.status === 'PUBLISHED';
-            else if (activeTab === 'expired') matchesTab = post.status === 'EXPIRED';
-            else if (activeTab === 'pending') matchesTab = post.status === 'DRAFT';
-            // 'all' tab shows everything
-
-            // Filter by search term
-            let matchesSearch = true;
-            if (searchParams.title && searchParams.title.trim() !== '') {
-                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
-            }
-
-            // Filter by transaction type
-            let matchesTransaction = true;
-            if (searchParams.transactionType && searchParams.transactionType !== '') {
-                matchesTransaction = post.transactionType === searchParams.transactionType;
-            }
-
-            // Filter by date (lastDate is in days)
-            let matchesDate = true;
-            if (searchParams.lastDate !== 0) {
-                const postDate = new Date(post.createdDate);
-                const cutoffDate = new Date();
-                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
-                matchesDate = postDate >= cutoffDate;
-            }
-
-            return matchesTab && matchesSearch && matchesTransaction && matchesDate;
-        }) || [];
-    };
-
-    const getPaginatedPosts = () => {
-        const filteredPosts = getFilteredPosts();
-        const startIndex = (currentPage - 1) * postsPerPage;
-        const endIndex = startIndex + postsPerPage;
-        return filteredPosts.slice(startIndex, endIndex);
-    };
-
-    const getTotalPages = () => {
-        const filteredPosts = getFilteredPosts();
-        return Math.ceil(filteredPosts.length / postsPerPage);
+    // Handle favorite button click
+    const handleFavoriteClick = (postId: string) => {
+        handleRemoveFavorite(postId);
     };
 
     // Toggle dropdown for specific post
@@ -337,94 +180,27 @@ function MobileView({ session }: { session?: any }) {
         setOpenDropdownId(postId);
     };
 
-    // Handle dropdown actions
-    const handleDropdownAction = (action: string, post: any) => {
-        setOpenDropdownId(null);
-
-        switch (action) {
-            case 'upload-new': // status = 'DRAFT'                
-                showChargeFeePopup(post.postId, 'new', post.title);
-                break;
-            case 'reup': // status = 'Published'
-                showChargeFeePopup(post.postId, 'up', post.title);
-                break;
-            case 'renew': // status = 'Expired'
-                showChargeFeePopup(post.postId, 'renew', post.title);
-                break;
-            case 'edit':
-                router.push(`/edit-post/${post.postId}`);
-                break;
-            case 'upgrade':
-                showVipPackagePopup(post.postId, post.title);
-                break;
-            case 'delete':
-                // Show confirmation dialog for delete
-                showConfirmation({
-                    title: 'Xác nhận xóa tin',
-                    message: `Bạn có chắc chắn muốn xóa tin "${post.title}"? Hành động này không thể hoàn tác.`,
-                    type: 'danger',
-                    confirmText: 'Xóa tin',
-                    cancelText: 'Hủy',
-                    onConfirm: async () => {
-                        setConfirmButtonLoading(true);
-                        try {
-                            await updatePostStatus(post.postId, 'DELETED');
-                            hideConfirmation();
-                            showSuccess(`Đã xóa tin "${post.title}" thành công`);
-                            await fetchPosts(searchParams);
-                        } catch (error) {
-                            setConfirmButtonLoading(false);
-                            showError('Không thể xóa tin đăng. Vui lòng thử lại sau.');
-                        }
-                    },
-                    onCancel: () => {
-                        hideConfirmation();
-                    }
-                });
-                break;
-        }
+    const getTotalPages = () => {
+        const filteredPosts = getFilteredPosts();
+        return Math.ceil(filteredPosts.length / postsPerPage);
     };
 
-    // Get the correct repost/reup label based on post status
-    const getRepostLabel = (status: string) => {
-        switch (status) {
-            case 'PUBLISHED':
-                return 'Đẩy tin';
-            case 'EXPIRED':
-                return 'Gia hạn';
-            case 'DRAFT':
-                return 'Đăng tin';
-            default:
-                return 'Gia hạn';
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        handleSearchSubmit();
+    };
+
+    const handleSearchBlur = () => {
+        handleSearchSubmit();
+    };
+
+    const handleSearchSubmit = () => {
+        const newParams = {
+            ...searchParams,
+            title: searchTerm
         };
+        setSearchParams(newParams);
+        setCurrentPage(1); // Reset to first page when searching
     };
-
-    // Get the correct repost/reup icon based on post status
-    const getRepostIcon = (status: string) => {
-        switch (status) {
-            case 'DRAFT':
-                return '/icons/Plus.svg';
-            case 'EXPIRED':
-                return '/icons/rotateIcon.svg';
-            case 'PUBLISHED':
-                return '/icons/upIcon.svg';
-            default:
-                return '/icons/rotateIcon.svg';
-        };
-    };
-
-    const getRepostAction = (status: string) => {
-        switch (status) {
-            case 'DRAFT':
-                return 'upload-new';
-            case 'EXPIRED':
-                return 'renew';
-            case 'PUBLISHED':
-                return 'reup';
-            default:
-                return 'renew';
-        }
-    }
 
     // Handle filter popup actions
     const handleFilterReset = () => {
@@ -441,6 +217,7 @@ function MobileView({ session }: { session?: any }) {
                     setSearchParams({
                         ...searchParams,
                         transactionType: '',
+                        propertyType: '',
                         lastDate: 180
                     });
                     hideConfirmation();
@@ -454,30 +231,30 @@ function MobileView({ session }: { session?: any }) {
             setSearchParams({
                 ...searchParams,
                 transactionType: '',
+                propertyType: '',
                 lastDate: 180
             });
             showInfo('Bộ lọc đã được đặt lại');
         }
     };
 
-    const handleFilterApply = async () => {
+    const handleFilterApply = () => {
         const newParams = {
             ...searchParams,
             transactionType: tempFilterParams.transactionType,
+            propertyType: tempFilterParams.propertyType,
             lastDate: tempFilterParams.lastDate
         };
-        
+
         setSearchParams(newParams);
         setOpenDropdownId(null);
-        setCurrentPage(1); // Reset to first page when applying filters
+        setCurrentPage(1);
 
-        // Re-fetch posts with new filters
-        await fetchPosts(newParams);
-
-        // Show filter applied success message
+        // Calculate filter count based on new params instead of outdated state
         let filterCount = 0;
-        if(newParams.transactionType) filterCount++;
-        if(newParams.lastDate != undefined && newParams.lastDate > 0) filterCount++;
+        if (newParams.transactionType) filterCount++;
+        if (newParams.lastDate !== 0) filterCount++; // 0 is the default value
+        if (newParams.propertyType) filterCount++;
 
         if (filterCount > 0) {
             showSuccess(`Đã áp dụng ${filterCount} bộ lọc thành công`);
@@ -486,14 +263,84 @@ function MobileView({ session }: { session?: any }) {
         }
     };
 
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    // Pagination handlers
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < getTotalPages()) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     const handleFilterClose = () => {
         // Reset temp params to current search params when closing without applying
         setTempFilterParams({
             transactionType: searchParams.transactionType,
+            propertyType: searchParams.propertyType,
             lastDate: searchParams.lastDate
         });
         setOpenDropdownId(null);
     };
+
+    const getActiveFilterCount = () => {
+        let count = 0;
+        if (searchParams.transactionType) count++;
+        if (searchParams.lastDate !== 0) count++; // 0 is the default value
+        if (searchParams.propertyType) count++;
+        return count;
+    };
+
+    const getFilteredPosts = () => {
+        return favorites?.filter((post) => {
+            // Filter by search term
+            let matchesSearch = true;
+            if (searchParams.title && searchParams.title.trim() !== '') {
+                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
+            }
+
+            // Filter by transaction type
+            let matchesTransaction = true;
+            if (searchParams.transactionType && searchParams.transactionType !== '') {
+                matchesTransaction = post.transactionType === searchParams.transactionType;
+            }
+
+            // Filter by property type            
+            let matchesProperty = true;
+            if (searchParams.propertyType && searchParams.propertyType !== '') {
+                matchesProperty = post.type === searchParams.propertyType;
+            }
+
+            // Filter by date (lastDate is in days)
+            let matchesDate = true;
+            if (searchParams.lastDate !== 0) {
+                const postDate = new Date(post.createdDate);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
+                matchesDate = postDate >= cutoffDate;
+            }
+
+            return matchesSearch && matchesTransaction && matchesProperty && matchesDate;
+        }) || [];
+    };
+
+    const getPaginatedPosts = () => {
+        const filteredPosts = getFilteredPosts();
+        const startIndex = (currentPage - 1) * postsPerPage;
+        const endIndex = startIndex + postsPerPage;
+        return filteredPosts.slice(startIndex, endIndex);
+    };
+
+    useEffect(() => {
+        fetchFavorites();
+    }, [session?.user?.id]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -515,120 +362,12 @@ function MobileView({ session }: { session?: any }) {
         };
     }, [openDropdownId]);
 
-
-    const tabs = [
-        { id: 'all', label: 'Tất cả', count: tabData.all },
-        { id: 'active', label: 'Đang hiển thị', count: tabData.active },
-        { id: 'expired', label: 'Hết hạn', count: tabData.expired },
-        { id: 'pending', label: 'Chờ xuất bản', count: tabData.pending }
-    ];
-
-    const fetchChargeFee = async (postId: string) => {
-        try {
-            const response = await fetch(`/api/manage/posts/charge-fee/${postId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-        } catch (error) {
-            console.error("Error charging fee:", error);
-            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");
-        }
-    }
-
-    // Fetch posts from API
-    const fetchPosts = async (params = searchParams) => {
-        try {
-            const response = await fetch('/api/manage/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(params)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setPosts(data.response);
-            setTabData({
-                all: data.response.length,
-                active: data.response.filter((post: any) => post.status === 'PUBLISHED').length,
-                expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
-                pending: data.response.filter((post: any) => post.status === 'DRAFT').length
-            });
-
-            // Show success message when posts are loaded (optional, can be removed if too frequent)
-            // showSuccess(`Đã tải ${data.response.length} tin đăng thành công`);
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
-        }
-    }
-
-    const updatePostStatus = async (postId: string, status: string) => {
-        await fetch(`/api/manage/post-status?postId=${postId}&status=${status}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    };
-
-    const reupPost = async (postId: string): Promise<Response> => {
-        const response = await fetch(`/api/manage/posts/reup/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response;
-    };
-
-    const renewPost = async (postId: string): Promise<Response> => {
-        const response = await fetch(`/api/manage/posts/renew/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response;
-    }
-
-    useEffect(() => {
-        fetchPosts();
-    }, []);
-
-    // Initialize temp filter params when filter dropdown opens
-    useEffect(() => {
-        if (openDropdownId === 'filter') {
-            setTempFilterParams({
-                transactionType: searchParams.transactionType,
-                lastDate: searchParams.lastDate
-            });
-        }
-    }, [openDropdownId, searchParams]);
-
-    const POST_STATUSES = {
-        PUBLISHED: 'PUBLISHED',
-        DRAFT: 'DRAFT',
-        EXPIRED: 'EXPIRED',
-        DELETED: 'DELETED'
-    };
-
     return (
         <div className="flex flex-col min-h-screen">
             <NavBarMobile displayNav={true} session={session} />
             <div className={styles.headerUploadPost}>
                 <div>
-                    <p className="heading-h8">Quản lý tin đăng</p>
+                    <p className="heading-h8">Tin đã lưu</p>
                 </div>
                 <div className={styles.searchFilterContainer}>
                     <div className={styles.searchInputContainer}>
@@ -728,6 +467,44 @@ function MobileView({ session }: { session?: any }) {
                                     >
                                         ×
                                     </button>
+                                </div>
+
+                                {/* Property Type Filter */}
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '6px',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#374151'
+                                    }}>
+                                        Loại bất động sản
+                                    </label>
+                                    <select
+                                        value={tempFilterParams.propertyType}
+                                        onChange={(e) => setTempFilterParams(prev => ({
+                                            ...prev,
+                                            propertyType: e.target.value
+                                        }))}
+                                        style={{
+                                            width: '100%',
+                                            padding: '8px 12px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '6px',
+                                            fontSize: '14px',
+                                            backgroundColor: 'white'
+                                        }}
+                                    >
+                                        <option value="">Tất cả</option>
+                                        <option value="CHCC">Căn hộ chung cư</option>
+                                        <option value="NHA_RIENG">Nhà riêng</option>
+                                        <option value="BIET_THU">Biệt thự</option>
+                                        <option value="NHA_PHO">Nhà phố</option>
+                                        <option value="DAT_NEN">Đất nền</option>
+                                        <option value="CONDOTEL">Condotel</option>
+                                        <option value="KHO_NHA_XUONG">Kho/Nhà xưởng</option>
+                                        <option value="BDS_KHAC">BDS khác</option>
+                                    </select>
                                 </div>
 
                                 {/* Transaction Type Filter */}
@@ -838,28 +615,13 @@ function MobileView({ session }: { session?: any }) {
                         )}
                     </div>
                 </div>
-                <div className={styles.tabsContainer}>
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => {
-                                setActiveTab(tab.id);
-                                setCurrentPage(1); // Reset to first page when changing tabs
-                            }}
-                            className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabButtonActive : ''}`}
-                        >
-                            <span className={styles.tabLabel}>{tab.label}</span>
-                            <span className={styles.tabCount}>{tab.count}</span>
-                        </button>
-                    ))}
-                </div>
             </div>
             <div className={`${styles.formContainer} flex-1`}>
                 <div className={styles.postsGrid}>
                     {getPaginatedPosts().map((post) => (
                         <div key={post.postId} className={styles.postCard}>
                             <div className={styles.postImageContainer}>
-                                 {post.images && post.images.length > 0 ? (
+                                {post.images && post.images.length > 0 ? (
                                     <Image
                                         src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[0].fileUrl}`}
                                         alt={post.title}
@@ -876,16 +638,38 @@ function MobileView({ session }: { session?: any }) {
                                         className={styles.postImage}
                                     />
                                 )}
-                                <div className={`${styles.statusBadge} ${styles[`status${post.status}`]}`}>
-                                    {post.status === 'PUBLISHED' && 'Đã xuất bản'}
-                                    {post.status === 'DRAFT' && 'Nháp'}
-                                    {post.status === 'EXPIRED' && 'Hết hạn'}
-                                </div>
                             </div>
-
                             <div className={styles.postContent}>
-                                <h3 className={styles.postTitle}>{post.title}</h3>
-
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h3 className={styles.postTitle}>{post.title}</h3>
+                                    {session && (
+                                        <div className="relative">
+                                            <button
+                                                className="p-2 rounded-full transition-all duration-200 text-red-500 bg-red-50 hover:bg-red-100"
+                                                onClick={() => handleFavoriteClick(post.postId)}
+                                                disabled={removingFavoriteId === post.postId}
+                                                aria-label="Remove from favorites"
+                                                style={{
+                                                    opacity: removingFavoriteId === post.postId ? 0.6 : 1,
+                                                    cursor: removingFavoriteId === post.postId ? 'not-allowed' : 'pointer'
+                                                }}
+                                            >
+                                                {removingFavoriteId === post.postId ? (
+                                                    <div className="animate-spin">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.3" />
+                                                            <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" />
+                                                        </svg>
+                                                    </div>
+                                                ) : (
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className={styles.postInfo}>
                                     <div className={styles.postType}>
                                         <span className={`${styles.transactionType} ${styles[getTransactionTypeClass(post.transactionType)]}`}>
@@ -894,12 +678,6 @@ function MobileView({ session }: { session?: any }) {
                                         <span className={styles.propertyType}>
                                             {getPropertyTypeLabel(post.type)}
                                         </span>
-                                        {post.rankingDto?.priorityLevel && (
-                                            <span className={`${styles.priorityLevel} ${styles[getPriorityLevelClass(post.rankingDto.priorityLevel)]}`}>
-                                                {getPriorityLevelLabel(post.rankingDto.priorityLevel)}
-                                            </span>
-                                        )}
-
                                     </div>
 
                                     <div className={styles.postAddress}>
@@ -919,16 +697,11 @@ function MobileView({ session }: { session?: any }) {
                                                 {new Date(post.createdDate).toLocaleDateString('vi-VN')}
                                             </span>
                                         </div>
-                                        <div className={styles.dateItem}>
-                                            <span className={styles.dateLabel}>Hết hạn:</span>
-                                            <span className={styles.dateValue}>
-                                                {new Date(post.expiredAt).toLocaleDateString('vi-VN')}
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Post Actions */}
                             <div className={styles.postActions}>
                                 <button
                                     className={styles.actionButton}
@@ -936,76 +709,6 @@ function MobileView({ session }: { session?: any }) {
                                 >
                                     <Image src="/icons/EyeOpen.svg" alt="View" width={16} height={16} />
                                 </button>
-                                <div style={{ position: 'relative' }}>
-                                    <button
-                                        className={styles.actionButton}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleDropdown(post.postId, e.currentTarget);
-                                        }}
-                                    >
-                                        <Image src="/icons/threeDots.svg" alt="More actions" width={16} height={16} />
-                                    </button>
-
-                                    {/* Dropdown menu */}
-                                    {openDropdownId === post.postId && (
-                                        <div
-                                            ref={dropdownRef}
-                                            data-dropdown-content="true"
-                                            onClick={(e) => e.stopPropagation()}
-                                            style={{
-                                                position: 'absolute',
-                                                [dropdownPosition === 'above' ? 'bottom' : 'top']: '100%',
-                                                right: 0,
-                                                backgroundColor: 'white',
-                                                border: '1px solid #e5e7eb',
-                                                borderRadius: '8px',
-                                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                                                zIndex: 50,
-                                                minWidth: '160px',
-                                                marginTop: dropdownPosition === 'below' ? '4px' : '0',
-                                                marginBottom: dropdownPosition === 'above' ? '4px' : '0'
-                                            }}
-                                        >
-                                            <button
-                                                onClick={() => handleDropdownAction(getRepostAction(post.status), post)}
-                                                className={styles.btnFacility}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                            >
-                                                <Image src={getRepostIcon(post.status)} alt="renew" width={16} height={16} />
-                                                {getRepostLabel(post.status)}
-                                            </button>
-                                            <button
-                                                onClick={() => handleDropdownAction('edit', post)}
-                                                className={styles.btnFacility}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                            >
-                                                <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} />
-                                                Sửa tin
-                                            </button>
-                                            <button
-                                                onClick={() => handleDropdownAction('upgrade', post)}
-                                                className={styles.btnFacility}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                            >
-                                                <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} />
-                                                Nâng/Hạ Vip
-                                            </button>
-                                            <button
-                                                onClick={() => handleDropdownAction('delete', post)}
-                                                className={styles.btnFacility}
-                                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
-                                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                            >
-                                                <Image src="/icons/X.svg" alt="Delete" width={16} height={16} style={{ filter: 'invert(18%) sepia(94%) saturate(7496%) hue-rotate(354deg) brightness(101%) contrast(109%)' }} />
-                                                Xoá tin
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     ))}
@@ -1105,7 +808,6 @@ function MobileView({ session }: { session?: any }) {
                     </div>
                 )}
             </div>
-
             {/* Alert Component */}
             <Alert
                 type={alert.type}
@@ -1113,7 +815,6 @@ function MobileView({ session }: { session?: any }) {
                 isVisible={alert.isVisible}
                 onClose={hideAlert}
             />
-
             {/* Confirmation Component */}
             <Confirmation
                 isVisible={confirmation.isVisible}
@@ -1126,28 +827,6 @@ function MobileView({ session }: { session?: any }) {
                 onCancel={confirmation.onCancel}
                 confirmButtonLoading={confirmation.confirmButtonLoading}
             />
-
-            {/* Charge Fee Popup */}
-            <ChargeFeePopup
-                isVisible={chargeFeePopup.isVisible}
-                postId={chargeFeePopup.postId}
-                type={chargeFeePopup.type}
-                postTitle={chargeFeePopup.postTitle}
-                onConfirm={handleChargeFeeConfirm}
-                onCancel={hideChargeFeePopup}
-                confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
-            />
-
-            {/* VIP Package Popup */}
-            <VipPackagePopup
-                isVisible={vipPackagePopup.isVisible}
-                postId={vipPackagePopup.postId}
-                postTitle={vipPackagePopup.postTitle}
-                onConfirm={handleVipPackageConfirm}
-                onCancel={hideVipPackagePopup}
-                confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
-            />
-
             {/* Preview Popup */}
             {previewPopup.isVisible && previewPopup.post && (
                 <div className={styles.previewOverlay} onClick={closePreviewPopup}>
@@ -1336,62 +1015,72 @@ function MobileView({ session }: { session?: any }) {
                     </div>
                 </div>
             )}
+
+            {/* Favorite Toast Notification */}
+            {showFavoriteToast && (
+                <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 text-white text-sm rounded-lg shadow-lg z-50 whitespace-nowrap transition-all duration-300 ${showFavoriteToast ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                    } ${isToastError ? 'bg-red-600' : 'bg-green-600'
+                    }`}>
+                    {favoriteToastMessage}
+                </div>
+            )}
+            <MbFooter />
         </div>
     );
 }
 
-function DesktopView({ session }: { session?: any }) {
-    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
-    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
+function DesktopFavorites({ session }: { session?: any }) {
+    const [favorites, setFavorites] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('all');
-    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-    const [dropdownPosition, setDropdownPosition] = useState<'below' | 'above'>('below');
-    const [dropdownCoordinates, setDropdownCoordinates] = useState<{x: number, y: number}>({x: 0, y: 0});
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [posts, setPosts] = useState<any[]>([]);
-    const [tabData, setTabData] = useState({
-        all: 0,
-        active: 0,
-        expired: 0,
-        pending: 0
-    });
     const [searchParams, setSearchParams] = useState({
         title: '',
         transactionType: '',
+        propertyType: '',
         lastDate: 180
     });
+    const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const [dropdownPosition, setDropdownPosition] = useState<'above' | 'below'>('below');
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(12); // More posts per page for desktop
     const [tempFilterParams, setTempFilterParams] = useState({
         transactionType: '',
+        propertyType: '',
         lastDate: 180
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    const [postsPerPage] = useState(10); // More posts per page for desktop
-
-    // Charge fee popup state
-    const [chargeFeePopup, setChargeFeePopup] = useState({
-        isVisible: false,
-        postId: '',
-        type: 'new' as 'new' | 'up' | 'renew',
-        postTitle: '',
-        confirmButtonLoading: false
-    });
-
-    // VIP package popup state
-    const [vipPackagePopup, setVipPackagePopup] = useState({
-        isVisible: false,
-        postId: '',
-        postTitle: '',
-        confirmButtonLoading: false
-    });
-
+    // Favorite button state
+    const [showFavoriteToast, setShowFavoriteToast] = useState(false);
+    const [favoriteToastMessage, setFavoriteToastMessage] = useState('');
+    const [isToastError, setIsToastError] = useState(false);
+    const [removingFavoriteId, setRemovingFavoriteId] = useState<string | null>(null);
     // Preview popup state
     const [previewPopup, setPreviewPopup] = useState({
         isVisible: false,
         post: null as any
     });
-
     const router = useRouter();
+    const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
+
+    const fetchFavorites = async (params = searchParams) => {
+        if (!session?.user?.id) return;
+        try {
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/favorites/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch favorites");
+            }
+            const data = await response.json();
+            setFavorites(data.response);
+        } catch (error) {
+            console.error("Error fetching favorites:", error);
+        }
+    }
 
     // Handle preview popup
     const handlePreviewPost = (post: any) => {
@@ -1402,194 +1091,56 @@ function DesktopView({ session }: { session?: any }) {
         setPreviewPopup({ isVisible: false, post: null });
     };
 
-    // Handle search input events
-    const handleSearchSubmit = () => {
-        const newParams = {
-            ...searchParams,
-            title: searchTerm
-        };
-        setSearchParams(newParams);
-        setCurrentPage(1);
-    };
-
-    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {        
-        handleSearchSubmit();        
-    };
-
-    const handleSearchBlur = () => {
-        handleSearchSubmit();
-    };
-
-    // Pagination handlers
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
-
-    const handleNextPage = () => {
-        if (currentPage < getTotalPages()) {
-            setCurrentPage(currentPage + 1);
-        }
-    };
-
-    const handlePreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
-
-    // Charge fee popup handlers
-    const showChargeFeePopup = (postId: string, type: 'new' | 'up' | 'renew', postTitle: string) => {
-        setChargeFeePopup({
-            isVisible: true,
-            postId,
-            type,
-            postTitle,
-            confirmButtonLoading: false
-        });
-    };
-
-    const hideChargeFeePopup = () => {
-        setChargeFeePopup(prev => ({
-            ...prev,
-            isVisible: false,
-            confirmButtonLoading: false
-        }));
-    };
-
-    // VIP package popup handlers
-    const showVipPackagePopup = (postId: string, postTitle: string) => {
-        setVipPackagePopup({
-            isVisible: true,
-            postId,
-            postTitle,
-            confirmButtonLoading: false
-        });
-    };
-
-    const hideVipPackagePopup = () => {
-        setVipPackagePopup(prev => ({
-            ...prev,
-            isVisible: false,
-            confirmButtonLoading: false
-        }));
-    };
-
-    const handleChargeFeeConfirm = async (feeData: ChargeFeeData) => {
-        setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-
+    const handleRemoveFavorite = async (postId: string) => {
         try {
-            if (chargeFeePopup.type === 'new' || chargeFeePopup.type === 'renew') {
-                const response = await renewPost(chargeFeePopup.postId);
-                const data = await response.json();
-                if (!response.ok) {
-                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                    showError(`Thanh toán thất bại. ${data.message || ''}`);
-                    return;
-                }
-
-            } else if (chargeFeePopup.type === 'up') {
-                const response = await reupPost(chargeFeePopup.postId);
-                const data = await response.json();
-                if (!response.ok) {
-                    setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                    showError(`Thanh toán thất bại. ${data.message || ''}`);
-                    return;
-                }
-            }
-
-            hideChargeFeePopup();
-            showSuccess(`Thanh toán thành công!`);
-            await fetchPosts(searchParams);
-        } catch (error) {
-            setChargeFeePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-            showError('Thanh toán thất bại. Vui lòng thử lại sau.');
-        }
-    };
-
-    const handleVipPackageConfirm = async (selectedPackage: PostChargeFeeData) => {
-        setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: true }));
-
-        try {
-            const response = await fetch('/api/posts/update-priority', {
-                method: 'POST',
+            setRemovingFavoriteId(postId);
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/favorites/remove/`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    postId: vipPackagePopup.postId,
-                    priorityLevel: selectedPackage.priorityLevel
+                    userId: userId,
+                    postId: postId
                 })
             });
-
-            const data = await response.json();
             if (!response.ok) {
-                setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-                showError(`Cập nhật gói VIP thất bại. ${data.message || ''}`);
-                return;
+                throw new Error("Failed to remove favorite");
             }
 
-            hideVipPackagePopup();
-            showSuccess('Cập nhật gói VIP thành công!');
-            await fetchPosts(searchParams);
+            // Remove post from local state instead of refetching
+            setFavorites(prev => prev.filter(fav => fav.postId !== postId));
+
+            // Show success toast
+            setFavoriteToastMessage('Đã xóa khỏi danh sách yêu thích');
+            setIsToastError(false);
+            setShowFavoriteToast(true);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                setShowFavoriteToast(false);
+            }, 3000);
+
         } catch (error) {
-            setVipPackagePopup(prev => ({ ...prev, confirmButtonLoading: false }));
-            showError('Cập nhật gói VIP thất bại. Vui lòng thử lại sau.');
+            console.error("Error removing favorite:", error);
+            // Show error toast
+            setFavoriteToastMessage('Không thể xóa khỏi danh sách yêu thích');
+            setIsToastError(true);
+            setShowFavoriteToast(true);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                setShowFavoriteToast(false);
+            }, 3000);
+        } finally {
+            setRemovingFavoriteId(null);
         }
     };
 
-    // Calculate active filter count
-    const getActiveFilterCount = () => {
-        let count = 0;
-        if (searchParams.transactionType) count++;
-        if (searchParams.lastDate !== 0) count++;
-        return count;
-    };
-
-    // Pagination calculations
-    const getFilteredPosts = () => {
-        return posts?.filter((post) => {
-            // Filter by tab status
-            let matchesTab = true;
-            if (activeTab === 'active') matchesTab = post.status === 'PUBLISHED';
-            else if (activeTab === 'expired') matchesTab = post.status === 'EXPIRED';
-            else if (activeTab === 'pending') matchesTab = post.status === 'DRAFT';
-            // 'all' tab shows everything
-
-            // Filter by search term
-            let matchesSearch = true;
-            if (searchParams.title && searchParams.title.trim() !== '') {
-                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
-            }
-
-            // Filter by transaction type
-            let matchesTransaction = true;
-            if (searchParams.transactionType && searchParams.transactionType !== '') {
-                matchesTransaction = post.transactionType === searchParams.transactionType;
-            }
-
-            // Filter by date (lastDate is in days)
-            let matchesDate = true;
-            if (searchParams.lastDate !== 0) {
-                const postDate = new Date(post.createdDate);
-                const cutoffDate = new Date();
-                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
-                matchesDate = postDate >= cutoffDate;
-            }
-
-            return matchesTab && matchesSearch && matchesTransaction && matchesDate;
-        }) || [];
-    };
-
-    const getPaginatedPosts = () => {
-        const filteredPosts = getFilteredPosts();
-        const startIndex = (currentPage - 1) * postsPerPage;
-        const endIndex = startIndex + postsPerPage;
-        return filteredPosts.slice(startIndex, endIndex);
-    };
-
-    const getTotalPages = () => {
-        const filteredPosts = getFilteredPosts();
-        return Math.ceil(filteredPosts.length / postsPerPage);
+    // Handle favorite button click
+    const handleFavoriteClick = (postId: string) => {
+        handleRemoveFavorite(postId);
     };
 
     // Toggle dropdown for specific post
@@ -1599,113 +1150,43 @@ function DesktopView({ session }: { session?: any }) {
             return;
         }
 
+        // Calculate dropdown position
         const buttonRect = buttonElement.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        const dropdownHeight = 180;
+        const dropdownHeight = 300;
         const spaceBelow = windowHeight - buttonRect.bottom;
         const spaceAbove = buttonRect.top;
 
-        // Determine if dropdown should appear above or below
-        const positionBelow = spaceBelow >= dropdownHeight || spaceAbove < dropdownHeight;
-        setDropdownPosition(positionBelow ? 'below' : 'above');
+        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+            setDropdownPosition('above');
+        } else {
+            setDropdownPosition('below');
+        }
 
-        // Calculate fixed position coordinates
-        const x = buttonRect.right - 192; // 192px = w-48 (12rem)
-        const y = positionBelow 
-            ? buttonRect.bottom + 8 
-            : buttonRect.top - dropdownHeight - 8;
-
-        setDropdownCoordinates({ x, y });
         setOpenDropdownId(postId);
     };
 
-    // Handle dropdown actions
-    const handleDropdownAction = (action: string, post: any) => {
-        setOpenDropdownId(null);
-
-        switch (action) {
-            case 'upload-new':
-                showChargeFeePopup(post.postId, 'new', post.title);
-                break;
-            case 'reup':
-                showChargeFeePopup(post.postId, 'up', post.title);
-                break;
-            case 'renew':
-                showChargeFeePopup(post.postId, 'renew', post.title);
-                break;
-            case 'edit':
-                router.push(`/edit-post/${post.postId}`);
-                break;
-            case 'upgrade':
-                showVipPackagePopup(post.postId, post.title);
-                break;
-            case 'delete':
-                showConfirmation({
-                    title: 'Xác nhận xóa tin',
-                    message: `Bạn có chắc chắn muốn xóa tin "${post.title}"? Hành động này không thể hoàn tác.`,
-                    type: 'danger',
-                    confirmText: 'Xóa tin',
-                    cancelText: 'Hủy',
-                    onConfirm: async () => {
-                        setConfirmButtonLoading(true);
-                        try {
-                            await updatePostStatus(post.postId, 'DELETED');
-                            hideConfirmation();
-                            showSuccess(`Đã xóa tin "${post.title}" thành công`);
-                            await fetchPosts(searchParams);
-                        } catch (error) {
-                            setConfirmButtonLoading(false);
-                            showError('Không thể xóa tin đăng. Vui lòng thử lại sau.');
-                        }
-                    },
-                    onCancel: () => {
-                        hideConfirmation();
-                    }
-                });
-                break;
-        }
+    const getTotalPages = () => {
+        const filteredPosts = getFilteredPosts();
+        return Math.ceil(filteredPosts.length / postsPerPage);
     };
 
-    // Get the correct repost/reup label based on post status
-    const getRepostLabel = (status: string) => {
-        switch (status) {
-            case 'PUBLISHED':
-                return 'Đẩy tin';
-            case 'EXPIRED':
-                return 'Gia hạn';
-            case 'DRAFT':
-                return 'Đăng tin';
-            default:
-                return 'Gia hạn';
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        handleSearchSubmit();
+    };
+
+    const handleSearchBlur = () => {
+        handleSearchSubmit();
+    };
+
+    const handleSearchSubmit = () => {
+        const newParams = {
+            ...searchParams,
+            title: searchTerm
         };
+        setSearchParams(newParams);
+        setCurrentPage(1);
     };
-
-    // Get the correct repost/reup icon based on post status
-    const getRepostIcon = (status: string) => {
-        switch (status) {
-            case 'DRAFT':
-                return '/icons/Plus.svg';
-            case 'EXPIRED':
-                return '/icons/rotateIcon.svg';
-            case 'PUBLISHED':
-                return '/icons/upIcon.svg';
-            default:
-                return '/icons/rotateIcon.svg';
-        };
-    };
-
-    const getRepostAction = (status: string) => {
-        switch (status) {
-            case 'DRAFT':
-                return 'upload-new';
-            case 'EXPIRED':
-                return 'renew';
-            case 'PUBLISHED':
-                return 'reup';
-            default:
-                return 'renew';
-        }
-    }
 
     // Handle filter popup actions
     const handleFilterReset = () => {
@@ -1722,6 +1203,7 @@ function DesktopView({ session }: { session?: any }) {
                     setSearchParams({
                         ...searchParams,
                         transactionType: '',
+                        propertyType: '',
                         lastDate: 180
                     });
                     hideConfirmation();
@@ -1735,16 +1217,18 @@ function DesktopView({ session }: { session?: any }) {
             setSearchParams({
                 ...searchParams,
                 transactionType: '',
+                propertyType: '',
                 lastDate: 180
             });
             showInfo('Bộ lọc đã được đặt lại');
         }
     };
 
-    const handleFilterApply = async () => {
+    const handleFilterApply = () => {
         const newParams = {
             ...searchParams,
             transactionType: tempFilterParams.transactionType,
+            propertyType: tempFilterParams.propertyType,
             lastDate: tempFilterParams.lastDate
         };
 
@@ -1752,12 +1236,11 @@ function DesktopView({ session }: { session?: any }) {
         setOpenDropdownId(null);
         setCurrentPage(1);
 
-        // Re-fetch posts with new filters
-        await fetchPosts(newParams);
-
+        // Calculate filter count based on new params instead of outdated state
         let filterCount = 0;
         if (newParams.transactionType) filterCount++;
-        if (newParams.lastDate != undefined && newParams.lastDate > 0) filterCount++;
+        if (newParams.lastDate !== 180) filterCount++;
+        if (newParams.propertyType) filterCount++;
 
         if (filterCount > 0) {
             showSuccess(`Đã áp dụng ${filterCount} bộ lọc thành công`);
@@ -1766,13 +1249,82 @@ function DesktopView({ session }: { session?: any }) {
         }
     };
 
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < getTotalPages()) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
     const handleFilterClose = () => {
         setTempFilterParams({
             transactionType: searchParams.transactionType,
+            propertyType: searchParams.propertyType,
             lastDate: searchParams.lastDate
         });
         setOpenDropdownId(null);
     };
+
+    const getActiveFilterCount = () => {
+        let count = 0;
+        if (searchParams.transactionType) count++;
+        if (searchParams.lastDate !== 180) count++;
+        if (searchParams.propertyType) count++;
+        return count;
+    };
+
+    const getFilteredPosts = () => {
+        return favorites?.filter((post) => {
+            // Filter by search term
+            let matchesSearch = true;
+            if (searchParams.title && searchParams.title.trim() !== '') {
+                matchesSearch = post.title.toLowerCase().includes(searchParams.title.toLowerCase());
+            }
+
+            // Filter by transaction type
+            let matchesTransaction = true;
+            if (searchParams.transactionType && searchParams.transactionType !== '') {
+                matchesTransaction = post.transactionType === searchParams.transactionType;
+            }
+
+            // Filter by property type            
+            let matchesProperty = true;
+            if (searchParams.propertyType && searchParams.propertyType !== '') {
+                matchesProperty = post.type === searchParams.propertyType;
+            }
+
+            // Filter by date (lastDate is in days)
+            let matchesDate = true;
+            if (searchParams.lastDate !== 180) {
+                const postDate = new Date(post.createdDate);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
+                matchesDate = postDate >= cutoffDate;
+            }
+
+            return matchesSearch && matchesTransaction && matchesProperty && matchesDate;
+        }) || [];
+    };
+
+    const getPaginatedPosts = () => {
+        const filteredPosts = getFilteredPosts();
+        const startIndex = (currentPage - 1) * postsPerPage;
+        const endIndex = startIndex + postsPerPage;
+        return filteredPosts.slice(startIndex, endIndex);
+    };
+
+    useEffect(() => {
+        fetchFavorites();
+    }, [session?.user?.id]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -1784,124 +1336,14 @@ function DesktopView({ session }: { session?: any }) {
             setOpenDropdownId(null);
         };
 
-        const handleScroll = () => {
-            setOpenDropdownId(null);
-        };
-
         if (openDropdownId) {
             document.addEventListener('click', handleClickOutside);
-            window.addEventListener('scroll', handleScroll, true); // true for capture phase
         }
 
         return () => {
             document.removeEventListener('click', handleClickOutside);
-            window.removeEventListener('scroll', handleScroll, true);
         };
     }, [openDropdownId]);
-
-    const tabs = [
-        { id: 'all', label: 'Tất cả', count: tabData.all },
-        { id: 'active', label: 'Đang hiển thị', count: tabData.active },
-        { id: 'expired', label: 'Hết hạn', count: tabData.expired },
-        { id: 'pending', label: 'Chờ xuất bản', count: tabData.pending }
-    ];
-
-    const fetchChargeFee = async (postId: string) => {
-        try {
-            const response = await fetch(`/api/manage/posts/charge-fee/${postId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-        } catch (error) {
-            console.error("Error charging fee:", error);
-            showError("Không thể tính phí tin đăng. Vui lòng thử lại sau.");
-        }
-    }
-
-    // Fetch posts from API
-    const fetchPosts = async (params = searchParams) => {
-        try {
-            const response = await fetch('/api/manage/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(params)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setPosts(data.response);
-            setTabData({
-                all: data.response.length,
-                active: data.response.filter((post: any) => post.status === 'PUBLISHED').length,
-                expired: data.response.filter((post: any) => post.status === 'EXPIRED').length,
-                pending: data.response.filter((post: any) => post.status === 'DRAFT').length
-            });
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
-        }
-    }
-
-    const updatePostStatus = async (postId: string, status: string) => {
-        await fetch(`/api/manage/post-status?postId=${postId}&status=${status}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    };
-
-    const reupPost = async (postId: string): Promise<Response> => {
-        const response = await fetch(`/api/manage/posts/reup/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response;
-    };
-
-    const renewPost = async (postId: string): Promise<Response> => {
-        const response = await fetch(`/api/manage/posts/renew/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response;
-    }
-
-    useEffect(() => {
-        fetchPosts();
-    }, []);
-
-    // Initialize temp filter params when filter dropdown opens
-    useEffect(() => {
-        if (openDropdownId === 'filter') {
-            setTempFilterParams({
-                transactionType: searchParams.transactionType,
-                lastDate: searchParams.lastDate
-            });
-        }
-    }, [openDropdownId, searchParams]);
-
-    const POST_STATUSES = {
-        PUBLISHED: 'PUBLISHED',
-        DRAFT: 'DRAFT',
-        EXPIRED: 'EXPIRED',
-        DELETED: 'DELETED'
-    };
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -1911,11 +1353,11 @@ function DesktopView({ session }: { session?: any }) {
                     {/* Header Section */}
                     <div className="p-6 border-b border-gray-200">
                         <div className="flex justify-between items-center mb-6">
-                            <h1 className="text-2xl font-bold text-gray-900">Quản lý tin đăng</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">Tin đã lưu</h1>
                         </div>
 
                         {/* Search and Filter Section */}
-                        <div className="flex items-center gap-4 mb-6">
+                        <div className="flex items-center gap-4 mb-4">
                             <div className="flex-1 max-w-md">
                                 <input
                                     type="text"
@@ -1973,6 +1415,31 @@ function DesktopView({ session }: { session?: any }) {
                                                 </button>
                                             </div>
 
+                                            {/* Property Type Filter */}
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Loại bất động sản
+                                                </label>
+                                                <select
+                                                    value={tempFilterParams.propertyType}
+                                                    onChange={(e) => setTempFilterParams(prev => ({
+                                                        ...prev,
+                                                        propertyType: e.target.value
+                                                    }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                >
+                                                    <option value="">Tất cả</option>
+                                                    <option value="CHCC">Căn hộ chung cư</option>
+                                                    <option value="NHA_RIENG">Nhà riêng</option>
+                                                    <option value="BIET_THU">Biệt thự</option>
+                                                    <option value="NHA_PHO">Nhà phố</option>
+                                                    <option value="DAT_NEN">Đất nền</option>
+                                                    <option value="CONDOTEL">Condotel</option>
+                                                    <option value="KHO_NHA_XUONG">Kho/Nhà xưởng</option>
+                                                    <option value="BDS_KHAC">BDS khác</option>
+                                                </select>
+                                            </div>
+
                                             {/* Transaction Type Filter */}
                                             <div className="mb-4">
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1988,8 +1455,7 @@ function DesktopView({ session }: { session?: any }) {
                                                 >
                                                     <option value="">Tất cả</option>
                                                     <option value="SELL">Bán</option>
-                                                    <option value="RENT">Cho thuê</option>
-                                                    <option value="PROJECT">Dự án</option>
+                                                    <option value="RENT">Thuê</option>
                                                 </select>
                                             </div>
 
@@ -2005,12 +1471,12 @@ function DesktopView({ session }: { session?: any }) {
                                                         lastDate: parseInt(e.target.value)
                                                     }))}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >                                                    
+                                                >
                                                     <option value={7}>7 ngày qua</option>
                                                     <option value={30}>30 ngày qua</option>
+                                                    <option value={60}>60 ngày qua</option>
                                                     <option value={90}>90 ngày qua</option>
                                                     <option value={180}>180 ngày qua</option>
-                                                    <option value={0}>Tất cả</option>
                                                 </select>
                                             </div>
 
@@ -2034,31 +1500,6 @@ function DesktopView({ session }: { session?: any }) {
                                 )}
                             </div>
                         </div>
-
-                        {/* Tabs Section */}
-                        <div className="flex space-x-1 border-b border-gray-200">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => {
-                                        setActiveTab(tab.id);
-                                        setCurrentPage(1);
-                                    }}
-                                    className={`px-4 py-2 text-sm font-medium rounded-t-md ${activeTab === tab.id
-                                        ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    {tab.label}
-                                    <span className={`ml-2 px-2 py-1 text-xs rounded-full ${activeTab === tab.id
-                                        ? 'bg-blue-100 text-blue-600'
-                                        : 'bg-gray-100 text-gray-500'
-                                        }`}>
-                                        {tab.count}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Table Section */}
@@ -2073,10 +1514,10 @@ function DesktopView({ session }: { session?: any }) {
                                         Địa chỉ
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Trạng thái
+                                        Loại giao dịch
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Ngày tạo/Hết hạn
+                                        Ngày tạo
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Thao tác
@@ -2089,141 +1530,76 @@ function DesktopView({ session }: { session?: any }) {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 w-20 h-16">
-                                                    {post.images && post.images.length > 0 ? (
-                                                        <Image
-                                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[0].fileUrl}`}
-                                                            alt={post.title}
-                                                            width={120}
-                                                            height={80}
-                                                            className={styles.postImage}
-                                                        />
-                                                    ) : (
-                                                        <Image
-                                                            src="/temp/11.jpg"
-                                                            alt={post.title}
-                                                            width={120}
-                                                            height={80}
-                                                            className={styles.postImage}
-                                                        />
-                                                    )}                                                    
+                                                    <Image
+                                                        src="/temp/11.jpg"
+                                                        alt={post.title}
+                                                        width={80}
+                                                        height={64}
+                                                        className="w-20 h-16 object-cover rounded-md"
+                                                    />
                                                 </div>
-                                                <div className="ml-4 flex-1 min-w-0">
-                                                    <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                                <div className="ml-4 flex-1">
+                                                    <div className="text-sm font-medium text-gray-900 line-clamp-2">
                                                         {post.title}
                                                     </div>
-                                                    <span className={`${styles.transactionType} ${styles[getTransactionTypeClass(post.transactionType)]}`}>
-                                                        {getTransactionTypeLabel(post.transactionType)}
-                                                    </span>
-                                                    <span className={styles.propertyType}>
-                                                        {getPropertyTypeLabel(post.type)}
-                                                    </span>
-                                                    {post.rankingDto?.priorityLevel && (
-                                                        <span className={`${styles.priorityLevel} ${styles[getPriorityLevelClass(post.rankingDto.priorityLevel)]}`}>
-                                                            {getPriorityLevelLabel(post.rankingDto.priorityLevel)}
+                                                    <div className="flex items-center mt-1 gap-2">
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${post.transactionType === 'SELL'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-blue-100 text-blue-800'
+                                                            }`}>
+                                                            {getTransactionTypeLabel(post.transactionType)}
                                                         </span>
-                                                    )}
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            {getPropertyTypeLabel(post.type)}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-500 mt-1 flex items-center">
-                                                <Image src="/icons/location.svg" alt="Location" width={12} height={12} className="mr-1" />
-                                                {post.address ? `${post.address.split(',').slice(-2).join(',').trim()}` : 'Chưa cập nhật'}
+                                            <div className="text-sm text-gray-900 line-clamp-2">
+                                                {post.address}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${post.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' :
-                                                post.status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
-                                                    post.status === 'EXPIRED' ? 'bg-red-100 text-red-800' :
-                                                        'bg-gray-100 text-gray-800'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${post.transactionType === 'SELL'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-blue-100 text-blue-800'
                                                 }`}>
-                                                {post.status === 'PUBLISHED' && 'Đã xuất bản'}
-                                                {post.status === 'DRAFT' && 'Nháp'}
-                                                {post.status === 'EXPIRED' && 'Hết hạn'}
+                                                {getTransactionTypeLabel(post.transactionType)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-500">
-                                                Ngày tạo: {new Date(post.createdDate).toLocaleDateString('vi-VN')}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                Hết hạn: {post.expiredAt ? new Date(post.expiredAt).toLocaleDateString('vi-VN') : 'Chưa xác định'}
-                                            </div>
+                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                            {new Date(post.createdDate).toLocaleDateString('vi-VN')}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center space-x-2">
                                                 <button
+                                                    className="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded-md text-xs font-medium hover:bg-blue-600 hover:text-white transition-colors"
                                                     onClick={() => handlePreviewPost(post)}
-                                                    className={styles.actionButton}
-                                                    title="Xem trước"
                                                 >
-                                                    <Image src="/icons/EyeOpen.svg" alt="View" width={18} height={18} />
+                                                    <Image src="/icons/EyeOpen.svg" alt="View" width={14} height={14} className="mr-1" />
+                                                    Xem
                                                 </button>
-                                                <div style={{ position: 'relative' }}>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleDropdown(post.postId, e.currentTarget);
-                                                        }}
-                                                        className={styles.actionButton}
-                                                        title="Thêm thao tác"
-                                                    >
-                                                        <Image src="/icons/threeDots.svg" alt="More actions" width={18} height={18} />
-                                                    </button>
-
-                                                    {/* Dropdown menu */}
-                                                    {openDropdownId === post.postId && (
-                                                        <div
-                                                            ref={dropdownRef}
-                                                            data-dropdown-content="true"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="fixed w-48 bg-white border border-gray-200 rounded-md shadow-lg z-[9999]"
-                                                            style={{
-                                                                left: `${dropdownCoordinates.x}px`,
-                                                                top: `${dropdownCoordinates.y}px`,
-                                                            }}
-                                                        >
-                                                            <div className="py-1">
-                                                                <button
-                                                                    onClick={() => handleDropdownAction(getRepostAction(post.status), post)}                                                                    
-                                                                    className={styles.btnFacility}
-                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                                                >
-                                                                    <Image src={getRepostIcon(post.status)} alt={getRepostLabel(post.status)} width={18} height={18} />
-                                                                    {getRepostLabel(post.status)}
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDropdownAction('edit', post)}                                                                    
-                                                                    className={styles.btnFacility}
-                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                                                >
-                                                                    <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} className="mr-2" />
-                                                                    Sửa tin
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDropdownAction('upgrade', post)}
-                                                                    className={styles.btnFacility}
-                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                                                >
-                                                                    <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} className="mr-2" />
-                                                                    Nâng/Hạ Vip
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDropdownAction('delete', post)}
-                                                                    className={styles.btnFacility}
-                                                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                                                                >
-                                                                    <Image src="/icons/X.svg" alt="Delete" width={16} height={16} className="mr-2" style={{ filter: 'invert(18%) sepia(94%) saturate(7496%) hue-rotate(354deg) brightness(101%) contrast(109%)' }} />
-                                                                    Xoá tin
-                                                                </button>
-                                                            </div>
+                                                <button
+                                                    className="inline-flex items-center px-3 py-1.5 border border-red-600 text-red-600 rounded-md text-xs font-medium hover:bg-red-600 hover:text-white transition-colors"
+                                                    onClick={() => handleFavoriteClick(post.postId)}
+                                                    disabled={removingFavoriteId === post.postId}
+                                                >
+                                                    {removingFavoriteId === post.postId ? (
+                                                        <div className="animate-spin mr-1">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.3" />
+                                                                <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" />
+                                                            </svg>
                                                         </div>
+                                                    ) : (
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="mr-1">
+                                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                                        </svg>
                                                     )}
-                                                </div>
+                                                    Xóa
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -2234,8 +1610,8 @@ function DesktopView({ session }: { session?: any }) {
                         {/* Empty State */}
                         {getPaginatedPosts().length === 0 && (
                             <div className="text-center py-12">
-                                <div className="text-gray-500 text-lg">Không có tin đăng nào</div>
-                                <div className="text-gray-400 text-sm mt-2">Hãy thử thay đổi bộ lọc hoặc tạo tin đăng mới</div>
+                                <div className="text-gray-500 text-lg">Không có tin đăng yêu thích nào</div>
+                                <div className="text-gray-400 text-sm mt-2">Hãy thêm tin đăng vào danh sách yêu thích để quản lý dễ dàng hơn</div>
                             </div>
                         )}
                     </div>
@@ -2248,8 +1624,8 @@ function DesktopView({ session }: { session?: any }) {
                                     onClick={handlePreviousPage}
                                     disabled={currentPage === 1}
                                     className={`px-3 py-2 text-sm font-medium rounded-md ${currentPage === 1
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                                         }`}
                                 >
                                     ← Trước
@@ -2279,8 +1655,8 @@ function DesktopView({ session }: { session?: any }) {
                                             key={page}
                                             onClick={() => handlePageChange(page)}
                                             className={`px-3 py-2 text-sm font-medium rounded-md min-w-[40px] ${isCurrentPage
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                                                 }`}
                                         >
                                             {page}
@@ -2292,8 +1668,8 @@ function DesktopView({ session }: { session?: any }) {
                                     onClick={handleNextPage}
                                     disabled={currentPage === getTotalPages()}
                                     className={`px-3 py-2 text-sm font-medium rounded-md ${currentPage === getTotalPages()
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                                         }`}
                                 >
                                     Tiếp →
@@ -2308,6 +1684,7 @@ function DesktopView({ session }: { session?: any }) {
                 </div>
             </div>
 
+            {/* Alert, Confirmation, and other components remain the same... */}
             {/* Alert Component */}
             <Alert
                 type={alert.type}
@@ -2329,28 +1706,7 @@ function DesktopView({ session }: { session?: any }) {
                 confirmButtonLoading={confirmation.confirmButtonLoading}
             />
 
-            {/* Charge Fee Popup */}
-            <ChargeFeePopup
-                isVisible={chargeFeePopup.isVisible}
-                postId={chargeFeePopup.postId}
-                type={chargeFeePopup.type}
-                postTitle={chargeFeePopup.postTitle}
-                onConfirm={handleChargeFeeConfirm}
-                onCancel={hideChargeFeePopup}
-                confirmButtonLoading={chargeFeePopup.confirmButtonLoading}
-            />
-
-            {/* VIP Package Popup */}
-            <VipPackagePopup
-                isVisible={vipPackagePopup.isVisible}
-                postId={vipPackagePopup.postId}
-                postTitle={vipPackagePopup.postTitle}
-                onConfirm={handleVipPackageConfirm}
-                onCancel={hideVipPackagePopup}
-                confirmButtonLoading={vipPackagePopup.confirmButtonLoading}
-            />
-
-            {/* Preview Popup */}
+            {/* Preview Popup - same as before */}
             {previewPopup.isVisible && previewPopup.post && (
                 <div className={styles.previewOverlay} onClick={closePreviewPopup}>
                     <div className={styles.previewContainer} onClick={(e) => e.stopPropagation()}>
@@ -2378,9 +1734,7 @@ function DesktopView({ session }: { session?: any }) {
 
                         <div className={styles.previewMainContent}>
                             <div className={styles.previewHeader}>
-                                <h1 className={styles.previewTitle}>
-                                    {previewPopup.post.title}
-                                </h1>
+                                <h1 className={styles.previewTitle}>{previewPopup.post.title}</h1>
                                 <div className={styles.previewAddress}>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                         <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z" fill="currentColor" />
@@ -2391,9 +1745,7 @@ function DesktopView({ session }: { session?: any }) {
 
                             {previewPopup.post.description && (
                                 <div className={styles.previewDescriptionSection}>
-                                    <h2 className={styles.previewDescriptionTitle}>
-                                        Thông tin mô tả
-                                    </h2>
+                                    <h2 className={styles.previewDescriptionTitle}>Thông tin mô tả</h2>
                                     <div className={styles.previewDescriptionContent}>
                                         {formatDescription(previewPopup.post.description)}
                                     </div>
@@ -2401,9 +1753,7 @@ function DesktopView({ session }: { session?: any }) {
                             )}
 
                             <div className={styles.previewFeaturesSection}>
-                                <h2 className={styles.previewFeaturesTitle}>
-                                    Đặc điểm bất động sản
-                                </h2>
+                                <h2 className={styles.previewFeaturesTitle}>Đặc điểm bất động sản</h2>
                                 <div className={styles.previewFeaturesGrid}>
                                     {previewPopup.post.price && (
                                         <div className={styles.previewFeatureItem}>
@@ -2511,16 +1861,10 @@ function DesktopView({ session }: { session?: any }) {
                         <div className={styles.previewFooter}>
                             <div className={styles.previewFooterContent}>
                                 <div className={styles.previewFooterProfile}>
-                                    <div className={styles.previewFooterAvatar}>
-                                        📝
-                                    </div>
+                                    <div className={styles.previewFooterAvatar}>📝</div>
                                     <div>
-                                        <p className={styles.previewFooterUserName}>
-                                            Mã bài đăng
-                                        </p>
-                                        <p className={styles.previewFooterUserId}>
-                                            {previewPopup.post.postId}
-                                        </p>
+                                        <p className={styles.previewFooterUserName}>Mã bài đăng</p>
+                                        <p className={styles.previewFooterUserId}>{previewPopup.post.postId}</p>
                                     </div>
                                 </div>
                             </div>
@@ -2531,6 +1875,17 @@ function DesktopView({ session }: { session?: any }) {
                     </div>
                 </div>
             )}
+
+            {/* Toast Notification */}
+            {showFavoriteToast && (
+                <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 text-white text-sm rounded-lg shadow-lg z-50 whitespace-nowrap transition-all duration-300 ${showFavoriteToast ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                    } ${isToastError ? 'bg-red-600' : 'bg-green-600'
+                    }`}>
+                    {favoriteToastMessage}
+                </div>
+            )}
+
+            <DesktopFooter />
         </div>
     );
-} 
+}

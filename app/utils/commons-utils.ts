@@ -36,3 +36,25 @@ export const formatDirection = (direction: string) => {
     return directionMap[direction] || direction;
 }
 
+export const getPropertyTypeLabel = (type: string): string => {
+    const typeLabels: { [key: string]: string } = {
+        'CHCC': 'Căn hộ chung cư',
+        'NHA_RIENG': 'Nhà riêng',
+        'BIET_THU': 'Biệt thự',
+        'NHA_PHO': 'Nhà phố',
+        'DAT_NEN': 'Đất nền',
+        'CONDOTEL': 'Condotel',
+        'KHO_NHA_XUONG': 'Kho/Nhà xưởng',
+        'BDS_KHAC': 'BDS khác'
+    };
+    return typeLabels[type] || type;
+}
+
+export const getTransactionTypeLabel = (type: string): string => {
+  const transactionLabels: { [key: string]: string } = {
+        'SELL': 'Bán',
+        'RENT': 'Cho thuê',
+        'PROJECT': 'Dự án'
+    };
+    return transactionLabels[type] || type;
+}
