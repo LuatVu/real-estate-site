@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         pathname: "/api/public/image/**"
       },
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8080",
+        pathname: "/api/public/landing-images/**"
+      },
+      {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",     
         pathname: "/**"   

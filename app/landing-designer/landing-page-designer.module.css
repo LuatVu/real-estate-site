@@ -1,0 +1,227 @@
+/* Landing Page Designer Styles */
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.designerLayout {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 140px); /* Account for navbar and footer */
+}
+
+.sidebar {
+    width: 320px;
+    background: #f8f9fa;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+.sidebarContent {
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.sidebar h3 {
+    margin: 20px 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+.titleInput {
+    margin-bottom: 20px;
+}
+
+.titleInput label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.addSectionButtons {
+    margin-bottom: 20px;
+}
+
+.addBtn {
+    display: block !important;
+    width: 100%;
+    margin-bottom: 8px !important;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.sectionList {
+    margin-bottom: 20px;
+}
+
+.sectionItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 6px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sectionItem:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionItem.active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionControls {
+    display: flex;
+    gap: 4px;
+}
+
+.controlBtn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.controlBtn:hover:not(:disabled) {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.controlBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.deleteBtn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #dc2626;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #dc2626;
+    transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+    background: #fee2e2;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.mainContent {
+    flex: 1;
+    background: white;
+    overflow-y: auto;
+}
+
+.editorArea {
+    padding: 20px;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.emptyState h3 {
+    margin: 0 0 10px 0;
+    color: #374151;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.sectionEditor {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sectionEditor:hover {
+    border-color: #3b82f6;
+}
+
+.sectionEditor.activeEditor {
+    border-color: #3b82f6;
+    background: #f8faff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 280px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .designerLayout {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        max-height: 300px;
+    }
+}
