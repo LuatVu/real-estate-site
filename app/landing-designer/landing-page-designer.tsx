@@ -12,6 +12,7 @@ import PagePreview from './components/page-preview';
 import SaveDialog from './components/save-dialog';
 import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import styles from './landing-page-designer.module.css';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface LandingPageData {
     id?: string;
@@ -40,8 +41,8 @@ export interface LandingPageSection {
 export default function LandingPageDesigner() {
     const { data: session } = useSession();
     const router = useRouter();
-    const [landingPageData, setLandingPageData] = useState<LandingPageData>({
-        id: `lp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate ID upfront
+    const [landingPageData, setLandingPageData] = useState<LandingPageData>({        
+        id: uuidv4(), // Use UUID for unique ID generation
         title: '',
         address: '',
         sections: []
@@ -54,7 +55,7 @@ export default function LandingPageDesigner() {
 
     const addSection = (type: 'text' | 'image' | 'text-image') => {
         const newSection: LandingPageSection = {
-            id: `section-${Date.now()}`,
+            id: uuidv4(),
             type,
             order: landingPageData.sections.length,
             content: {
@@ -330,8 +331,8 @@ export default function LandingPageDesigner() {
                             <button
                                 onClick={() => {
                                     setShowSuccessPopup(false);
-                                    setLandingPageData({
-                                        id: `lp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                                    setLandingPageData({                                        
+                                        id: uuidv4(),
                                         title: '',
                                         address: '',
                                         sections: []
