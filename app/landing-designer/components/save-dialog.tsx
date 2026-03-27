@@ -6,13 +6,15 @@ import styles from './save-dialog.module.css';
 
 interface SaveDialogProps {
     currentTitle: string;
-    onSave: (title: string, isPublic: boolean) => void;
+    currentAddress: string;
+    onSave: (title: string, address: string, isPublic: boolean) => void;
     onCancel: () => void;
     saving: boolean;
 }
 
-export default function SaveDialog({ currentTitle, onSave, onCancel, saving }: SaveDialogProps) {
+export default function SaveDialog({ currentTitle, currentAddress, onSave, onCancel, saving }: SaveDialogProps) {
     const [title, setTitle] = useState(currentTitle || '');
+    const [address, setAddress] = useState(currentAddress || '');
     const [isPublic, setIsPublic] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -23,12 +25,24 @@ export default function SaveDialog({ currentTitle, onSave, onCancel, saving }: S
             newErrors.push('Vui lòng nhập tiêu đề trang');
         }
         
+        if (!address.trim()) {
+            newErrors.push('Vui lòng nhập địa chỉ dự án');
+        }
+
         if (title.trim().length < 3) {
             newErrors.push('Tiêu đề phải có ít nhất 3 ký tự');
         }
         
         if (title.trim().length > 100) {
             newErrors.push('Tiêu đề không được vượt quá 100 ký tự');
+        }
+
+        if (address.trim().length < 3) {
+            newErrors.push('Địa chỉ dự án phải có ít nhất 3 ký tự');
+        }
+
+        if (address.trim().length > 100) {
+            newErrors.push('Địa chỉ dự án không được vượt quá 100 ký tự');
         }
         
         setErrors(newErrors);
@@ -37,7 +51,7 @@ export default function SaveDialog({ currentTitle, onSave, onCancel, saving }: S
 
     const handleSave = () => {
         if (validateForm()) {
-            onSave(title.trim(), isPublic);
+            onSave(title.trim(), address.trim(), isPublic);
         }
     };
 
@@ -78,6 +92,23 @@ export default function SaveDialog({ currentTitle, onSave, onCancel, saving }: S
                         />
                         <div className={styles.characterCount}>
                             {title.length}/100 ký tự
+                        </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="address">Địa chỉ dự án *</label>
+                        <input
+                            id="address"
+                            type="text"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder="Ví dụ: 123 Đường ABC, Quận XYZ"
+                            className={styles.input}
+                            disabled={saving}
+                            maxLength={100}
+                        />
+                        <div className={styles.characterCount}>
+                            {address.length}/100 ký tự
                         </div>
                     </div>
 

@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
         const landingPageData = {
             id: body.id || undefined, // Use existing ID for updates, or let backend generate a new one
             title: body.title,
+            address: body.address || '',
             sections: body.sections,
             isPublic: body.isPublic || false,
             userId: session.user.id || session.user.email, // Use user ID or email as fallback

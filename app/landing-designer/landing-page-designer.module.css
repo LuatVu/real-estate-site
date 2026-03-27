@@ -48,6 +48,18 @@
     color: #374151;
 }
 
+.addressInput {
+    margin-bottom: 20px;
+}
+
+.addressInput label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #374151;
+}
+
+
 .input {
     width: 100%;
     padding: 10px;

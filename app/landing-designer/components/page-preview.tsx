@@ -3,12 +3,17 @@ import { LandingPageData } from '../landing-page-designer';
 import ReactMarkdown from 'react-markdown';
 import styles from './page-preview.module.css';
 import remarkBreaks from 'remark-breaks';
+import { useState } from 'react';
 
 interface PagePreviewProps {
     landingPageData: LandingPageData;
 }
 
+type PreviewMode = 'desktop' | 'mobile';
+
 export default function PagePreview({ landingPageData }: PagePreviewProps) {
+    const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop');
+
     if (landingPageData.sections.length === 0) {
         return (
             <div className={styles.emptyPreview}>
@@ -28,23 +33,45 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
         <div className={styles.previewContainer}>
             <div className={styles.previewHeader}>
                 <h3>Xem trước: {landingPageData.title || 'Trang chưa có tiêu đề'}</h3>
-                <div className={styles.previewMeta}>
-                    <span>📱 Chế độ xem trước</span>
+                
+                {/* Preview Mode Toggle */}
+                <div className={styles.previewControls}>
+                    <div className={styles.modeToggle}>
+                        <button
+                            className={`${styles.modeButton} ${previewMode === 'desktop' ? styles.active : ''}`}
+                            onClick={() => setPreviewMode('desktop')}
+                        >
+                            🖥️ Desktop
+                        </button>
+                        <button
+                            className={`${styles.modeButton} ${previewMode === 'mobile' ? styles.active : ''}`}
+                            onClick={() => setPreviewMode('mobile')}
+                        >
+                            📱 Mobile
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className={styles.previewContent}>
-                <div className={styles.landingPage}>
+            <div className={`${styles.previewContent} ${previewMode === 'mobile' ? styles.mobilePreview : styles.desktopPreview}`}>
+                <div className={`${styles.landingPage} ${previewMode === 'mobile' ? styles.mobileLandingPage : styles.desktopLandingPage}`}>
                     {landingPageData.title && (
                         <div className={styles.pageTitle}>
-                            <h1>{landingPageData.title}</h1>
+                            <h1 className={previewMode === 'mobile' ? styles.mobileTitleText : styles.desktopTitleText}>
+                                {landingPageData.title}
+                            </h1>
+                            {landingPageData.address && (
+                                <div className={`${styles.pageAddress} ${previewMode === 'mobile' ? styles.mobileAddressText : styles.desktopAddressText}`}>
+                                    {landingPageData.address}
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {sortedSections.map((section) => (
                         <div
                             key={section.id}
-                            className={styles.previewSection}
+                            className={`${styles.previewSection} ${previewMode === 'mobile' ? styles.mobileSectionSpacing : styles.desktopSectionSpacing}`}
                             style={{
                                 backgroundColor: section.content.backgroundColor || '#ffffff'
                             }}
@@ -55,7 +82,7 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
                                         className={styles.textContent}
                                         style={{
                                             color: section.content.textColor || '#333333',
-                                            fontSize: getFontSize(section.content.fontSize),
+                                            fontSize: getFontSize(section.content.fontSize, previewMode),
                                             textAlign: section.content.layout as any
                                         }}
                                     >
@@ -85,7 +112,7 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
                                             <img
                                                 src={section.content.imageUrl}
                                                 alt={section.content.imageAlt || 'Landing page image'}
-                                                className={styles.previewImage}
+                                                className={`${styles.previewImage} ${previewMode === 'mobile' ? styles.mobileImage : styles.desktopImage}`}
                                             />
                                         </div>
                                     ) : (
@@ -98,13 +125,13 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
                             )}
 
                             {section.type === 'text-image' && (
-                                <div className={`${styles.textImageSection} ${getLayoutClass(section.content.layout)}`}>
+                                <div className={`${styles.textImageSection} ${getLayoutClass(section.content.layout)} ${previewMode === 'mobile' ? styles.mobileTextImage : ''}`}>
                                     <div className={styles.textPart}>
                                         <div
                                             className={styles.textContent}
                                             style={{
                                                 color: section.content.textColor || '#333333',
-                                                fontSize: getFontSize(section.content.fontSize),
+                                                fontSize: getFontSize(section.content.fontSize, previewMode),
                                                 textAlign: section.content.layout === 'center' ? 'center' : 'left'
                                             }}
                                         >
@@ -125,7 +152,7 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
                                             <img
                                                 src={section.content.imageUrl}
                                                 alt={section.content.imageAlt || 'Landing page image'}
-                                                className={styles.previewImage}
+                                                className={`${styles.previewImage} ${previewMode === 'mobile' ? styles.mobileImage : styles.desktopImage}`}
                                             />
                                         ) : (
                                             <div className={styles.imagePlaceholder}>
@@ -144,7 +171,8 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
             <div className={styles.previewFooter}>
                 <div className={styles.footerNote}>
                     <small>
-                        💡 Đây là bản xem trước. Trang thực tế có thể khác một chút tùy thuộc vào thiết bị của người xem.
+                        💡 Đang xem ở chế độ {previewMode === 'desktop' ? 'Desktop' : 'Mobile'}. 
+                        Trang thực tế có thể khác một chút tùy thuộc vào thiết bị của người xem.
                     </small>
                 </div>
             </div>
@@ -152,14 +180,18 @@ export default function PagePreview({ landingPageData }: PagePreviewProps) {
     );
 }
 
-function getFontSize(size?: string) {
-    switch (size) {
-        case 'small': return '14px';
-        case 'medium': return '18px';
-        case 'large': return '24px';
-        case 'xl': return '32px';
-        default: return '18px';
-    }
+function getFontSize(size?: string, mode: PreviewMode = 'desktop') {
+    const baseSize = (() => {
+        switch (size) {
+            case 'small': return mode === 'mobile' ? 12 : 14;
+            case 'medium': return mode === 'mobile' ? 15 : 18;
+            case 'large': return mode === 'mobile' ? 20 : 24;
+            case 'xl': return mode === 'mobile' ? 26 : 32;
+            default: return mode === 'mobile' ? 15 : 18;
+        }
+    })();
+    
+    return `${baseSize}px`;
 }
 
 function getLayoutClass(layout?: string) {

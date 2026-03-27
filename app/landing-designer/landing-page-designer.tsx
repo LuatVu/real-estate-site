@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import NavBarDesktop from '../ui/desktop/navigation/nav-bar-desktop';
 import DesktopFooter from '../ui/desktop/footer/desktop-footer';
 import Button from '../ui/common/button/button';
@@ -9,11 +10,13 @@ import TextEditor from './components/text-editor';
 import ImageManager from './components/image-manager';
 import PagePreview from './components/page-preview';
 import SaveDialog from './components/save-dialog';
+import PortalPopup from '../ui/common/portal-popup/portal-popup';
 import styles from './landing-page-designer.module.css';
 
 export interface LandingPageData {
     id?: string;
     title: string;
+    address?: string;
     sections: LandingPageSection[];
     createdAt?: string;
     updatedAt?: string;
@@ -36,14 +39,17 @@ export interface LandingPageSection {
 
 export default function LandingPageDesigner() {
     const { data: session } = useSession();
+    const router = useRouter();
     const [landingPageData, setLandingPageData] = useState<LandingPageData>({
         id: `lp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate ID upfront
         title: '',
+        address: '',
         sections: []
     });
     const [activeSection, setActiveSection] = useState<string | null>(null);
     const [previewMode, setPreviewMode] = useState(false);
     const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [saving, setSaving] = useState(false);
 
     const addSection = (type: 'text' | 'image' | 'text-image') => {
@@ -116,7 +122,7 @@ export default function LandingPageDesigner() {
         setShowSaveDialog(true);
     };
 
-    const handleSaveConfirm = async (title: string, isPublic: boolean) => {
+    const handleSaveConfirm = async (title: string, address: string, isPublic: boolean) => {
         setSaving(true);
         try {
             const response = await fetch('/api/landing-pages', {
@@ -127,14 +133,15 @@ export default function LandingPageDesigner() {
                 body: JSON.stringify({
                     ...landingPageData,
                     title,
+                    address,
                     isPublic
                 })
             });
 
             if (response.ok) {
                 const result = await response.json();
-                setLandingPageData(prev => ({ ...prev, id: result.id, title }));
-                alert('Trang đã được lưu thành công!');
+                setLandingPageData(prev => ({ ...prev, id: result.id, title, address }));
+                setShowSuccessPopup(true);
             } else {
                 throw new Error('Failed to save');
             }
@@ -166,6 +173,18 @@ export default function LandingPageDesigner() {
                                 className={styles.input}
                             />
                         </div>
+
+                        <div className={styles.addressInput}>
+                            <label>Địa chỉ dự án:</label>
+                            <input
+                                type="text"
+                                value={landingPageData.address}
+                                onChange={(e) => setLandingPageData(prev => ({ ...prev, address: e.target.value }))}
+                                placeholder="Nhập địa chỉ dự án..."
+                                className={styles.input}
+                            />
+                        </div>
+
 
                         <div className={styles.addSectionButtons}>
                             <h3>Thêm phần tử</h3>
@@ -279,10 +298,81 @@ export default function LandingPageDesigner() {
             {showSaveDialog && (
                 <SaveDialog
                     currentTitle={landingPageData.title}
+                    currentAddress={landingPageData.address || ''}
                     onSave={handleSaveConfirm}
                     onCancel={() => setShowSaveDialog(false)}
                     saving={saving}
                 />
+            )}
+
+            {showSuccessPopup && (
+                <PortalPopup 
+                    overlayColor="rgba(113, 113, 113, 0.3)" 
+                    placement="Centered"                    
+                >
+                    <div style={{
+                        borderRadius: '8px',
+                        backgroundColor: '#fff',
+                        padding: '24px',
+                        maxWidth: '320px',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}>
+                        <div style={{ marginBottom: '16px' }}>
+                            <h3 style={{ color: '#22c55e', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
+                                Lưu trang thành công!
+                            </h3>
+                            <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                                Trang landing của bạn đã được lưu thành công.
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    setLandingPageData({
+                                        id: `lp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                                        title: '',
+                                        address: '',
+                                        sections: []
+                                    });
+                                    setActiveSection(null);
+                                    setPreviewMode(false);
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Tạo trang mới
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowSuccessPopup(false);
+                                    router.push('/manage/landing-page');
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    backgroundColor: '#f3f4f6',
+                                    color: '#374151',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Quản lý tin đăng
+                            </button>
+                        </div>
+                    </div>
+                </PortalPopup>
             )}
 
             <DesktopFooter />
