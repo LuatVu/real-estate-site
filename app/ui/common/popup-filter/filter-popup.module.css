@@ -727,12 +727,12 @@
 }
 
 /* Global z-index for any popup components that should appear above desktop overlay */
-:global(.popup-overlay),
-:global([role="dialog"]) {
+.overlap :global(.popup-overlay),
+.overlap :global([role="dialog"]) {
     z-index: 1001 !important;
 }
 
 /* Specific z-index for common popup patterns */
-:global(.popup-container) {
+.overlap :global(.popup-container) {
     z-index: 1001 !important;
 }
