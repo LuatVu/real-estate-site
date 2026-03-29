@@ -313,7 +313,7 @@ export default async function Posts({ searchParams }: {
         <Suspense fallback={<PostsLoadingSkeleton />}>
           <PostsClient 
             initialData={postsData}
-            session={session ?? {}}
+            session={session}
             searchParams={params}
           />
         </Suspense>

@@ -661,7 +661,7 @@
   padding: 2rem;
   position: relative;
   z-index: 10;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+  /* background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%); */
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(226, 232, 240, 0.3);
 }
@@ -669,7 +669,7 @@
 .projectTitle {
   font-weight: 700;
   color: #111827;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
   line-height: 1.375;
   font-size: 1.4rem;
   letter-spacing: -0.015em;
@@ -678,7 +678,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: all 0.3s ease;
-  height: 3.5rem;
+  /* height: 3.5rem; */
   position: relative;
 }
 

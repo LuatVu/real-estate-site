@@ -183,13 +183,19 @@ export default function FilterPopup({ onClose, setFilterParam, filterParam, isMo
             setFilterParam(updateRequest);
             
             // Transform search request and navigate to posts page with filters - similar to search() method
-            const postSearchRequest = transformSearchRequest(updateRequest);
-            const newUrl = `/posts?${postSearchRequest}&page=1`;
+            const postSearchRequest = transformSearchRequest(updateRequest);           
             
             // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 300));
-            
-            router.push(newUrl);
+            if(updateRequest.transactionType === "PROJECT") {
+                // Navigate immediately without delay
+                const newUrl = `/landing-page?${postSearchRequest}&page=1`;
+                router.push(newUrl);
+            }else{
+                // Navigate immediately without delay
+                const newUrl = `/posts?${postSearchRequest}&page=1`;        
+                router.push(newUrl);
+            }            
             onClose();
         } catch (error) {
             console.error("Error applying filters:", error);

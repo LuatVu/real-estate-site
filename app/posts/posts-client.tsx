@@ -60,7 +60,7 @@ interface PostsClientProps {
       email?: string | null;
       image?: string | null;
     };
-  };
+  } | null;
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
@@ -69,7 +69,7 @@ export default function PostsClient({ initialData, session, searchParams }: Post
 
   return (
     <div className="h-full">
-      {screenSize === 'sm' ? (
+      {(screenSize === 'sm' || screenSize === 'md') ? (
         <PostsOnMobile
           session={session}
           initialData={initialData}
@@ -147,7 +147,7 @@ function PostsOnMobile({
           const body = extractSearchRequest(urlSearchParams);
           const page = parseInt(urlSearchParams.get("page") || "1", 10);
 
-          const response = await fetch(`/api/posts?page=${page}`, {
+          const response = await fetch(`/api/public/posts?page=${page}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -384,7 +384,7 @@ function PostOnDesktop({
           const body = extractSearchRequest(urlSearchParams);
           const page = parseInt(urlSearchParams.get("page") || "1", 10);
 
-          const response = await fetch(`/api/posts?page=${page}`, {
+          const response = await fetch(`/api/public/posts?page=${page}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)

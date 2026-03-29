@@ -72,13 +72,13 @@ export default function DesktopHome() {
 
     const fetchProject = async () => {
         try {
-            const response = await fetch(`/api/public/search/posts?page=1&size=12`, {
+            const response = await fetch(`/api/public/search/landing-page?page=1&size=10`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    transactionType: "PROJECT"
+                    query: ""
                 }),
             });
             if (!response.ok) {
@@ -182,20 +182,20 @@ export default function DesktopHome() {
                             </div>
                             <div className={styles.projectGrid}>
                                 {projectData.map((item: any, index: number) => (
-                                    <Link href={`/post/${item.postId}`} className={styles.projectCard} key={index}>
+                                    <Link href={`/landing-page/${item.id}`} className={styles.projectCard} key={index}>
                                         <div className={styles.projectImageWrapper}>
                                             <Image
                                                 className={styles.projectImage}
                                                 width={400}
                                                 height={250}
                                                 alt={item.title}
-                                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                                src={`${item.sections?.filter((section: any) => section?.content.imageUrl != null)[0]?.content.imageUrl}`}
                                                 style={{ objectFit: 'cover' }}
                                             />
                                         </div>
                                         <div className={styles.projectContent}>
                                             <h3 className={styles.projectTitle}>{item.title}</h3>
-                                            <div className={styles.projectPrice}>{formatPrice(item.price)}</div>
+                                            {/* <div className={styles.projectPrice}>{formatPrice(item.price)}</div> */}
                                             <div className={styles.projectLocation}>
                                                 <Image width={16} height={16} alt="Location" src="/icons/location.svg" />
                                                 <span>{item.address}</span>

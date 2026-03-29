@@ -36,10 +36,17 @@ export default function SearchingSector({searchRequest, openFilterPopup, filterN
             query: currentQuery
         };
         
-        const postSearchRequest = transformSearchRequest(updatedSearchRequest);                         
-        // Navigate immediately without delay
-        const newUrl = `/posts?${postSearchRequest}&page=1`;        
-        router.push(newUrl);
+        const postSearchRequest = transformSearchRequest(updatedSearchRequest);
+        
+        if(updatedSearchRequest.transactionType === "PROJECT") {
+            // Navigate immediately without delay
+            const newUrl = `/landing-page?${postSearchRequest}&page=1`;
+            router.push(newUrl);
+        }else{
+            // Navigate immediately without delay
+            const newUrl = `/posts?${postSearchRequest}&page=1`;        
+            router.push(newUrl);
+        }                        
         setIsSearching(false);
     }
 

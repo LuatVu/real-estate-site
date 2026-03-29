@@ -34,9 +34,15 @@ export default function SearchingSectorDesktop({searchRequest, openFilterPopup, 
         };
         
         const postSearchRequest = transformSearchRequest(updatedSearchRequest);                         
-        // Navigate immediately without delay
-        const newUrl = `/posts?${postSearchRequest}&page=1`;        
-        router.push(newUrl);
+        if(updatedSearchRequest.transactionType === "PROJECT") {
+            // Navigate immediately without delay
+            const newUrl = `/landing-page?${postSearchRequest}&page=1`;
+            router.push(newUrl);
+        }else{
+            // Navigate immediately without delay
+            const newUrl = `/posts?${postSearchRequest}&page=1`;        
+            router.push(newUrl);
+        }
         setIsSearching(false);
     }
 

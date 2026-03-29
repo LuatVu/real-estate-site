@@ -60,6 +60,7 @@ export const config = {
     "/edit-post/:path*",
     "/deposit/:path*",
     "/manage/:path*",
+    "/account/:path*",
     "/packages/:path*",
     "/profile/:path*"
   ]
