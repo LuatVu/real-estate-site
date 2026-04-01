@@ -274,13 +274,13 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
                     <div
                       className={styles.blurredBackground}
                       style={{
-                        backgroundImage: `url(${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${img.fileUrl})`
+                        backgroundImage: `url(${img.fileUrl})`
                       }}
                     />
 
                     {/* Main image with SEO-optimized alt text */}
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${img.fileUrl}`}
+                      src={`${img.fileUrl}`}
                       fill
                       alt={`${post?.title} - Property image ${index + 1} of ${post?.images?.length}`}
                       className={styles.propertyImage}
@@ -560,7 +560,7 @@ function MobilePosts({ post, session }: { post: any; session?: any }) {
             </button>
             <div className={styles.fullscreenImageContainer}>
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[currentImageIndex]?.fileUrl}`}
+                src={`${post.images[currentImageIndex]?.fileUrl}`}
                 fill
                 alt={`${post?.title} - Property image ${currentImageIndex + 1} fullscreen view`}
                 className={styles.fullscreenImage}
@@ -817,7 +817,7 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
 
                         {/* Main image with SEO-optimized alt text */}
                         <Image
-                          src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${img.fileUrl}`}
+                          src={`${img.fileUrl}`}
                           fill
                           alt={`${post?.title} - Property image ${index + 1} of ${post?.images?.length}`}
                           className={styles.propertyImage}
@@ -863,7 +863,7 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
                       aria-label={`View image ${index + 1}`}
                     >
                       <Image
-                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${img.fileUrl}`}
+                        src={`${img.fileUrl}`}
                         fill
                         alt={`Thumbnail ${index + 1}`}
                         className="object-cover"
@@ -1148,7 +1148,7 @@ function DesktopPosts({ post, session }: { post: any; session?: any }) {
             </button>
             <div className={styles.fullscreenImageContainer}>
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[currentImageIndex]?.fileUrl}`}
+                src={`${post.images[currentImageIndex]?.fileUrl}`}
                 fill
                 alt={`${post?.title} - Property image ${currentImageIndex + 1} fullscreen view`}
                 className={styles.fullscreenImage}

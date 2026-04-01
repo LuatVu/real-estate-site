@@ -16,6 +16,8 @@ import { useRouter } from 'next/navigation';
 import { formatPrice } from "@/app/utils/price-formatter";
 import { formatLegalStatus, formatFurnitureStatus, formatDirection, getPropertyTypeLabel, getTransactionTypeLabel } from "@/app/utils/commons-utils";
 import { formatDescription } from "@/app/utils/markdown-utils";
+import DesktopFooter from "@/app/ui/desktop/footer/desktop-footer";
+import MbFooter from "@/app/ui/mobile/footer/mb.footer";
 
 // Function to get CSS class for transaction type
 function getTransactionTypeClass(transactionType: string): string {
@@ -759,6 +761,7 @@ function MobileView({ session }: { session?: any }) {
                                         <option value="">Tất cả</option>
                                         <option value="SELL">Bán</option>
                                         <option value="RENT">Thuê</option>
+                                        <option value="PROJECT">Dự án</option>
                                     </select>
                                 </div>
 
@@ -861,7 +864,7 @@ function MobileView({ session }: { session?: any }) {
                             <div className={styles.postImageContainer}>
                                  {post.images && post.images.length > 0 ? (
                                     <Image
-                                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[0].fileUrl}`}
+                                        src={`${post.images[0].fileUrl}`}
                                         alt={post.title}
                                         width={120}
                                         height={80}
@@ -967,6 +970,7 @@ function MobileView({ session }: { session?: any }) {
                                                 marginBottom: dropdownPosition === 'above' ? '4px' : '0'
                                             }}
                                         >
+                                            {post.transactionType !== 'PROJECT' && (
                                             <button
                                                 onClick={() => handleDropdownAction(getRepostAction(post.status), post)}
                                                 className={styles.btnFacility}
@@ -976,6 +980,8 @@ function MobileView({ session }: { session?: any }) {
                                                 <Image src={getRepostIcon(post.status)} alt="renew" width={16} height={16} />
                                                 {getRepostLabel(post.status)}
                                             </button>
+                                            )}
+                                            {post.transactionType !== 'PROJECT' && (
                                             <button
                                                 onClick={() => handleDropdownAction('edit', post)}
                                                 className={styles.btnFacility}
@@ -985,6 +991,8 @@ function MobileView({ session }: { session?: any }) {
                                                 <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} />
                                                 Sửa tin
                                             </button>
+                                            )}
+                                            {post.transactionType !== 'PROJECT' && (
                                             <button
                                                 onClick={() => handleDropdownAction('upgrade', post)}
                                                 className={styles.btnFacility}
@@ -994,6 +1002,7 @@ function MobileView({ session }: { session?: any }) {
                                                 <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} />
                                                 Nâng/Hạ Vip
                                             </button>
+                                            )}
                                             <button
                                                 onClick={() => handleDropdownAction('delete', post)}
                                                 className={styles.btnFacility}
@@ -1161,7 +1170,7 @@ function MobileView({ session }: { session?: any }) {
                         <div className={styles.previewImageContainer}>
                             {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    src={`${previewPopup.post.images[0].fileUrl}`}
                                     alt={previewPopup.post.title}
                                     fill
                                     style={{ objectFit: 'cover' }}
@@ -1329,13 +1338,21 @@ function MobileView({ session }: { session?: any }) {
                                     </div>
                                 </div>
                             </div>
-                            <button className={styles.previewDetailButton} onClick={() => router.push(`/post/${previewPopup.post.postId}`)}>
+                            <button className={styles.previewDetailButton} onClick={() => 
+                            {
+                                if (previewPopup.post.transactionType === 'PROJECT') {
+                                    router.push(`/landing-page/${previewPopup.post.postId}`);
+                                    return;
+                                }
+                                router.push(`/post/${previewPopup.post.postId}`);
+                            }}>
                                 Xem chi tiết
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+            <MbFooter />
         </div>
     );
 }
@@ -2091,7 +2108,7 @@ function DesktopView({ session }: { session?: any }) {
                                                 <div className="flex-shrink-0 w-20 h-16">
                                                     {post.images && post.images.length > 0 ? (
                                                         <Image
-                                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[0].fileUrl}`}
+                                                            src={`${post.images[0].fileUrl}`}
                                                             alt={post.title}
                                                             width={120}
                                                             height={80}
@@ -2184,6 +2201,7 @@ function DesktopView({ session }: { session?: any }) {
                                                             }}
                                                         >
                                                             <div className="py-1">
+                                                                {post.transactionType !== 'PROJECT' && (
                                                                 <button
                                                                     onClick={() => handleDropdownAction(getRepostAction(post.status), post)}                                                                    
                                                                     className={styles.btnFacility}
@@ -2193,6 +2211,8 @@ function DesktopView({ session }: { session?: any }) {
                                                                     <Image src={getRepostIcon(post.status)} alt={getRepostLabel(post.status)} width={18} height={18} />
                                                                     {getRepostLabel(post.status)}
                                                                 </button>
+                                                                )}
+                                                                {post.transactionType !== 'PROJECT' && (
                                                                 <button
                                                                     onClick={() => handleDropdownAction('edit', post)}                                                                    
                                                                     className={styles.btnFacility}
@@ -2202,6 +2222,8 @@ function DesktopView({ session }: { session?: any }) {
                                                                     <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} className="mr-2" />
                                                                     Sửa tin
                                                                 </button>
+                                                                )}
+                                                                {post.transactionType !== 'PROJECT' && (
                                                                 <button
                                                                     onClick={() => handleDropdownAction('upgrade', post)}
                                                                     className={styles.btnFacility}
@@ -2211,6 +2233,7 @@ function DesktopView({ session }: { session?: any }) {
                                                                     <Image src="/icons/VipDiamond.svg" alt="Upgrade" width={16} height={16} className="mr-2" />
                                                                     Nâng/Hạ Vip
                                                                 </button>
+                                                                )}                                                                
                                                                 <button
                                                                     onClick={() => handleDropdownAction('delete', post)}
                                                                     className={styles.btnFacility}
@@ -2361,7 +2384,7 @@ function DesktopView({ session }: { session?: any }) {
                         <div className={styles.previewImageContainer}>
                             {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    src={`${previewPopup.post.images[0].fileUrl}`}
                                     alt={previewPopup.post.title}
                                     fill
                                     style={{ objectFit: 'cover' }}
@@ -2524,13 +2547,22 @@ function DesktopView({ session }: { session?: any }) {
                                     </div>
                                 </div>
                             </div>
-                            <button className={styles.previewDetailButton} onClick={() => router.push(`/post/${previewPopup.post.postId}`)}>
+                            <button className={styles.previewDetailButton} onClick={() =>                                 
+                                {
+                                    if(previewPopup.post.transactionType === 'PROJECT') {
+                                        router.push(`/landing-page/${previewPopup.post.postId}`);
+                                        return;
+                                    }
+                                    router.push(`/post/${previewPopup.post.postId}`);
+                                }
+                                }>
                                 Xem chi tiết
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+            <DesktopFooter />
         </div>
     );
 } 

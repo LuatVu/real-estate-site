@@ -259,7 +259,7 @@ function PostsOnMobile({
                             width={174}
                             height={178}
                             alt={`${element.title} - Hình ${imgIndex + 1}`}
-                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${image?.fileUrl}`}
+                            src={`${image?.fileUrl}`}
                             loading={index < 3 ? "eager" : "lazy"}
                             quality={index < 3 ? 85 : 75}
                             sizes="(max-width: 768px) 174px, 200px"
@@ -501,7 +501,7 @@ function PostOnDesktop({
                         width={320}
                         height={192}
                         alt={`${element.title}`}
-                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${primaryImage?.fileUrl}`}
+                        src={`${primaryImage?.fileUrl}`}
                         loading={index < 8 ? "eager" : "lazy"}
                         quality={85}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"

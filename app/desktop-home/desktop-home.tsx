@@ -149,7 +149,7 @@ export default function DesktopHome() {
                                             width={300}
                                             height={200}
                                             alt={item.title}
-                                            src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                            src={`${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
                                             style={{ objectFit: 'cover' }}
                                         />
                                     </div>

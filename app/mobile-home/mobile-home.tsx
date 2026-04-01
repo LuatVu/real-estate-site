@@ -136,7 +136,7 @@ export default function MobileHome() {
 
                     <div className={styles.optionFilter}>
                         <div className={styles.buttonParent}>
-                            <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.button2}>
+                            <Link href="/landing-page?query=&transactionType=PROJECT&page=1" className={styles.button2}>
                                 <Image className={styles.buildingofficeIcon} width={24} height={24} alt="" src="/icons/BuildingOffice.svg" />
                                 <div className={styles.filter}>Dự án</div>
                             </Link>
@@ -168,7 +168,7 @@ export default function MobileHome() {
                                                 width={174} 
                                                 height={140} 
                                                 alt={item.title} 
-                                                src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
+                                                src={`${item.images?.filter((img: any) => img.isPrimary)[0]?.fileUrl}`}
                                                 style={{ objectFit: 'cover' }}
                                             />
                                         </div>
@@ -191,7 +191,7 @@ export default function MobileHome() {
                     <div className={styles.secondMainContent}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>Dự án bất động sản nổi bật</h2>
-                            <Link href="/posts?query=&transactionType=PROJECT&page=1" className={styles.viewAllLink}>
+                            <Link href="/landing-page?query=&transactionType=PROJECT&page=1" className={styles.viewAllLink}>
                                 Xem tất cả
                                 <Image width={14} height={14} alt="Arrow" src="/icons/ArrowRight.svg" />
                             </Link>

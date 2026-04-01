@@ -623,7 +623,7 @@ function MobileFavorites({ session }: { session?: any }) {
                             <div className={styles.postImageContainer}>
                                 {post.images && post.images.length > 0 ? (
                                     <Image
-                                        src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${post.images[0].fileUrl}`}
+                                        src={`${post.images[0].fileUrl}`}
                                         alt={post.title}
                                         width={120}
                                         height={80}
@@ -840,7 +840,7 @@ function MobileFavorites({ session }: { session?: any }) {
                         <div className={styles.previewImageContainer}>
                             {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    src={`${previewPopup.post.images[0].fileUrl}`}
                                     alt={previewPopup.post.title}
                                     fill
                                     style={{ objectFit: 'cover' }}
@@ -1717,7 +1717,7 @@ function DesktopFavorites({ session }: { session?: any }) {
                         <div className={styles.previewImageContainer}>
                             {previewPopup.post.images && previewPopup.post.images.length > 0 ? (
                                 <Image
-                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/public/image/${previewPopup.post.images[0].fileUrl}`}
+                                    src={`${previewPopup.post.images[0].fileUrl}`}
                                     alt={previewPopup.post.title}
                                     fill
                                     style={{ objectFit: 'cover' }}
