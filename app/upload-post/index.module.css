@@ -76,6 +76,19 @@
     gap: 16px;
 }
 
+.inputGroupDesktop{
+    margin-bottom: 24px;
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--color-secondary-s300, #E6E8EC);
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;    
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
 .inputGroup:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -352,4 +365,17 @@
 .detailAddressContainer .inputField:focus-within + .addressPreview {
     border-color: var(--color-primary-p200, #2B6AD0);
     box-shadow: 0 4px 12px rgba(43, 106, 208, 0.15);
+}
+
+.filterContainer {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filterInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
 }

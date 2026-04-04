@@ -58,3 +58,19 @@ export const getTransactionTypeLabel = (type: string): string => {
     };
     return transactionLabels[type] || type;
 }
+
+export const removeVietnameseDiacritics = (text: string): string => {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Remove combining diacritical marks
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'd')
+        .replace(/ă/g, 'a')
+        .replace(/â/g, 'a')
+        .replace(/ê/g, 'e')
+        .replace(/ô/g, 'o')
+        .replace(/ơ/g, 'o')
+        .replace(/ư/g, 'u')
+        .replace(/ý/g, 'y');
+}
