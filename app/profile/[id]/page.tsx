@@ -35,7 +35,8 @@ function MobileProfile({ session }: { session?: any }) {
         name: session?.user?.username || '',
         address: '',
         idCard: '',
-        taxId: ''
+        taxId: '',
+        phoneNumber: ''
     });
     const [nameError, setNameError] = useState<string>('');
     const [passwordFields, setPasswordFields] = useState({
@@ -149,7 +150,8 @@ function MobileProfile({ session }: { session?: any }) {
                 address: formData.address,
                 identificationCode: formData.idCard,
                 taxId: formData.taxId,
-                profilePicture: uploadedImage
+                profilePicture: uploadedImage,
+                phoneNumber: formData.phoneNumber
             }),
         });
         if (!response.ok) {
@@ -306,7 +308,8 @@ function MobileProfile({ session }: { session?: any }) {
                     name: data.response.username || '',
                     address: data.response.address || '',
                     idCard: data.response.identificationCode || '',
-                    taxId: data.response.taxId || ''
+                    taxId: data.response.taxId || '',
+                    phoneNumber: data.response.phoneNumber || ''
                 });
                 setUploadedImage(data.response.profilePicture || null);
             } else {                
@@ -465,6 +468,24 @@ function MobileProfile({ session }: { session?: any }) {
                                         />
                                     </div>
                                 </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="phoneNumber" className={styles.formLabel}>
+                                        <span className={styles.labelIcon}>📱</span>
+                                        Số điện thoại
+                                    </label>
+                                    <div className={styles.inputWrapper}>
+                                        <input
+                                            className={styles.inputText}
+                                            type="tel"
+                                            id="phoneNumber"
+                                            name="phoneNumber"
+                                            defaultValue={formData.phoneNumber}
+                                            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                            placeholder="Nhập số điện thoại (VD: 0901234567)"
+                                        />
+                                    </div>
+                                </div>
+                                
                                 <button
                                     type="submit"
                                     className={`${styles.submitBtn} ${!isFormValid ? styles.submitBtnDisabled : ''}`}
@@ -577,7 +598,8 @@ function DesktopProfile({ session }: { session?: any }) {
         name: session?.user?.username || '',
         address: '',
         idCard: '',
-        taxId: ''
+        taxId: '',
+        phoneNumber: ''
     });
     const [nameError, setNameError] = useState<string>('');
     const [passwordFields, setPasswordFields] = useState({
@@ -691,7 +713,8 @@ function DesktopProfile({ session }: { session?: any }) {
                 address: formData.address,
                 identificationCode: formData.idCard,
                 taxId: formData.taxId,
-                profilePicture: uploadedImage
+                profilePicture: uploadedImage,
+                phoneNumber: formData.phoneNumber
             }),
         });
         if (!response.ok) {
@@ -848,7 +871,8 @@ function DesktopProfile({ session }: { session?: any }) {
                     name: data.response.username || '',
                     address: data.response.address || '',
                     idCard: data.response.identificationCode || '',
-                    taxId: data.response.taxId || ''
+                    taxId: data.response.taxId || '',
+                    phoneNumber: data.response.phoneNumber || ''
                 });
                 setUploadedImage(data.response.profilePicture || null);
             } else {                
@@ -1030,6 +1054,23 @@ function DesktopProfile({ session }: { session?: any }) {
                                                                 defaultValue={formData.taxId}
                                                                 onChange={(e) => handleInputChange('taxId', e.target.value)}
                                                                 placeholder="Nhập mã số thuế cá nhân"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className={styles.desktopFormGroup}>
+                                                        <label htmlFor="desktopPhoneNumber" className={styles.desktopFormLabel}>
+                                                            <span className={styles.desktopLabelIcon}>📞</span>
+                                                            Số điện thoại
+                                                        </label>
+                                                        <div className={styles.desktopInputWrapper}>
+                                                            <input
+                                                                className={styles.desktopInputText}
+                                                                type="text"
+                                                                id="desktopPhoneNumber"
+                                                                name="phoneNumber"
+                                                                defaultValue={formData.phoneNumber}
+                                                                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                                                                placeholder="Nhập số điện thoại (VD: 0901234567)"
                                                             />
                                                         </div>
                                                     </div>
