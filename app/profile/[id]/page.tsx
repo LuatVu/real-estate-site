@@ -153,6 +153,10 @@ function MobileProfile({ session }: { session?: any }) {
             }),
         });
         if (!response.ok) {
+            if(response.status === 401 || response.status === 403) {                
+                router.push('/sign-in?error=session-expired');
+                return;
+            }
             setMessage({
                 show: true,
                 type: 'error',
@@ -244,6 +248,10 @@ function MobileProfile({ session }: { session?: any }) {
         });
 
         if (!response.ok) {
+            if(response.status === 401 || response.status === 403) {                
+                router.push('/sign-in?error=session-expired');
+                return;
+            }
             setMessage({
                 show: true,
                 type: 'error',
@@ -301,11 +309,14 @@ function MobileProfile({ session }: { session?: any }) {
                     taxId: data.response.taxId || ''
                 });
                 setUploadedImage(data.response.profilePicture || null);
-            } else {
-                console.error("Error fetching user data:", data);
+            } else {                
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
+        } catch (error) {                                  
+            router.push('/sign-in?error=session-expired');            
         }
     }
 
@@ -684,6 +695,10 @@ function DesktopProfile({ session }: { session?: any }) {
             }),
         });
         if (!response.ok) {
+            if(response.status === 401 || response.status === 403) {                
+                router.push('/sign-in?error=session-expired');
+                return;
+            }
             setMessage({
                 show: true,
                 type: 'error',
@@ -775,6 +790,10 @@ function DesktopProfile({ session }: { session?: any }) {
         });
 
         if (!response.ok) {
+            if(response.status === 401 || response.status === 403) {                
+                router.push('/sign-in?error=session-expired');
+                return;
+            }
             setMessage({
                 show: true,
                 type: 'error',
@@ -832,11 +851,14 @@ function DesktopProfile({ session }: { session?: any }) {
                     taxId: data.response.taxId || ''
                 });
                 setUploadedImage(data.response.profilePicture || null);
-            } else {
-                console.error("Error fetching user data:", data);
+            } else {                
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
+        } catch (error) {            
+            router.push('/sign-in?error=session-expired');
         }
     }
 

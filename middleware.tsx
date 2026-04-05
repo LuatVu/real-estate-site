@@ -41,8 +41,7 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    "/profile/:path*", // Protect /profile and all sub-routes
+  matcher: [    
     "/api/users/:path*", // Protect all API routes    
     "/api/((?!auth|public).)*", // Protect all API routes except auth and public    
     "/api/posts/upload/:path*",
@@ -61,6 +60,7 @@ export const config = {
     "/deposit/:path*",
     "/manage/:path*",
     "/account/:path*",
+    "/landing-designer/:path*",
     "/packages/:path*",
     "/profile/:path*"
   ]
