@@ -76,7 +76,10 @@ function MobileFavorites({ session }: { session?: any }) {
     const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
 
     const fetchFavorites = async (params = searchParams) => {
-        if (!session?.user?.id) return; // Ensure user ID is available before fetching favorites
+        if (!session?.user?.id) {
+            router.push('/sign-in?error=session-expired');
+            return;
+        }
         try {
             const userId = session?.user?.id;
             const response = await fetch(`/api/users/favorites/${userId}`, {
@@ -86,12 +89,15 @@ function MobileFavorites({ session }: { session?: any }) {
                 }
             });
             if (!response.ok) {
-                throw new Error("Failed to fetch favorites");
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
             const data = await response.json();
             setFavorites(data.response);
         } catch (error) {
-            console.error("Error fetching favorites:", error);
+            router.push('/sign-in?error=session-expired');
         }
     }
 
@@ -119,7 +125,10 @@ function MobileFavorites({ session }: { session?: any }) {
                 })
             });
             if (!response.ok) {
-                throw new Error("Failed to remove favorite");
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
 
             // Remove post from local state instead of refetching
@@ -1063,7 +1072,10 @@ function DesktopFavorites({ session }: { session?: any }) {
     const { alert, showSuccess, showError, showWarning, showInfo, hideAlert } = useAlert();
 
     const fetchFavorites = async (params = searchParams) => {
-        if (!session?.user?.id) return;
+        if (!session?.user?.id) {
+            router.push('/sign-in?error=session-expired');
+            return;
+        }
         try {
             const userId = session?.user?.id;
             const response = await fetch(`/api/users/favorites/${userId}`, {
@@ -1073,12 +1085,15 @@ function DesktopFavorites({ session }: { session?: any }) {
                 }
             });
             if (!response.ok) {
-                throw new Error("Failed to fetch favorites");
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }                
             }
             const data = await response.json();
             setFavorites(data.response);
         } catch (error) {
-            console.error("Error fetching favorites:", error);
+            router.push('/sign-in?error=session-expired');
         }
     }
 
@@ -1106,7 +1121,10 @@ function DesktopFavorites({ session }: { session?: any }) {
                 })
             });
             if (!response.ok) {
-                throw new Error("Failed to remove favorite");
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
 
             // Remove post from local state instead of refetching
@@ -1277,7 +1295,7 @@ function DesktopFavorites({ session }: { session?: any }) {
     const getActiveFilterCount = () => {
         let count = 0;
         if (searchParams.transactionType) count++;
-        if (searchParams.lastDate !== 180) count++;
+        if (searchParams.lastDate !== 0) count++;
         if (searchParams.propertyType) count++;
         return count;
     };
@@ -1304,7 +1322,7 @@ function DesktopFavorites({ session }: { session?: any }) {
 
             // Filter by date (lastDate is in days)
             let matchesDate = true;
-            if (searchParams.lastDate !== 180) {
+            if (searchParams.lastDate !== 0) {
                 const postDate = new Date(post.createdDate);
                 const cutoffDate = new Date();
                 cutoffDate.setDate(cutoffDate.getDate() - searchParams.lastDate);
@@ -1477,6 +1495,7 @@ function DesktopFavorites({ session }: { session?: any }) {
                                                     <option value={60}>60 ngày qua</option>
                                                     <option value={90}>90 ngày qua</option>
                                                     <option value={180}>180 ngày qua</option>
+                                                    <option value={0}>Tất cả</option>
                                                 </select>
                                             </div>
 
