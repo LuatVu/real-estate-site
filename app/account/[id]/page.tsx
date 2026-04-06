@@ -30,34 +30,52 @@ function MobileAccount({ session }: { session?: any }) {
     const router = useRouter();
 
     const fetchUserBalance = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/users/balances/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserBalance({
-                mainBalance: data.mainBalance,
-                promoBalance: data.promoBalance,
-                mainBalanceExpiredDate: data.mainBalanceExpiredDate,
-                promoBalanceExpiredDate: data.promoBalanceExpiredDate
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/users/balances/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
-        }
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserBalance({
+                    mainBalance: data.mainBalance,
+                    promoBalance: data.promoBalance,
+                    mainBalanceExpiredDate: data.mainBalanceExpiredDate,
+                    promoBalanceExpiredDate: data.promoBalanceExpiredDate
+                });
+            } else {
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     const fetchUserPackages = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/packages/userPackages/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserPackages(data);
-        }
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/packages/userPackages/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserPackages(data);
+            } else{
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     useEffect(() => {
@@ -290,34 +308,52 @@ function DesktopAccount({ session }: { session?: any }) {
     const router = useRouter();
 
     const fetchUserBalance = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/users/balances/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserBalance({
-                mainBalance: data.mainBalance,
-                promoBalance: data.promoBalance,
-                mainBalanceExpiredDate: data.mainBalanceExpiredDate,
-                promoBalanceExpiredDate: data.promoBalanceExpiredDate
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/users/balances/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
-        }
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserBalance({
+                    mainBalance: data.mainBalance,
+                    promoBalance: data.promoBalance,
+                    mainBalanceExpiredDate: data.mainBalanceExpiredDate,
+                    promoBalanceExpiredDate: data.promoBalanceExpiredDate
+                });
+            } else {
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     const fetchUserPackages = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/packages/userPackages/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserPackages(data);
-        }
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/packages/userPackages/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserPackages(data);
+            } else {
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     useEffect(() => {
