@@ -101,6 +101,33 @@ function MobileUploadPost({ session }: { session?: any }) {
     const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
 
+    const fetchUserData = async () => {
+        try{
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setFormData(prev => ({
+                    ...prev,
+                    contactName: data.response.username || prev.contactName,
+                    phone: data.response.phoneNumber || prev.phone
+                }));
+            } else {
+                if(response.status === 401 || response.status === 403){                
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){            
+            router.push('/sign-in?error=session-expired');
+        }
+    }
+
     const handleTransactionTypeChange = (type: string) => {
         setTransactionType(type);
         setFormData(prev => ({
@@ -530,13 +557,7 @@ function MobileUploadPost({ session }: { session?: any }) {
 
     // Update form data when session becomes available
     useEffect(() => {
-        if (session?.user?.username || session?.user?.phoneNumber) {
-            setFormData(prev => ({
-                ...prev,
-                contactName: session.user.username || prev.contactName,
-                phone: session.user.phoneNumber || prev.phone
-            }));
-        }
+        fetchUserData();
     }, [session]);
 
     return (
@@ -1502,6 +1523,33 @@ function DesktopUploadPost({ session }: { session?: any }) {
     const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
 
+    const fetchUserData = async () => {
+        try{
+            const userId = session?.user?.id;
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setFormData(prev => ({
+                    ...prev,
+                    contactName: data.response.username || prev.contactName,
+                    phone: data.response.phoneNumber || prev.phone
+                }));
+            } else {
+                if(response.status === 401 || response.status === 403){                
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){            
+            router.push('/sign-in?error=session-expired');
+        }
+    }
+
     const handleTransactionTypeChange = (type: string) => {
         setTransactionType(type);
         setFormData(prev => ({
@@ -1931,13 +1979,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
 
     // Update form data when session becomes available
     useEffect(() => {
-        if (session?.user?.username || session?.user?.phoneNumber) {
-            setFormData(prev => ({
-                ...prev,
-                contactName: session.user.username || prev.contactName,
-                phone: session.user.phoneNumber || prev.phone
-            }));
-        }
+        fetchUserData();
     }, [session]);
 
     return (
