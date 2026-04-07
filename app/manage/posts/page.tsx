@@ -555,7 +555,10 @@ function MobileView({ session }: { session?: any }) {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
 
             const data = await response.json();
@@ -570,8 +573,7 @@ function MobileView({ session }: { session?: any }) {
             // Show success message when posts are loaded (optional, can be removed if too frequent)
             // showSuccess(`Đã tải ${data.response.length} tin đăng thành công`);
         } catch (error) {
-            console.error("Error fetching posts:", error);
-            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
+            router.push('/sign-in?error=session-expired');
         }
     }
 
@@ -606,7 +608,7 @@ function MobileView({ session }: { session?: any }) {
 
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [session]);
 
     // Initialize temp filter params when filter dropdown opens
     useEffect(() => {
@@ -1853,7 +1855,10 @@ function DesktopView({ session }: { session?: any }) {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
 
             const data = await response.json();
@@ -1865,8 +1870,7 @@ function DesktopView({ session }: { session?: any }) {
                 pending: data.response.filter((post: any) => post.status === 'DRAFT').length
             });
         } catch (error) {
-            console.error("Error fetching posts:", error);
-            showError("Không thể tải danh sách tin đăng. Vui lòng thử lại sau.");
+            router.push('/sign-in?error=session-expired');
         }
     }
 
@@ -1901,7 +1905,7 @@ function DesktopView({ session }: { session?: any }) {
 
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [session]);
 
     // Initialize temp filter params when filter dropdown opens
     useEffect(() => {
