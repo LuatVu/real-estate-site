@@ -11,6 +11,7 @@ import PackagePurchaseDesktopPopup from '../../ui/common/package-purchase-deskto
 import MbFooter from '@/app/ui/mobile/footer/mb.footer';
 import NavBarDesktop from '@/app/ui/desktop/navigation/nav-bar-desktop';
 import DesktopFooter from '@/app/ui/desktop/footer/desktop-footer';
+import { useRouter } from 'next/navigation';
 
 export default function PackagesPage() {
     const screenSize = useScreenSize();
@@ -23,6 +24,7 @@ export default function PackagesPage() {
 }
 
 function MobilePackages({ session }: { session?: any }){
+    const router = useRouter();
     const [packages, setPackages] = useState<Array<any>>([]);
     const [expandedPackage, setExpandedPackage] = useState<string | null>(null);
     const [userBalance, setUserBalance] = useState<any>({});
@@ -64,38 +66,50 @@ function MobilePackages({ session }: { session?: any }){
                 headers: { 'Content-Type': 'application/json' }
             })
             if (!response.ok) {
-                throw new Error('Failed to fetch packages');
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
             const res = await response.json();
             const data = res.response;
             setPackages(data);
         } catch (error) {
-            console.error('Error fetching packages:', error);
+            router.push('/sign-in?error=session-expired');
         }
     }
 
     const fetchUserBalance = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/users/balances/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserBalance({
-                mainBalance: data.mainBalance,
-                promoBalance: data.promoBalance,
-                mainBalanceExpiredDate: data.mainBalanceExpiredDate,
-                promoBalanceExpiredDate: data.promoBalanceExpiredDate
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/users/balances/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
-        }
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserBalance({
+                    mainBalance: data.mainBalance,
+                    promoBalance: data.promoBalance,
+                    mainBalanceExpiredDate: data.mainBalanceExpiredDate,
+                    promoBalanceExpiredDate: data.promoBalanceExpiredDate
+                });
+            }else{
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     useEffect(() => {
         fetchAllPackages();
         fetchUserBalance();
-    }, []);
+    }, [session]);
 
     return(
         <div className="flex flex-col min-h-screen">
@@ -195,6 +209,7 @@ function DesktopPackages({ session }: { session?: any }){
     const [showPurchasePopup, setShowPurchasePopup] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<any>(null);
     const params = useParams();
+    const router = useRouter();
     
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN').format(price);
@@ -230,38 +245,50 @@ function DesktopPackages({ session }: { session?: any }){
                 headers: { 'Content-Type': 'application/json' }
             })
             if (!response.ok) {
-                throw new Error('Failed to fetch packages');
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }                
             }
             const res = await response.json();
             const data = res.response;
             setPackages(data);
         } catch (error) {
-            console.error('Error fetching packages:', error);
+            router.push('/sign-in?error=session-expired');
         }
     }
 
     const fetchUserBalance = async () => {
-        const userId = params.id || session?.user?.id;
-        const response = await fetch(`/api/users/balances/${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const res = await response.json();
-            const data = res.response;
-            setUserBalance({
-                mainBalance: data.mainBalance,
-                promoBalance: data.promoBalance,
-                mainBalanceExpiredDate: data.mainBalanceExpiredDate,
-                promoBalanceExpiredDate: data.promoBalanceExpiredDate
+        try{
+            const userId = params.id || session?.user?.id;
+            const response = await fetch(`/api/users/balances/${userId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
             });
-        }
+            if (response.ok) {
+                const res = await response.json();
+                const data = res.response;
+                setUserBalance({
+                    mainBalance: data.mainBalance,
+                    promoBalance: data.promoBalance,
+                    mainBalanceExpiredDate: data.mainBalanceExpiredDate,
+                    promoBalanceExpiredDate: data.promoBalanceExpiredDate
+                });
+            }else{
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+            }
+        }catch(error){
+            router.push('/sign-in?error=session-expired');
+        }        
     }
 
     useEffect(() => {
         fetchAllPackages();
         fetchUserBalance();
-    }, []);
+    }, [session]);
 
     return(
         <div className="flex flex-col min-h-screen">
