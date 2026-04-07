@@ -144,7 +144,10 @@ export default function LandingPageDesigner() {
                 setLandingPageData(prev => ({ ...prev, id: result.id, title, address }));
                 setShowSuccessPopup(true);
             } else {
-                throw new Error('Failed to save');
+                if(response.status === 401 || response.status === 403) {                    
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
             }
         } catch (error) {
             alert('Có lỗi xảy ra khi lưu trang. Vui lòng thử lại.');

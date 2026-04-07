@@ -18,7 +18,7 @@ export default function LandingDesignerPage() {
             router.push('/sign-in?redirect=/landing-designer');
             return;
         }
-    }, [session, status, router]);
+    }, [session]);
 
     // Only allow desktop access
     if (screenSize === 'sm' || screenSize === 'md') {
