@@ -102,7 +102,7 @@ function MobileUploadPost({ session }: { session?: any }) {
     const router = useRouter();
 
     const fetchUserData = async () => {
-        try{
+        try {
             const userId = session?.user?.id;
             const response = await fetch(`/api/users/${userId}`, {
                 method: 'GET',
@@ -118,12 +118,12 @@ function MobileUploadPost({ session }: { session?: any }) {
                     phone: data.response.phoneNumber || prev.phone
                 }));
             } else {
-                if(response.status === 401 || response.status === 403){                
+                if (response.status === 401 || response.status === 403) {
                     router.push('/sign-in?error=session-expired');
                     return;
                 }
             }
-        }catch(error){            
+        } catch (error) {
             router.push('/sign-in?error=session-expired');
         }
     }
@@ -327,9 +327,20 @@ function MobileUploadPost({ session }: { session?: any }) {
         }));
     };
 
+    const getTotalImageSize = () => {
+        return uploadedImages.reduce((total, img) => total + img.file.size, 0);
+    };
+
+    const formatFileSize = (bytes: number) => {
+        const mb = bytes / (1024 * 1024);
+        return mb.toFixed(2);
+    };
+
     // Check if step 2 is valid (at least 4 images)
     const isStep2Valid = () => {
-        return uploadedImages.length >= 4;
+        const totalSize = getTotalImageSize();
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        return uploadedImages.length >= 4 && totalSize <= maxSize;
     };
 
     // Function to check if all mandatory fields are filled
@@ -448,40 +459,47 @@ function MobileUploadPost({ session }: { session?: any }) {
     };
 
     const draftUploadImages = async () => {
-        if(Object.keys(imageMapping).length > 0) return; // Already uploaded
-        if(uploadedImages.length === 0){
-            return;
-        }
-        const formData = new FormData();        
-        for (const img of uploadedImages) {
-            formData.append('files', img.file.name);
-        }        
-        const response = await fetch('/api/media/draft', {
+        setIsUploading(true);
+        try {
+            if (Object.keys(imageMapping).length > 0) return; // Already uploaded
+            if (uploadedImages.length === 0) {
+                return;
+            }
+            const formData = new FormData();
+            for (const img of uploadedImages) {
+                formData.append('files', img.file.name);
+            }
+            const response = await fetch('/api/media/draft', {
                 method: 'POST',
                 body: formData
             });
 
-        if (!response.ok) {
-            if(response.status === 401 || response.status === 403){                
-                router.push('/sign-in?error=session-expired');
-                return;
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+                setShowFailurePopup(true);
+                throw new Error('Failed to create image url before upload');
             }
-            setShowFailurePopup(true);
-            throw new Error('Failed to create image url before upload');                    
-        }
 
-        const result = await response.json();
-        for(const img of uploadedImages){
-            const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
-            if(fileImg){
-                imageMapping[img.id] = fileImg.fileUrl;
-            }            
+            const result = await response.json();
+            for (const img of uploadedImages) {
+                const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
+                if (fileImg) {
+                    imageMapping[img.id] = fileImg.fileUrl;
+                }
+            }
+        } catch (error) {
+            setShowFailurePopup(true);
+        } finally {
+            setIsUploading(false);
         }
     };
 
-    const uploadPost = async () => {        
+    const uploadPost = async () => {
         setIsUploading(true); // Start loading
-        
+
         const images = uploadedImages.map(img => ({
             fileName: img.file.name,
             fileUrl: imageMapping[img.id] || img.file.name, // Use the uploaded URL from mapping
@@ -496,54 +514,40 @@ function MobileUploadPost({ session }: { session?: any }) {
             price: Number(formData.price),
             frontage: Number(formData.frontage) > 0 ? Number(formData.frontage) : null, // non-mandatory field
             images: images
-        };        
+        };
         // Add uploaded images to FormData
         try {
-            const response = await fetch('/api/posts/upload', {
+            const formData = new FormData();
+            for (const img of uploadedImages) {
+                formData.append('files', img.file);
+                formData.append('keys', imageMapping[img.id] || img.file.name);
+            }
+            const uploadResponse = await fetch('/api/media/upload/batch-parallel', {
                 method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                body: formData
             });
-
-            const result = await response.json();            
-
-            if (response.ok) {
-                for(const img of uploadedImages) {
-                    try{
-                        const formData = new FormData();
-                        formData.append('file', img.file);
-                        const key = imageMapping[img.id] || img.file.name;
-                        const uploadResponse = await fetch(`/api/media/upload/${key}`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        if(!uploadResponse.ok){
-                            throw new Error('Failed to upload image');
-                        }
-                    }catch(error){
-                        console.error('Error uploading images:', error);
-                        if(imageMapping[img.id]){
-                            await fetch(`/api/media/delete-image/${imageMapping[img.id]}`, {
-                                method:'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                }
-                            })
-                        }
-                    }
-                }
-                setShowSuccessPopup(true); // Show success popup
-            } else {
-                if(response.status === 401 || response.status === 403){                
+            if (!uploadResponse.ok) {
+                if (uploadResponse.status === 401 || uploadResponse.status === 403) {
                     router.push('/sign-in?error=session-expired');
                     return;
                 }
-                setShowFailurePopup(true); // Show failure popup
+                setShowFailurePopup(true);
+            } else {
+                const response = await fetch('/api/posts/upload', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    setShowSuccessPopup(true); // Show success popup
+                } else {
+                    setShowFailurePopup(true);
+                }
             }
-
-        } catch (error) {            
+        } catch (error) {
             setShowFailurePopup(true);  // Show failure popup
         } finally {
             setIsUploading(false); // Stop loading
@@ -708,31 +712,31 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                 />
                                             </div>
                                             {provinces
-                                                .filter((province: any) => 
+                                                .filter((province: any) =>
                                                     removeVietnameseDiacritics(province.name).includes(removeVietnameseDiacritics(provinceFilter?.trim() || ''))
                                                 )
                                                 .map((province: any) => (
-                                                <div
-                                                    key={province.code}
-                                                    className={`${styles.transactionOption} ${selectedProvince === province.name ? styles.selectedOption : ''}`}
-                                                    onClick={() => handleProvinceChange(province.code, province.name)}
-                                                >
-                                                    <div className={styles.optionContent}>
-                                                        <div className={styles.optionRadio}>
-                                                            <input
-                                                                type="radio"
-                                                                id={province.code}
-                                                                name="province"
-                                                                value={province.code}
-                                                                checked={selectedProvince === province.name}
-                                                                onChange={() => { }}
-                                                            />
-                                                            <div className={styles.radioIndicator}></div>
+                                                    <div
+                                                        key={province.code}
+                                                        className={`${styles.transactionOption} ${selectedProvince === province.name ? styles.selectedOption : ''}`}
+                                                        onClick={() => handleProvinceChange(province.code, province.name)}
+                                                    >
+                                                        <div className={styles.optionContent}>
+                                                            <div className={styles.optionRadio}>
+                                                                <input
+                                                                    type="radio"
+                                                                    id={province.code}
+                                                                    name="province"
+                                                                    value={province.code}
+                                                                    checked={selectedProvince === province.name}
+                                                                    onChange={() => { }}
+                                                                />
+                                                                <div className={styles.radioIndicator}></div>
+                                                            </div>
+                                                            <label htmlFor={province.code}>{province.name}</label>
                                                         </div>
-                                                        <label htmlFor={province.code}>{province.name}</label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                         </div>
                                     )}
                                 </div>
@@ -771,27 +775,27 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                     removeVietnameseDiacritics(ward.name).includes(removeVietnameseDiacritics(wardFilter?.trim() || ''))
                                                 )
                                                 .map((ward: any) => (
-                                                <div
-                                                    key={ward.code}
-                                                    className={`${styles.transactionOption} ${selectedWard === ward.name ? styles.selectedOption : ''}`}
-                                                    onClick={() => { handleWardChange(ward.name); handleInputChange('wardCode', ward.code) }}
-                                                >
-                                                    <div className={styles.optionContent}>
-                                                        <div className={styles.optionRadio}>
-                                                            <input
-                                                                type="radio"
-                                                                id={ward.code}
-                                                                name="ward"
-                                                                value={ward.code}
-                                                                checked={selectedWard === ward.name}
-                                                                onChange={() => { }}
-                                                            />
-                                                            <div className={styles.radioIndicator}></div>
+                                                    <div
+                                                        key={ward.code}
+                                                        className={`${styles.transactionOption} ${selectedWard === ward.name ? styles.selectedOption : ''}`}
+                                                        onClick={() => { handleWardChange(ward.name); handleInputChange('wardCode', ward.code) }}
+                                                    >
+                                                        <div className={styles.optionContent}>
+                                                            <div className={styles.optionRadio}>
+                                                                <input
+                                                                    type="radio"
+                                                                    id={ward.code}
+                                                                    name="ward"
+                                                                    value={ward.code}
+                                                                    checked={selectedWard === ward.name}
+                                                                    onChange={() => { }}
+                                                                />
+                                                                <div className={styles.radioIndicator}></div>
+                                                            </div>
+                                                            <label htmlFor={ward.code}>{ward.name}</label>
                                                         </div>
-                                                        <label htmlFor={ward.code}>{ward.name}</label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                         </div>
                                     )}
                                 </div>
@@ -1113,19 +1117,27 @@ function MobileUploadPost({ session }: { session?: any }) {
                                             height={16}
                                             className="mr-2"
                                         />
-                        Thêm hình ảnh
-                    </label>
-                    {uploadedImages.length < 4 && (
-                        <p className="text-sm text-red-600 mt-2">
-                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
-                        </p>
-                    )}
-                    {uploadedImages.length >= 4 && (
-                        <p className="text-sm text-green-600 mt-2">
-                            ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình)
-                        </p>
-                    )}
-                </div>                                {/* Image Preview Grid */}
+                                        Thêm hình ảnh
+                                    </label>
+                                    {uploadedImages.length < 4 && (
+                                        <p className="text-sm text-red-600 mt-2">
+                                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
+                                        </p>
+                                    )}
+                                    {uploadedImages.length >= 4 && (
+                                        <>
+                                            {getTotalImageSize() > 10 * 1024 * 1024 ? (
+                                                <p className="text-sm text-red-600 mt-2">
+                                                    ⚠️ Tổng kích thước ảnh quá lớn ({formatFileSize(getTotalImageSize())}MB / 10MB tối đa)
+                                                </p>
+                                            ) : (
+                                                <p className="text-sm text-green-600 mt-2">
+                                                    ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình, {formatFileSize(getTotalImageSize())}MB / 10MB)
+                                                </p>
+                                            )}
+                                        </>
+                                    )}
+                                </div>                                {/* Image Preview Grid */}
                                 {uploadedImages.length > 0 && (
                                     <div className="grid grid-cols-2 gap-4">
                                         {[...uploadedImages].sort((a, b) => {
@@ -1310,7 +1322,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                 type="button"
                                 className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={!isStep2Valid()}
-                                onClick={() => { handleStepChange(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages();}}
+                                onClick={() => { handleStepChange(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages(); }}
                             >
                                 Tiếp tục
                             </button>
@@ -1340,9 +1352,9 @@ function MobileUploadPost({ session }: { session?: any }) {
 
             {/* Success Popup */}
             {showSuccessPopup && (
-                <PortalPopup 
-                    overlayColor="rgba(113, 113, 113, 0.3)" 
-                    placement="Centered"                    
+                <PortalPopup
+                    overlayColor="rgba(113, 113, 113, 0.3)"
+                    placement="Centered"
                 >
                     <div style={{
                         borderRadius: '8px',
@@ -1404,9 +1416,9 @@ function MobileUploadPost({ session }: { session?: any }) {
 
             {/* Failure Popup */}
             {showFailurePopup && (
-                <PortalPopup 
-                    overlayColor="rgba(113, 113, 113, 0.3)" 
-                    placement="Centered"                    
+                <PortalPopup
+                    overlayColor="rgba(113, 113, 113, 0.3)"
+                    placement="Centered"
                 >
                     <div style={{
                         borderRadius: '8px',
@@ -1443,13 +1455,13 @@ function MobileUploadPost({ session }: { session?: any }) {
                     </div>
                 </PortalPopup>
             )}
-            
+
             {/* Loading overlay while uploading */}
             {isUploading && (
-                <Loading 
+                <Loading
                     fullScreen
                     size="large"
-                    message="Đang đăng tin..." 
+                    message="Đang xử lý..."
                 />
             )}
             <MbFooter />
@@ -1527,7 +1539,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
     const router = useRouter();
 
     const fetchUserData = async () => {
-        try{
+        try {
             const userId = session?.user?.id;
             const response = await fetch(`/api/users/${userId}`, {
                 method: 'GET',
@@ -1543,12 +1555,12 @@ function DesktopUploadPost({ session }: { session?: any }) {
                     phone: data.response.phoneNumber || prev.phone
                 }));
             } else {
-                if(response.status === 401 || response.status === 403){                
+                if (response.status === 401 || response.status === 403) {
                     router.push('/sign-in?error=session-expired');
                     return;
                 }
             }
-        }catch(error){            
+        } catch (error) {
             router.push('/sign-in?error=session-expired');
         }
     }
@@ -1752,9 +1764,22 @@ function DesktopUploadPost({ session }: { session?: any }) {
         }));
     };
 
+    // Helper function to calculate total image size in bytes
+    const getTotalImageSize = () => {
+        return uploadedImages.reduce((total, img) => total + img.file.size, 0);
+    };
+
+    // Helper function to format file size for display
+    const formatFileSize = (bytes: number) => {
+        const mb = bytes / (1024 * 1024);
+        return mb.toFixed(2);
+    };
+
     // Check if step 2 is valid (at least 4 images)
     const isStep2Valid = () => {
-        return uploadedImages.length >= 4;
+        const totalSize = getTotalImageSize();
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        return uploadedImages.length >= 4 && totalSize <= maxSize;
     };
 
     // Function to check if all mandatory fields are filled
@@ -1873,40 +1898,47 @@ function DesktopUploadPost({ session }: { session?: any }) {
     };
 
     const draftUploadImages = async () => {
-        if(Object.keys(imageMapping).length > 0) return; // Already uploaded
-        if(uploadedImages.length === 0){
-            return;
-        }
-        const formData = new FormData();        
-        for (const img of uploadedImages) {
-            formData.append('files', img.file.name);
-        }        
-        const response = await fetch('/api/media/draft', {
+        setIsUploading(true);
+        try {
+            if (Object.keys(imageMapping).length > 0) return; // Already uploaded
+            if (uploadedImages.length === 0) {
+                return;
+            }
+            const formData = new FormData();
+            for (const img of uploadedImages) {
+                formData.append('files', img.file.name);
+            }
+            const response = await fetch('/api/media/draft', {
                 method: 'POST',
                 body: formData
             });
 
-        if (!response.ok) {
-            if(response.status === 401 || response.status === 403){                
-                router.push('/sign-in?error=session-expired');
-                return;
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    router.push('/sign-in?error=session-expired');
+                    return;
+                }
+                setShowFailurePopup(true);
+                throw new Error('Failed to create image url before upload');
             }
-            setShowFailurePopup(true);
-            throw new Error('Failed to create image url before upload');                    
-        }
 
-        const result = await response.json();
-        for(const img of uploadedImages){
-            const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
-            if(fileImg){
-                imageMapping[img.id] = fileImg.fileUrl;
-            }            
+            const result = await response.json();
+            for (const img of uploadedImages) {
+                const fileImg = result.find((ele: any) => ele.fileName === img.file.name);
+                if (fileImg) {
+                    imageMapping[img.id] = fileImg.fileUrl;
+                }
+            }
+        } catch (error) {
+            setShowFailurePopup(true);
+        } finally {
+            setIsUploading(false);
         }
     };
 
-    const uploadPost = async () => {        
+    const uploadPost = async () => {
         setIsUploading(true); // Start loading
-        
+
         const images = uploadedImages.map(img => ({
             fileName: img.file.name,
             fileUrl: imageMapping[img.id] || img.file.name, // Use the uploaded URL from mapping
@@ -1921,53 +1953,39 @@ function DesktopUploadPost({ session }: { session?: any }) {
             price: Number(formData.price),
             frontage: Number(formData.frontage) > 0 ? Number(formData.frontage) : null, // non-mandatory field
             images: images
-        };        
+        };
         // Add uploaded images to FormData
         try {
-            const response = await fetch('/api/posts/upload', {
+            const formData = new FormData();
+            for (const img of uploadedImages) {
+                formData.append('files', img.file);
+                formData.append('keys', imageMapping[img.id] || img.file.name);
+            }
+            const uploadResponse = await fetch('/api/media/upload/batch-parallel', {
                 method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                body: formData
             });
-
-            const result = await response.json();            
-
-            if (response.ok) {
-                for(const img of uploadedImages) {
-                    try{
-                        const formData = new FormData();
-                        formData.append('file', img.file);
-                        const key = imageMapping[img.id] || img.file.name;
-                        const uploadResponse = await fetch(`/api/media/upload/${key}`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        if(!uploadResponse.ok){
-                            throw new Error('Failed to upload image');
-                        }
-                    }catch(error){
-                        console.error('Error uploading images:', error);
-                        if(imageMapping[img.id]){
-                            await fetch(`/api/media/delete-image/${imageMapping[img.id]}`, {
-                                method:'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                }
-                            })
-                        }
-                    }
-                }
-                setShowSuccessPopup(true); // Show success popup
-            } else {
-                if(response.status === 401 || response.status === 403){                
+            if (!uploadResponse.ok) {
+                if (uploadResponse.status === 401 || uploadResponse.status === 403) {
                     router.push('/sign-in?error=session-expired');
                     return;
                 }
-                setShowFailurePopup(true); // Show failure popup
+                setShowFailurePopup(true);
+            } else {
+                const response = await fetch('/api/posts/upload', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    setShowSuccessPopup(true); // Show success popup
+                } else {
+                    setShowFailurePopup(true);
+                }
             }
-
         } catch (error) {
             setShowFailurePopup(true);  // Show failure popup
         } finally {
@@ -2133,31 +2151,31 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                                 />
                                             </div>
                                             {provinces
-                                                .filter((province: any) => 
+                                                .filter((province: any) =>
                                                     removeVietnameseDiacritics(province.name).includes(removeVietnameseDiacritics(provinceFilter?.trim() || ''))
                                                 )
                                                 .map((province: any) => (
-                                                <div
-                                                    key={province.code}
-                                                    className={`${styles.transactionOption} ${selectedProvince === province.name ? styles.selectedOption : ''}`}
-                                                    onClick={() => handleProvinceChange(province.code, province.name)}
-                                                >
-                                                    <div className={styles.optionContent}>
-                                                        <div className={styles.optionRadio}>
-                                                            <input
-                                                                type="radio"
-                                                                id={province.code}
-                                                                name="province"
-                                                                value={province.code}
-                                                                checked={selectedProvince === province.name}
-                                                                onChange={() => { }}
-                                                            />
-                                                            <div className={styles.radioIndicator}></div>
+                                                    <div
+                                                        key={province.code}
+                                                        className={`${styles.transactionOption} ${selectedProvince === province.name ? styles.selectedOption : ''}`}
+                                                        onClick={() => handleProvinceChange(province.code, province.name)}
+                                                    >
+                                                        <div className={styles.optionContent}>
+                                                            <div className={styles.optionRadio}>
+                                                                <input
+                                                                    type="radio"
+                                                                    id={province.code}
+                                                                    name="province"
+                                                                    value={province.code}
+                                                                    checked={selectedProvince === province.name}
+                                                                    onChange={() => { }}
+                                                                />
+                                                                <div className={styles.radioIndicator}></div>
+                                                            </div>
+                                                            <label htmlFor={province.code}>{province.name}</label>
                                                         </div>
-                                                        <label htmlFor={province.code}>{province.name}</label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                         </div>
                                     )}
                                 </div>
@@ -2196,27 +2214,27 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                                     removeVietnameseDiacritics(ward.name).includes(removeVietnameseDiacritics(wardFilter?.trim() || ''))
                                                 )
                                                 .map((ward: any) => (
-                                                <div
-                                                    key={ward.code}
-                                                    className={`${styles.transactionOption} ${selectedWard === ward.name ? styles.selectedOption : ''}`}
-                                                    onClick={() => { handleWardChange(ward.name); handleInputChange('wardCode', ward.code) }}
-                                                >
-                                                    <div className={styles.optionContent}>
-                                                        <div className={styles.optionRadio}>
-                                                            <input
-                                                                type="radio"
-                                                                id={ward.code}
-                                                                name="ward"
-                                                                value={ward.code}
-                                                                checked={selectedWard === ward.name}
-                                                                onChange={() => { }}
-                                                            />
-                                                            <div className={styles.radioIndicator}></div>
+                                                    <div
+                                                        key={ward.code}
+                                                        className={`${styles.transactionOption} ${selectedWard === ward.name ? styles.selectedOption : ''}`}
+                                                        onClick={() => { handleWardChange(ward.name); handleInputChange('wardCode', ward.code) }}
+                                                    >
+                                                        <div className={styles.optionContent}>
+                                                            <div className={styles.optionRadio}>
+                                                                <input
+                                                                    type="radio"
+                                                                    id={ward.code}
+                                                                    name="ward"
+                                                                    value={ward.code}
+                                                                    checked={selectedWard === ward.name}
+                                                                    onChange={() => { }}
+                                                                />
+                                                                <div className={styles.radioIndicator}></div>
+                                                            </div>
+                                                            <label htmlFor={ward.code}>{ward.name}</label>
                                                         </div>
-                                                        <label htmlFor={ward.code}>{ward.name}</label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                         </div>
                                     )}
                                 </div>
@@ -2538,19 +2556,27 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                             height={16}
                                             className="mr-2"
                                         />
-                        Thêm hình ảnh
-                    </label>
-                    {uploadedImages.length < 4 && (
-                        <p className="text-sm text-red-600 mt-2">
-                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
-                        </p>
-                    )}
-                    {uploadedImages.length >= 4 && (
-                        <p className="text-sm text-green-600 mt-2">
-                            ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình)
-                        </p>
-                    )}
-                </div>                                {/* Image Preview Grid */}
+                                        Thêm hình ảnh
+                                    </label>
+                                    {uploadedImages.length < 4 && (
+                                        <p className="text-sm text-red-600 mt-2">
+                                            Cần tối thiểu 4 hình ảnh để tiếp tục ({uploadedImages.length}/4)
+                                        </p>
+                                    )}
+                                    {uploadedImages.length >= 4 && (
+                                        <>
+                                            {getTotalImageSize() > 10 * 1024 * 1024 ? (
+                                                <p className="text-sm text-red-600 mt-2">
+                                                    ⚠️ Tổng kích thước ảnh quá lớn ({formatFileSize(getTotalImageSize())}MB / 10MB tối đa)
+                                                </p>
+                                            ) : (
+                                                <p className="text-sm text-green-600 mt-2">
+                                                    ✓ Đã có đủ hình ảnh ({uploadedImages.length} hình, {formatFileSize(getTotalImageSize())}MB / 10MB)
+                                                </p>
+                                            )}
+                                        </>
+                                    )}
+                                </div>                                {/* Image Preview Grid */}
                                 {uploadedImages.length > 0 && (
                                     <div className="grid grid-cols-2 gap-4">
                                         {[...uploadedImages].sort((a, b) => {
@@ -2735,7 +2761,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                 type="button"
                                 className={`${styles.nextButton} ${!isStep2Valid() ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={!isStep2Valid()}
-                                onClick={() => { handleStepChange(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages();}}
+                                onClick={() => { handleStepChange(3); setTabBtnState({ ...tabItemState, thirdTab: styles.activeTabItem }); draftUploadImages(); }}
                             >
                                 Tiếp tục
                             </button>
@@ -2765,9 +2791,9 @@ function DesktopUploadPost({ session }: { session?: any }) {
 
             {/* Success Popup */}
             {showSuccessPopup && (
-                <PortalPopup 
-                    overlayColor="rgba(113, 113, 113, 0.3)" 
-                    placement="Centered"                    
+                <PortalPopup
+                    overlayColor="rgba(113, 113, 113, 0.3)"
+                    placement="Centered"
                 >
                     <div style={{
                         borderRadius: '8px',
@@ -2829,9 +2855,9 @@ function DesktopUploadPost({ session }: { session?: any }) {
 
             {/* Failure Popup */}
             {showFailurePopup && (
-                <PortalPopup 
-                    overlayColor="rgba(113, 113, 113, 0.3)" 
-                    placement="Centered"                    
+                <PortalPopup
+                    overlayColor="rgba(113, 113, 113, 0.3)"
+                    placement="Centered"
                 >
                     <div style={{
                         borderRadius: '8px',
@@ -2868,13 +2894,13 @@ function DesktopUploadPost({ session }: { session?: any }) {
                     </div>
                 </PortalPopup>
             )}
-            
+
             {/* Loading overlay while uploading */}
             {isUploading && (
-                <Loading 
+                <Loading
                     fullScreen
                     size="large"
-                    message="Đang đăng tin..." 
+                    message="Đang xử lý..."
                 />
             )}
             <DesktopFooter />

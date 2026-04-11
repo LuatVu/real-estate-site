@@ -48,6 +48,7 @@ export const config = {
     "/api/posts/:path*",
     "/api/media/draft/:path*",
     "/api/media/upload/:path*",
+    "/api/media/upload/batch-parallel/:path*",
     "/api/media/delete-image/:path*",
     "/api/manage/:path*",
     "/api/manage/posts/:path*",
