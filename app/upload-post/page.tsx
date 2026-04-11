@@ -1162,6 +1162,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                             onClick={() => setPrimaryImage(image.id)}
                                                             className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
                                                             title="Đặt làm ảnh chính"
+                                                            type="button"
                                                         >
                                                             ⭐
                                                         </button>
@@ -1172,6 +1173,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                         onClick={() => rotateImage(image.id)}
                                                         className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded text-xs"
                                                         title="Xoay ảnh"
+                                                        type="button"
                                                     >
                                                         ↻
                                                     </button>
@@ -1181,6 +1183,7 @@ function MobileUploadPost({ session }: { session?: any }) {
                                                         onClick={() => removeImage(image.id)}
                                                         className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
                                                         title="Xóa ảnh"
+                                                        type="button"
                                                     >
                                                         ×
                                                     </button>
@@ -2584,6 +2587,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                                             onClick={() => setPrimaryImage(image.id)}
                                                             className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
                                                             title="Đặt làm ảnh chính"
+                                                            type="button"
                                                         >
                                                             ⭐
                                                         </button>
@@ -2594,6 +2598,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                                         onClick={() => rotateImage(image.id)}
                                                         className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded text-xs"
                                                         title="Xoay ảnh"
+                                                        type="button"
                                                     >
                                                         ↻
                                                     </button>
@@ -2603,6 +2608,7 @@ function DesktopUploadPost({ session }: { session?: any }) {
                                                         onClick={() => removeImage(image.id)}
                                                         className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
                                                         title="Xóa ảnh"
+                                                        type="button"
                                                     >
                                                         ×
                                                     </button>
