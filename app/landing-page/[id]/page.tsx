@@ -1,8 +1,9 @@
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { options as authOptions } from "../../api/auth/[...nextauth]/options";
 import LandingPageClient from "./landing-page-client";
 import { ErrorBoundary } from "../../posts/error-boundary";
+
+// Force static generation for this route
+export const dynamic = 'force-static';
 
 // Generate static params for popular landing pages (optional - improves performance)
 export async function generateStaticParams() {
@@ -227,10 +228,7 @@ export default async function LandingPage({ params }: { params: Promise<{ id: st
     const resolvedParams = await params;
     const { id } = resolvedParams;
     
-    const [session, landingPage] = await Promise.all([
-      getServerSession(authOptions),
-      getLandingPageData(id)
-    ]);
+    const landingPage = await getLandingPageData(id);
     
     if (!landingPage) {
       return (
@@ -260,8 +258,8 @@ export default async function LandingPage({ params }: { params: Promise<{ id: st
           />
         ))}
         
-        {/* Main Content - no Suspense needed since server component already awaits data */}
-        <LandingPageClient landingPage={landingPage} session={session} />
+        {/* Main Content - session will be handled client-side in LandingPageClient */}
+        <LandingPageClient landingPage={landingPage} />
       </ErrorBoundary>
     );
   } catch (error) {    

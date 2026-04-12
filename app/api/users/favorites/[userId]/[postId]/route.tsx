@@ -10,7 +10,7 @@ interface RouteParams {
 // GET - Check if a favorite exists or get favorite details
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<RouteParams['params']> }
 ) {
   const { userId, postId } = await params;
   const authorization = request.headers.get('authorization');

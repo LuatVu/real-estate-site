@@ -1,8 +1,9 @@
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { options as authOptions } from "../../api/auth/[...nextauth]/options";
 import PostClient from "./post-client";
 import ErrorBoundary from "./error-boundary";
+
+// Force static generation for this route
+export const dynamic = 'force-static';
 
 // Generate static params for popular posts (optional - improves performance)
 export async function generateStaticParams() {
@@ -256,10 +257,7 @@ export default async function Posts({ params }: { params: Promise<{ id: string }
     const resolvedParams = await params;
     const { id } = resolvedParams;
     
-    const [session, post] = await Promise.all([
-      getServerSession(authOptions),
-      getPostData(id)
-    ]);
+    const post = await getPostData(id);
     
     if (!post) {
       return (
@@ -289,8 +287,8 @@ export default async function Posts({ params }: { params: Promise<{ id: string }
           />
         ))}
         
-        {/* Main Content - no Suspense needed since server component already awaits data */}
-        <PostClient post={post} session={session} />
+        {/* Main Content - session will be handled client-side in PostClient */}
+        <PostClient post={post} />
       </ErrorBoundary>
     );
   } catch (error) {    

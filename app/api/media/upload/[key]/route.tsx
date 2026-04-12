@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-export async function POST(request: NextRequest, { params }: { params: { key: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     try {
         const { key } = await params;
         const formdata = await request.formData();

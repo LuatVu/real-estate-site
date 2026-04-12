@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import useScreenSize from "../../lib/useScreenSize";
 import styles from './index.module.css';
 import NavBarMobile from '../../ui/mobile/navigation/nav-bar-mobile';
@@ -21,10 +22,10 @@ import { formatDescription } from '../../utils/markdown-utils';
 
 interface PostClientProps {
   post: any;
-  session?: any;
 }
 
-export default function PostClient({ post, session }: PostClientProps) {
+export default function PostClient({ post }: PostClientProps) {
+  const { data: session, status } = useSession();
   const screenSize = useScreenSize();
   const [isClient, setIsClient] = useState(false);
   

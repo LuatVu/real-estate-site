@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const authorization = request.headers.get('authorization');

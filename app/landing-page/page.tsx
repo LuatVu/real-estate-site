@@ -38,7 +38,7 @@ interface LandingPageData {
 }
 
 export async function generateMetadata({ searchParams }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }): Promise<Metadata> {
     const params = await searchParams;
     const page = params.page ? Number(params.page) : 1;
@@ -116,9 +116,10 @@ export async function generateMetadata({ searchParams }: {
 }
 
 // Server-side data fetching with improved error handling and validation
-async function fetchLandingPageData(searchParams: { [key: string]: string | string[] | undefined }): Promise<LandingPageData> {
+async function fetchLandingPageData(searchParams: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<LandingPageData> {
     try {
-        const page = searchParams.page ? Number(searchParams.page) : 1;
+        const params = await searchParams.searchParams;
+        const page = params.page ? Number(params.page) : 1;
 
         // Validate page number
         if (page < 1 || page > 1000) {
@@ -127,8 +128,8 @@ async function fetchLandingPageData(searchParams: { [key: string]: string | stri
 
         // Build search request from URL parameters with validation
         const searchRequest: SearchRequest = {
-            transactionType: searchParams.transactionType as string,
-            query: (searchParams.query as string) || ""
+            transactionType: params.transactionType as string,
+            query: (params.query as string) || ""
         };
 
         // Validate transactionType parameter
@@ -193,12 +194,12 @@ async function fetchLandingPageData(searchParams: { [key: string]: string | stri
 }
 
 // Main server component
-export default async function LandingPage({ searchParams }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+export default async function LandingPage( searchParams : {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-    const params = await searchParams;
+    const params = await searchParams.searchParams;
     const session = await getServerSession(authOptions);
-    const landingPageData = await fetchLandingPageData(params);
+    const landingPageData = await fetchLandingPageData({ searchParams: Promise.resolve(params) });
 
     // Generate JSON-LD structured data for SEO
   const structuredData = {

@@ -40,7 +40,7 @@ interface SearchRequest {
 
 // SEO Metadata for the posts page
 export async function generateMetadata({ searchParams }: { 
-  searchParams: { [key: string]: string | string[] | undefined } 
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }): Promise<Metadata> {
   const params = await searchParams;
   const page = params.page ? Number(params.page) : 1;
@@ -139,9 +139,10 @@ export async function generateMetadata({ searchParams }: {
 }
 
 // Server-side data fetching with improved error handling and validation
-async function fetchPostsData(searchParams: { [key: string]: string | string[] | undefined }): Promise<PostsData> {
+async function fetchPostsData(searchParams: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<PostsData> {
   try {
-    const page = searchParams.page ? Number(searchParams.page) : 1;
+    const params = await searchParams.searchParams;
+    const page = params.page ? Number(params.page) : 1;
     
     // Validate page number
     if (page < 1 || page > 1000) {
@@ -150,23 +151,23 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
     
     // Build search request from URL parameters with validation
     const searchRequest: SearchRequest = {
-      minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
-      maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
-      minAcreage: searchParams.minAcreage ? Number(searchParams.minAcreage) : undefined,
-      maxAcreage: searchParams.maxAcreage ? Number(searchParams.maxAcreage) : undefined,
-      typeCodes: searchParams.typeCodes 
-        ? Array.isArray(searchParams.typeCodes) 
-          ? searchParams.typeCodes 
-          : searchParams.typeCodes.split(",")
+      minPrice: params.minPrice ? Number(params.minPrice) : undefined,
+      maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
+      minAcreage: params.minAcreage ? Number(params.minAcreage) : undefined,
+      maxAcreage: params.maxAcreage ? Number(params.maxAcreage) : undefined,
+      typeCodes: params.typeCodes 
+        ? Array.isArray(params.typeCodes) 
+          ? params.typeCodes 
+          : params.typeCodes.split(",")
         : undefined,
-      cityCode: searchParams.cityCode as string,
-      wardCodes: searchParams.wardCodes 
-        ? Array.isArray(searchParams.wardCodes) 
-          ? searchParams.wardCodes 
-          : searchParams.wardCodes.split(",")
+      cityCode: params.cityCode as string,
+      wardCodes: params.wardCodes 
+        ? Array.isArray(params.wardCodes) 
+          ? params.wardCodes 
+          : params.wardCodes.split(",")
         : undefined,
-      transactionType: searchParams.transactionType  as string,
-      query: (searchParams.query as string) || ""
+      transactionType: params.transactionType  as string,
+      query: (params.query as string) || ""
     };
 
     // Validate transactionType parameter
@@ -239,11 +240,11 @@ async function fetchPostsData(searchParams: { [key: string]: string | string[] |
 
 // Main server component
 export default async function Posts({ searchParams }: { 
-  searchParams: { [key: string]: string | string[] | undefined } 
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams;
   const session = await getServerSession(authOptions);
-  const postsData = await fetchPostsData(params);
+  const postsData = await fetchPostsData({ searchParams: Promise.resolve(params) });
 
   // Generate JSON-LD structured data for SEO
   const structuredData = {

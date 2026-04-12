@@ -1,5 +1,5 @@
 "use client";
-import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import { useState, useEffect } from 'react';
@@ -36,10 +36,10 @@ interface LandingPageData {
 
 interface LandingPageClientProps {
   landingPage: LandingPageData;
-  session: Session | null;
 }
 
-export default function LandingPageClient({ landingPage, session }: LandingPageClientProps) {
+export default function LandingPageClient({ landingPage }: LandingPageClientProps) {
+  const { data: session } = useSession();
   const screenSize = useScreenSize();
 
   return (
@@ -47,12 +47,10 @@ export default function LandingPageClient({ landingPage, session }: LandingPageC
       {(screenSize === 'sm' || screenSize === 'md') ? (
         <LandingPageOnMobile
           landingPage={landingPage}
-          session={session}
         />
       ) : (
         <LandingPageOnDesktop
           landingPage={landingPage}
-          session={session}
         />
       )}
     </div>
@@ -60,12 +58,11 @@ export default function LandingPageClient({ landingPage, session }: LandingPageC
 }
   
 function LandingPageOnMobile({
-  landingPage,
-  session
+  landingPage
 }: {
   landingPage: LandingPageData;
-  session: Session | null;
 }) {
+  const { data: session } = useSession();
   if (!landingPage) {
     return (
       <div className={styles.errorContainer}>
@@ -201,12 +198,11 @@ function LandingPageOnMobile({
 }
 
 function LandingPageOnDesktop({
-  landingPage,
-  session
+  landingPage
 }: {
   landingPage: LandingPageData;
-  session: Session | null;
 }) {
+  const { data: session } = useSession();
   if (!landingPage) {
     return (
       <div className={styles.errorContainer}>

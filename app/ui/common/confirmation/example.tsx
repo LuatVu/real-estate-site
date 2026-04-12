@@ -1,7 +1,7 @@
 // Example usage of the confirmation component
 
-import { useConfirmation } from '../hook/useConfirmation';
-import Confirmation from '../ui/common/confirmation';
+import { useConfirmation } from '../../../hook/useConfirmation';
+import Confirmation from './index';
 
 function ExampleComponent() {
     const { confirmation, showConfirmation, hideConfirmation, setConfirmButtonLoading } = useConfirmation();
@@ -18,7 +18,7 @@ function ExampleComponent() {
                 setConfirmButtonLoading(true);
                 try {
                     // API call here
-                    await deleteItem();
+                    // await deleteItem();
                     hideConfirmation();
                     // Show success message
                 } catch (error) {
