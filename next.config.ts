@@ -1,5 +1,27 @@
 import type { NextConfig } from "next";
 
+// Parse API URL from environment variable
+const parseApiUrl = () => {
+  const apiUrl = process.env.SPRING_API || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+  try {
+    const url = new URL(apiUrl);
+    return {
+      protocol: url.protocol.slice(0, -1), // remove trailing ':'
+      hostname: url.hostname,
+      port: url.port || (url.protocol === 'https:' ? '443' : '80'),
+    };
+  } catch {
+    // Fallback values if URL parsing fails
+    return {
+      protocol: "http",
+      hostname: "localhost", 
+      port: "8080"
+    };
+  }
+};
+
+const apiConfig = parseApiUrl();
+
 const nextConfig: NextConfig = {
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -10,15 +32,15 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8080",
+        protocol: apiConfig.protocol as "http" | "https",
+        hostname: apiConfig.hostname,
+        port: apiConfig.port,
         pathname: "/api/public/image/**"
       },
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8080",
+        protocol: apiConfig.protocol as "http" | "https",
+        hostname: apiConfig.hostname,
+        port: apiConfig.port,
         pathname: "/api/public/landing-images/**"
       },
       {
