@@ -23,6 +23,8 @@ const parseApiUrl = () => {
 const apiConfig = parseApiUrl();
 
 const nextConfig: NextConfig = {
+  // Enable standalone output for Docker optimization
+  output: 'standalone',
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
