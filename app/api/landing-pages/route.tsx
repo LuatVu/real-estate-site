@@ -139,19 +139,13 @@ export async function PUT(req: NextRequest) {
             );
         }
 
-        const updateData = {
-            ...body,
-            userId: session.user.id || session.user.email,
-            updatedAt: new Date().toISOString()
-        };
-
-        const response = await fetch(`${process.env.SPRING_API}/api/landing-pages/${body.id}`, {
+        const response = await fetch(`${process.env.SPRING_API}/api/landing-pages/update`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': authorization || '',
             },
-            body: JSON.stringify(updateData)
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {

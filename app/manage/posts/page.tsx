@@ -1685,6 +1685,16 @@ function DesktopView({ session }: { session?: any }) {
         }
     };
 
+    const handleDropdownActionForLandingPage = (action: string, post: any) => {
+        setOpenDropdownId(null);
+
+        switch (action) {
+            case 'edit':
+                router.push(`/landing-designer/edit/${post.postId}`);
+                break;
+        }
+    }
+
     // Get the correct repost/reup label based on post status
     const getRepostLabel = (status: string) => {
         switch (status) {
@@ -2215,18 +2225,22 @@ function DesktopView({ session }: { session?: any }) {
                                                                     <Image src={getRepostIcon(post.status)} alt={getRepostLabel(post.status)} width={18} height={18} />
                                                                     {getRepostLabel(post.status)}
                                                                 </button>
-                                                                )}
-                                                                {post.transactionType !== 'PROJECT' && (
+                                                                )}                                                                
                                                                 <button
-                                                                    onClick={() => handleDropdownAction('edit', post)}                                                                    
+                                                                    onClick={() => {
+                                                                        if(post.transactionType !== 'PROJECT'){
+                                                                            handleDropdownAction('edit', post);
+                                                                        }else{
+                                                                            handleDropdownActionForLandingPage('edit', post);
+                                                                        }                                                                        
+                                                                    }}
                                                                     className={styles.btnFacility}
                                                                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                                                                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                                                 >
                                                                     <Image src="/icons/editIcon.svg" alt="Edit" width={16} height={16} className="mr-2" />
                                                                     Sửa tin
-                                                                </button>
-                                                                )}
+                                                                </button>                                                                
                                                                 {post.transactionType !== 'PROJECT' && (
                                                                 <button
                                                                     onClick={() => handleDropdownAction('upgrade', post)}

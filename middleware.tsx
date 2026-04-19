@@ -62,6 +62,7 @@ export const config = {
     "/manage/:path*",
     "/account/:path*",
     "/landing-designer/:path*",
+    "/landing-designer/edit/:path*",
     "/packages/:path*",
     "/profile/:path*"
   ]

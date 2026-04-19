@@ -38,13 +38,18 @@ export interface LandingPageSection {
     };
 }
 
-export default function LandingPageDesigner() {
+interface LandingPageDesignerProps {
+    editMode?: boolean;
+    landingPageId?: Promise<{ id: string }>;
+}
+
+export default function LandingPageDesigner({ editMode = false, landingPageId }: LandingPageDesignerProps) {
     const { data: session } = useSession();
     const router = useRouter();
     const [landingPageData, setLandingPageData] = useState<LandingPageData>({        
         id: uuidv4(), // Use UUID for unique ID generation
         title: '',
-        address: '',
+        address: '',        
         sections: []
     });
     const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -52,6 +57,8 @@ export default function LandingPageDesigner() {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(editMode);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     const addSection = (type: 'text' | 'image' | 'text-image') => {
         const newSection: LandingPageSection = {
@@ -97,6 +104,44 @@ export default function LandingPageDesigner() {
         setActiveSection(null);
     };
 
+    // Load existing landing page data for edit mode
+    useEffect(() => {
+        if (editMode && landingPageId) {
+            const fetchLandingPage = async () => {
+                try {
+                    const { id } = await landingPageId;
+                    const response = await fetch(`/api/public/landing-page/${id}`);
+                    
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            setLoadError('Không tìm thấy trang landing này.');
+                        } else {
+                            setLoadError('Có lỗi xảy ra khi tải trang landing.');
+                        }
+                        return;
+                    }
+                    
+                    const result = await response.json();
+                    const data = result.response || result;
+                    
+                    setLandingPageData({
+                        id: data.id,
+                        title: data.title || '',
+                        address: data.address || '',                        
+                        sections: data.sections || []
+                    });
+                } catch (error) {
+                    console.error('Error fetching landing page:', error);
+                    setLoadError('Có lỗi xảy ra khi tải trang landing.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            fetchLandingPage();
+        }
+    }, [editMode, landingPageId]);
+
     const reorderSection = (sectionId: string, direction: 'up' | 'down') => {
         setLandingPageData(prev => {
             const sections = [...prev.sections];
@@ -126,8 +171,9 @@ export default function LandingPageDesigner() {
     const handleSaveConfirm = async (title: string, address: string, isPublic: boolean) => {
         setSaving(true);
         try {
+            const method = editMode && landingPageData.id ? 'PUT' : 'POST';
             const response = await fetch('/api/landing-pages', {
-                method: 'POST',
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -148,6 +194,8 @@ export default function LandingPageDesigner() {
                     router.push('/sign-in?error=session-expired');
                     return;
                 }
+                const errorData = await response.json().catch(() => ({ message: 'Có lỗi xảy ra' }));
+                alert(errorData.message || 'Có lỗi xảy ra khi lưu trang. Vui lòng thử lại.');
             }
         } catch (error) {
             alert('Có lỗi xảy ra khi lưu trang. Vui lòng thử lại.');
@@ -157,6 +205,37 @@ export default function LandingPageDesigner() {
         }
     };
 
+    // Show loading state for edit mode
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <NavBarDesktop session={session} />
+                <div className={styles.loading} style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div>Đang tải dữ liệu trang...</div>
+                </div>
+                <DesktopFooter />
+            </div>
+        );
+    }
+
+    // Show error state
+    if (loadError) {
+        return (
+            <div className={styles.container}>
+                <NavBarDesktop session={session} />
+                <div className={styles.loading} style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                    <div style={{ color: '#e74c3c', fontSize: '18px' }}>{loadError}</div>
+                    <Button
+                        text="Quay lại"
+                        onClick={() => router.back()}
+                        cssClass={[btnStyle.buttonSecondary]}
+                    />
+                </div>
+                <DesktopFooter />
+            </div>
+        );
+    }
+
     return (
         <div className={styles.container}>
             <NavBarDesktop session={session} />
@@ -165,7 +244,7 @@ export default function LandingPageDesigner() {
                 {/* Left Sidebar - Controls */}
                 <div className={styles.sidebar}>
                     <div className={styles.sidebarContent}>
-                        <h2>Thiết kế trang</h2>
+                        <h2>{editMode ? 'Chỉnh sửa trang' : 'Thiết kế trang'}</h2>
                         
                         <div className={styles.titleInput}>
                             <label>Tiêu đề trang:</label>
@@ -251,7 +330,7 @@ export default function LandingPageDesigner() {
                                 cssClass={[btnStyle.buttonSecondary]}
                             />
                             <Button
-                                text="Lưu trang"
+                                text={editMode ? 'Cập nhật trang' : 'Lưu trang'}
                                 onClick={handleSave}
                                 cssClass={[btnStyle.buttonprimary]}
                             />
@@ -324,42 +403,44 @@ export default function LandingPageDesigner() {
                     }}>
                         <div style={{ marginBottom: '16px' }}>
                             <h3 style={{ color: '#22c55e', margin: '0 0 8px 0', fontSize: '18px', fontWeight: '600' }}>
-                                Lưu trang thành công!
+                                {editMode ? 'Cập nhật trang thành công!' : 'Lưu trang thành công!'}
                             </h3>
                             <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>
-                                Trang landing của bạn đã được lưu thành công.
+                                {editMode ? 'Trang landing của bạn đã được cập nhật thành công.' : 'Trang landing của bạn đã được lưu thành công.'}
                             </p>
                         </div>
                         <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            {!editMode && (
+                                <button
+                                    onClick={() => {
+                                        setShowSuccessPopup(false);
+                                        setLandingPageData({                                        
+                                            id: uuidv4(),
+                                            title: '',
+                                            address: '',                                            
+                                            sections: []
+                                        });
+                                        setActiveSection(null);
+                                        setPreviewMode(false);
+                                    }}
+                                    style={{
+                                        padding: '12px 16px',
+                                        backgroundColor: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Tạo trang mới
+                                </button>
+                            )}
                             <button
                                 onClick={() => {
                                     setShowSuccessPopup(false);
-                                    setLandingPageData({                                        
-                                        id: uuidv4(),
-                                        title: '',
-                                        address: '',
-                                        sections: []
-                                    });
-                                    setActiveSection(null);
-                                    setPreviewMode(false);
-                                }}
-                                style={{
-                                    padding: '12px 16px',
-                                    backgroundColor: '#3b82f6',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Tạo trang mới
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowSuccessPopup(false);
-                                    router.push('/manage/landing-page');
+                                    router.push('/manage/posts');
                                 }}
                                 style={{
                                     padding: '12px 16px',
